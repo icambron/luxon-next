@@ -1,0 +1,11 @@
+{
+  "name": "luxon",
+  "version": "3.0.0",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "latest",
+    "ts-transformer-keys": "^0.4.3"
+  }
+}
