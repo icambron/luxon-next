@@ -1,6 +1,3 @@
-// todo - move this
-export type ZoneOffsetFormat = "narrow" | "short" | "techie";
-
 /**
  * An abstract Zone class
  * @interface
@@ -44,3 +41,8 @@ export default interface Zone {
    */
   isValid: boolean;
 }
+
+export type Zoneish = Zone | number | string | null | undefined;
+
+export const isZone = (maybeZone: any): maybeZone is Zone => maybeZone.name !== undefined;
+

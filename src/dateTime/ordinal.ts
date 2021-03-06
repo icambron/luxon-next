@@ -1,5 +1,4 @@
-import DateTime from "../model/dateTime";
-import {fromCalendar, getCalendarValue} from "../impl/dateTimeImpl"
+import DateTime, {fromCalendar, getCalendarValue} from "../model/dateTime";
 import Zone from "../model/zone";
 import {OrdinalCalendar, OrdinalDate} from "../model/calendars/ordinal";
 import Time from "../model/time";

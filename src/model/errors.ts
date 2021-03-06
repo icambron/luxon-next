@@ -1,6 +1,6 @@
 // these aren't really private, but nor are they really useful to document
 
-import {Zoneish} from "../dateTime/toZone";
+import {Zoneish} from "../dateTime/zone";
 
 /**
  * @private

@@ -1,9 +1,10 @@
-import DateTime from "../model/dateTime";
+import DateTime, {alter, set} from "../model/dateTime";
 import {bestBy} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
-import {gregorianInstance} from "../model/calendars/gregorian";
-import {set} from "../impl/dateTimeImpl";
+import {daysInMonth, gregorianInstance, gregorianToTS, objToLocalTS} from "../model/calendars/gregorian";
+import Duration, {DurationValues, quickBoil} from "../model/duration";
+import {zeroed} from "../duration/core";
 
 /**
  * Return the max of several date times
@@ -19,7 +20,7 @@ export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueO
  */
 export const min = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueOf(), Math.min);
 
-// todo: use duration keys minus milliseconds
+// todo: use duration keys minus milliseconds, dealing with plurals somehow
 type StartableUnit = "year" | "quarter" | "month" | "week" | "day" | "hour" | "minute" | "second";
 
 export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
@@ -57,4 +58,31 @@ export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
    }
 
    return o.weekday ? set(dt, isoCalendarInstance, o) : set(dt, gregorianInstance, o);
+}
+
+const adjustTime = (dt: DateTime, dur: Duration) : [number, number] => {
+
+   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds} = zeroed(dur);
+
+   // todo: need to normalize the units to handle fractions. in the old one we do that with shiftTo
+
+   const greg = dt.gregorian;
+
+   const year = greg.year + years;
+   const month = greg.month + months + quarters * 3;
+   const day = Math.min(greg.day, daysInMonth(year, month)) + days + weeks * 7
+
+   let [ts, offset] = gregorianToTS({ year, month, day}, dt.time, dt.offset, dt.zone);
+
+   const millisToAdd = quickBoil({ hours, minutes, seconds, milliseconds}, dur.conversionAccuracy);
+   if (millisToAdd !== 0) {
+      ts += millisToAdd;
+      offset = dt.zone.offset(ts)
+   }
+   return [ts, offset];
+}
+
+export const plus = (dt: DateTime, dur: Duration): DateTime => {
+   const [ts, offset] = adjustTime(dt, dur);
+   return alter(dt, ts, dt.zone, offset);
 }

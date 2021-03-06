@@ -1,38 +1,10 @@
 import FixedOffsetZone from "../model/zones/fixedOffsetZone";
 import SystemZone from "../model/zones/systemZone";
-import DateTime, {alter} from "../model/dateTime";
-import Zone from "../model/zone";
-import {isNumber, isString, isUndefined} from "../impl/util";
-import IANAZone from "../model/zones/IANAZone";
-import {InvalidZoneError} from "../model/errors";
+import DateTime, {alter, normalizeZone} from "../model/dateTime";
 import {getDefaultZone} from "../model/settings";
 import {gregorianToTS} from "../model/calendars/gregorian";
+import {Zoneish} from "../model/zone";
 
-export type Zoneish = Zone | number | string | null | undefined;
-
-const isZone = (maybeZone: any): maybeZone is Zone => maybeZone.name !== undefined;
-
-export const toZone = (zoneish: Zoneish) => {
-    if (isUndefined(zoneish) || zoneish === null) return getDefaultZone();
-    if (isZone(zoneish)) return zoneish;
-    if (isString(zoneish)) {
-        const lowered = zoneish.toLowerCase();
-        if (lowered === "default") return getDefaultZone();
-        if (lowered === "system") return SystemZone.instance;
-        if (lowered === "utc") return FixedOffsetZone.utcInstance;
-        if (IANAZone.isValidSpecifier(lowered)) return IANAZone.create(zoneish);
-
-        const parsed = FixedOffsetZone.parseSpecifier(lowered);
-
-        if (!parsed) {
-            throw new InvalidZoneError(zoneish);
-        }
-
-        return parsed;
-    }
-    if (isNumber(zoneish)) return FixedOffsetZone.instance(zoneish);
-    throw new InvalidZoneError(zoneish);
-}
 
 /**
  * "Set" the DateTime's zone to specified zone. Returns a newly-constructed DateTime.
@@ -45,7 +17,7 @@ export const toZone = (zoneish: Zoneish) => {
  * @return {DateTime}
  */
 export const setZone = (dt: DateTime, tz: Zoneish, { keepLocalTime = false } = {}) => {
-    tz = toZone(tz);
+    tz = normalizeZone(tz);
     if (tz.equals(dt.zone)) {
         return dt;
     } else {

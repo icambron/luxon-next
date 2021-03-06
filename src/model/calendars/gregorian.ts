@@ -17,15 +17,11 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
     fromGregorian = (obj: GregorianDate): GregorianDate => obj;
 
     isInvalid = (obj: any): [string, number] | null => {
-        const validYear = isInteger(obj.year),
-            validMonth = integerBetween(obj.month, 1, 12),
-            validDay = integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month));
-
-        if (!validYear) {
+        if (!isInteger(obj.year)) {
             return ["year", obj.year];
-        } else if (!validMonth) {
+        } else if (!integerBetween(obj.month, 1, 12)) {
             return ["month", obj.month];
-        } else if (!validDay) {
+        } else if (!integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month))) {
             return ["day", obj.day];
         } else return null;
     };

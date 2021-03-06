@@ -1,8 +1,7 @@
 // rule: only depends on model and impl
-import Zone from "../model/zone";
+import Zone, {Zoneish} from "../model/zone";
 import {daysInMonth, GregorianDate, gregorianInstance} from "../model/calendars/gregorian";
-import DateTime from "../model/dateTime";
-import {fromCalendar, fromMillis as fromMillisInternal, set} from "../impl/dateTimeImpl"
+import DateTime, {fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set} from "../model/dateTime";
 import Time from "../model/time";
 import {daysInYear, isLeapYear} from "../impl/dateMath";
 import {getDefaultNowFn} from "../model/settings";
@@ -15,7 +14,7 @@ export const zoneName = (dt: DateTime): string => dt.zone.name;
 export const offset = (dt: DateTime): number => dt.offset;
 
 // TO/FROM A TIME
-export const fromTime = (obj: Partial<Time>, zone?: Zone): DateTime => fromGregorianCalendar(obj, zone);
+export const fromTime = (obj: Partial<Time>, zone?: Zoneish): DateTime => fromGregorian(obj, normalizeZone(zone));
 export const toTime = (dt: DateTime): Time => ({...dt.time});
 export const setTime = (dt: DateTime, obj: Partial<Time>): DateTime => setGregorian(dt, obj);
 
@@ -25,12 +24,12 @@ export const toMillis = (dt: DateTime): number => dt.ts;
 export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 
 // FROM ESSENTIALS
-export const now = (zone?: Zone) => fromMillis(getDefaultNowFn()(), zone);
+export const now = (zone?: Zoneish) => fromMillis(getDefaultNowFn()(), normalizeZone(zone));
 export const fromMillis = fromMillisInternal;
 
 // TO/FROM GREGORIAN
-export const fromGregorianCalendar = (obj: Partial<GregorianDate & Time>, zone?: Zone): DateTime =>
-    fromCalendar(gregorianInstance, obj, zone);
+export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
+    fromCalendar(gregorianInstance, obj, normalizeZone(zone));
 export const toGregorianCalendar = (dt: DateTime): Partial<GregorianDate & Time> => ({...dt.gregorian, ...dt.time});
 export const setGregorian = (dt: DateTime, obj: object): DateTime => set(dt, gregorianInstance, obj);
 

@@ -1,7 +1,7 @@
 // todo: clean this up, once enough of the rest is in place
+// should have no dependencies
 
 import { InvalidArgumentError } from "../model/errors"
-import {ZoneOffsetFormat} from "../model/zone";
 
 /**
  * @private
@@ -9,7 +9,7 @@ import {ZoneOffsetFormat} from "../model/zone";
 
 // TYPES
 
-export function isUndefined(o: unknown): o is number {
+export function isUndefined(o: unknown): o is undefined {
     return typeof o === "undefined";
 }
 
@@ -84,7 +84,7 @@ export function pick<T, K extends keyof T>(obj: T, keys: K[]) {
 // NUMBERS AND STRINGS
 
 export function integerBetween(thing: number, bottom: number, top: number) {
-    return thing >= bottom && thing <= top;
+    return isInteger(thing) && thing >= bottom && thing <= top;
 }
 
 // x % n but takes the sign of n instead of x
@@ -208,7 +208,7 @@ export function normalizeObject<T extends string>(
     }, {});
 }
 
-export function formatOffset(offset: number, format: ZoneOffsetFormat) {
+export function formatOffset(offset: number, format: "narrow" | "short" | "techie") {
     const hours = Math.trunc(Math.abs(offset / 60)),
         minutes = Math.trunc(Math.abs(offset % 60)),
         sign = offset >= 0 ? "+" : "-";
