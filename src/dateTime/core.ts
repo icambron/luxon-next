@@ -30,7 +30,7 @@ export const fromMillis = fromMillisInternal;
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
     fromCalendar(gregorianInstance, obj, normalizeZone(zone));
-export const toGregorianCalendar = (dt: DateTime): Partial<GregorianDate & Time> => ({...dt.gregorian, ...dt.time});
+export const toGregorian = (dt: DateTime): Partial<GregorianDate & Time> => ({...dt.gregorian, ...dt.time});
 export const setGregorian = (dt: DateTime, obj: object): DateTime => set(dt, gregorianInstance, obj);
 
 // GREGORIAN GETTERS

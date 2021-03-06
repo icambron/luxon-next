@@ -3,8 +3,7 @@ import {bestBy} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
 import {daysInMonth, gregorianInstance, gregorianToTS, objToLocalTS} from "../model/calendars/gregorian";
-import Duration, {DurationValues, quickBoil} from "../model/duration";
-import {zeroed} from "../duration/core";
+import Duration, {quickBoil, zeroed} from "../model/duration";
 
 /**
  * Return the max of several date times

@@ -11,17 +11,17 @@ const dayOfWeek = (year: number, month: number, day: number) => {
     return js === 0 ? 7 : js;
 };
 
-export interface IsoWeekDate extends CalendarDate {
+export interface ISOWeekDate extends CalendarDate {
     weekYear: number;
     weekNumber: number;
     weekday: number;
 }
 
-export class IsoWeekCalendar implements Calendar<IsoWeekDate> {
+export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
     defaultValues = { weekYear: 1, weekNumber: 1, weekday: 1};
     name = "isoweekdate";
 
-    fromGregorian(obj: GregorianDate): IsoWeekDate {
+    fromGregorian(obj: GregorianDate): ISOWeekDate {
         const { year, month, day } = obj,
             ordinal = computeOrdinal(year, month, day),
             weekday = dayOfWeek(year, month, day);
@@ -42,7 +42,7 @@ export class IsoWeekCalendar implements Calendar<IsoWeekDate> {
         return { weekYear, weekNumber, weekday };
     }
 
-    isInvalid(obj: IsoWeekDate): [string, number] | null {
+    isInvalid(obj: ISOWeekDate): [string, number] | null {
         if (!isInteger(obj.weekYear)) {
             return ["weekYear", obj.weekYear];
         }
@@ -57,7 +57,7 @@ export class IsoWeekCalendar implements Calendar<IsoWeekDate> {
         return null;
     }
 
-    toGregorian(obj: IsoWeekDate): GregorianDate {
+    toGregorian(obj: ISOWeekDate): GregorianDate {
         const { weekYear, weekNumber, weekday } = obj,
             weekdayOfJan4 = dayOfWeek(weekYear, 1, 4),
             yearInDays = daysInYear(weekYear);
