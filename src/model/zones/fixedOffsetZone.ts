@@ -1,8 +1,6 @@
 import { formatOffset, signedOffset } from "../../impl/util";
 import Zone from "../zone";
 
-let singleton: FixedOffsetZone | null = null;
-
 /**
  * A zone with a fixed offset (meaning no DST)
  * @implements {Zone}
@@ -58,16 +56,11 @@ export const parseFixedOffset = (s: string): FixedOffsetZone | null => {
  * @return {FixedOffsetZone}
  */
 export const fixedOffsetZone = (offset: number): FixedOffsetZone =>
-    offset === 0 ? utcInstance() : new FixedOffsetZone(offset)
+    offset === 0 ? utcInstance : new FixedOffsetZone(offset)
 
 /**
  * Get a singleton instance of UTC
  * @return {FixedOffsetZone}
  */
-export const utcInstance = (): FixedOffsetZone => {
-  if (singleton === null) {
-    singleton = new FixedOffsetZone(0);
-  }
-  return singleton;
-}
+export const utcInstance = new FixedOffsetZone(0);
 

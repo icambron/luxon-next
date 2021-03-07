@@ -58,12 +58,12 @@ export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
     }
 
     toGregorian(obj: ISOWeekDate): GregorianDate {
-        const { weekYear, weekNumber, weekday } = obj,
-            weekdayOfJan4 = dayOfWeek(weekYear, 1, 4),
-            yearInDays = daysInYear(weekYear);
+        const { weekYear, weekNumber, weekday } = obj;
+        const weekdayOfJan4 = dayOfWeek(weekYear, 1, 4);
+        const yearInDays = daysInYear(weekYear);
 
-        let ordinal = weekNumber * 7 + weekday - weekdayOfJan4 - 3,
-            year;
+        let ordinal: number = weekNumber * 7 + weekday - weekdayOfJan4 - 3;
+        let year: number;
 
         if (ordinal < 1) {
             year = weekYear - 1;
@@ -93,4 +93,3 @@ export function weeksInWeekYear(weekYear: number): number {
         p2 = (last + Math.floor(last / 4) - Math.floor(last / 100) + Math.floor(last / 400)) % 7;
     return p1 === 4 || p2 === 3 ? 53 : 52;
 }
-

@@ -38,5 +38,5 @@ export default interface Zone {
 
 export type Zoneish = Zone | number | string | null | undefined;
 
-export const isZone = (maybeZone: any): maybeZone is Zone => maybeZone.name !== undefined;
+export const isZone = (maybeZone: any): maybeZone is Zone => maybeZone?.name !== undefined;
 

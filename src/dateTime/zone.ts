@@ -49,7 +49,7 @@ export const toUTC = (dt: DateTime, offset = 0, opts = {}) =>
  * Equivalent to `{@link setZone}(dt, "system")`
  * @return {DateTime}
  */
-export const toSystemZone = (dt: DateTime) => setZone(dt, systemZone());
+export const toSystemZone = (dt: DateTime) => setZone(dt, systemZone);
 
 /**
  * "Set" the DateTime's zone to the default zone. Returns a newly-constructed DateTime.

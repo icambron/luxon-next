@@ -1,10 +1,13 @@
 // rule: only depends on model and impl
 import Zone, {Zoneish} from "../model/zone";
-import {daysInMonth, GregorianDate, gregorianInstance} from "../model/calendars/gregorian";
+import {adjustCalendarOverflow, daysInMonth, GregorianDate, gregorianInstance} from "../model/calendars/gregorian";
 import DateTime, {fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set} from "../model/dateTime";
 import Time from "../model/time";
 import {daysInYear, isLeapYear} from "../impl/dateMath";
 import {getDefaultNowFn} from "../model/settings";
+import {utcInstance} from "../model/zones/fixedOffsetZone";
+import {InvalidArgumentError} from "../model/errors";
+import {isDate} from "../impl/util";
 
 // BASICS
 // these are strictly unneeded but they make the interface more consistent
@@ -25,13 +28,25 @@ export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 
 // FROM ESSENTIALS
 export const now = (zone?: Zoneish) => fromMillisInternal(getDefaultNowFn()(), normalizeZone(zone));
+export const utcNow = () => now(utcInstance);
 export const fromMillis = (ms: number, zone?: Zoneish) => fromMillisInternal(ms, normalizeZone(zone));
+
+export const fromJSDate = (jsDate: Date, zone?: Zoneish): DateTime => {
+    if (!isDate(jsDate) || Number.isNaN(jsDate.valueOf())) {
+        throw new InvalidArgumentError("date argument must be a valid Date");
+    }
+    return fromMillis(+jsDate, zone);
+}
+export const ymd = (year: number, month: number, day: number, hour?: number, minute?: number, second?: number, millisecond?: number) =>
+    fromGregorian({year, month, day, hour, minute, second, millisecond})
 
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
     fromCalendar(gregorianInstance, obj, normalizeZone(zone));
 export const toGregorian = (dt: DateTime): Partial<GregorianDate & Time> => ({...dt.gregorian, ...dt.time});
-export const setGregorian = (dt: DateTime, obj: object): DateTime => set(dt, gregorianInstance, obj);
+export const setGregorian = (dt: DateTime, obj: object): DateTime =>
+    set(dt, gregorianInstance, obj, (original, unadjusted) =>
+        original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted);
 
 // GREGORIAN GETTERS
 export const year = (dt: DateTime): number => dt.gregorian.year;

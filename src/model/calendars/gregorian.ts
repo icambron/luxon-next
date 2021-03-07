@@ -4,6 +4,12 @@ import Zone from "../zone";
 import {floorMod, integerBetween, isInteger} from "../../impl/util";
 import {isLeapYear} from "../../impl/dateMath";
 
+/*
+The Gregorian calendar (i.e. the dates we use in everyday life) is the lingua franca of Luxon. It's thus a sort of
+privileged calendar, primarily because we know how to convert it to and from a timestamp. We can do that with other
+calendars too, but only by converting them to or from Gregorian first.
+ */
+
 export interface GregorianDate extends CalendarDate {
     year: number;
     month: number;
@@ -15,30 +21,50 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
     defaultValues = { year: 1, month: 1, day: 1 };
 
     fromGregorian = (obj: GregorianDate): GregorianDate => obj;
+    toGregorian = (obj: GregorianDate): GregorianDate => obj;
 
-    isInvalid = (obj: any): [string, number] | null => {
-        if (!isInteger(obj.year)) {
-            return ["year", obj.year];
-        } else if (!integerBetween(obj.month, 1, 12)) {
-            return ["month", obj.month];
-        } else if (!integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month))) {
-            return ["day", obj.day];
+    isInvalid = ({year, month, day}: any): [string, number] | null => {
+        if (!isInteger(year)) {
+            return ["year", year];
+        } else if (!integerBetween(month, 1, 12)) {
+            return ["month", month];
+        } else if (!integerBetween(day, 1, daysInMonth(year, month))) {
+            return ["day", day];
         } else return null;
     };
-
-    toGregorian = (obj: GregorianDate): GregorianDate => obj;
 }
 
 export const gregorianInstance: GregorianCalendar = new GregorianCalendar();
 
 export function daysInMonth(year: number, month: number) {
-    const modMonth = floorMod(month - 1, 12) + 1,
-        modYear = year + (month - modMonth) / 12;
+    const modMonth = floorMod(month - 1, 12) + 1;
+    const modYear = year + (month - modMonth) / 12;
     return [31, isLeapYear(modYear) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][modMonth - 1];
 }
 
+// convert a calendar object to a local timestamp (epoch, but with the offset baked in)
+export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => {
+    const ts = Date.UTC(
+        gregorianDate.year,
+        gregorianDate.month - 1,
+        gregorianDate.day,
+        time.hour,
+        time.minute,
+        time.second,
+        time.millisecond
+    );
+
+    // for legacy reasons, years between 0 and 99 are interpreted as 19XX; revert that
+    if (0 < gregorianDate.year && gregorianDate.year < 99) {
+        const date = new Date(ts);
+        date.setUTCFullYear(date.getUTCFullYear() - 1900);
+        return date.getTime();
+    }
+    return ts;
+};
+
 export const gregorianToTS = (gregorianDate: GregorianDate, time: Time, offset: number, zone: Zone): [number, number] =>
-    fixOffset(objToLocalTS(gregorianDate, time), offset, zone);
+    fixOffset(gregorianToLocalTS(gregorianDate, time), offset, zone);
 
 // convert an epoch timestamp into a calendar object with the given offset
 export const tsToGregorian = (ts: number, offset: number): [GregorianDate, Time] => {
@@ -62,27 +88,10 @@ export const tsToGregorian = (ts: number, offset: number): [GregorianDate, Time]
     return [gregorianDate, time];
 };
 
-// convert a calendar object to a local timestamp (epoch, but with the offset baked in)
-export function objToLocalTS(gregorianDate: GregorianDate, time: Time) {
-    const ts = Date.UTC(
-        gregorianDate.year,
-        gregorianDate.month - 1,
-        gregorianDate.day,
-        time.hour,
-        time.minute,
-        time.second,
-        time.millisecond
-    );
-
-    // for legacy reasons, years between 0 and 99 are interpreted as 19XX; revert that
-    if (integerBetween(gregorianDate.year, 0, 99)) {
-        const date = new Date(ts);
-        date.setUTCFullYear(date.getUTCFullYear() - 1900);
-        return date.getTime();
-    }
-
-    return ts;
-}
+export const adjustCalendarOverflow = (greg: GregorianDate): GregorianDate => {
+    const {year, month, day} = greg;
+    return {...greg, day: Math.min(day, daysInMonth(year, month))};
+};
 
 // find the right offset at a given local time. The o input is our guess, which determines which
 // offset we'll pick in ambiguous cases (e.g. there are two 3 AMs b/c Fallback DST)

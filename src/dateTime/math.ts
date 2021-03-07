@@ -2,7 +2,7 @@ import DateTime, {alter, set} from "../model/dateTime";
 import {bestBy} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
-import {daysInMonth, gregorianInstance, gregorianToTS, objToLocalTS} from "../model/calendars/gregorian";
+import {daysInMonth, gregorianInstance, gregorianToTS} from "../model/calendars/gregorian";
 import Duration, {quickBoil, defaultEmpties} from "../model/duration";
 
 /**

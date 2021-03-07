@@ -1,7 +1,7 @@
 import { isUndefined, ianaRegex } from "../../impl/util";
 import Zone from "../zone";
 import { InvalidZoneError } from "../errors";
-import {objToLocalTS} from "../calendars/gregorian";
+import {gregorianToLocalTS} from "../calendars/gregorian";
 
 const matchingRegex = RegExp(`^${ianaRegex.source}$`);
 
@@ -104,7 +104,7 @@ export default class IANAZone implements Zone {
       // work around https://bugs.chromium.org/p/chromium/issues/detail?id=1025564&can=2&q=%2224%3A00%22%20datetimeformat
       adjustedHour = hour === 24 ? 0 : hour;
 
-    const asUTC = objToLocalTS(
+    const asUTC = gregorianToLocalTS(
         { year, month, day},
         { hour: adjustedHour, minute, second, millisecond: 0}
     );

@@ -1,8 +1,6 @@
 import { hasIntl } from "../../impl/util";
 import Zone from "../zone";
 
-let singleton: SystemZone | null = null;
-
 /**
  * Represents the system's local zone for this Javascript environment.
  * @implements {Zone}
@@ -28,7 +26,7 @@ export default class SystemZone implements Zone {
   }
 
   equals(other: Zone) {
-    return other.type === "system";
+    return other !== undefined && other.type === "system";
   }
 }
 
@@ -36,9 +34,4 @@ export default class SystemZone implements Zone {
  * Get a singleton instance of the system's local zone
  * @return {SystemZone}
  */
-export const systemZone = (): SystemZone => {
-  if (singleton === null) {
-    singleton = new SystemZone();
-  }
-  return singleton;
-}
+export const systemZone = new SystemZone();

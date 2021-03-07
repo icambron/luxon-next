@@ -1,13 +1,18 @@
 import Zone, {isZone, Zoneish} from "./zone";
 import {Calendar, CalendarDate} from "./calendar";
-import {GregorianDate, gregorianInstance, gregorianToTS, tsToGregorian} from "./calendars/gregorian";
+import {
+    GregorianDate,
+    gregorianInstance,
+    gregorianToTS,
+    tsToGregorian
+} from "./calendars/gregorian";
 import Time, {hasInvalidTimeData} from "./time";
 import {formatOffset, isNumber, isString, isUndefined} from "../impl/util";
 import {getDefaultNowFn, getDefaultZone} from "./settings";
 import {InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError} from "./errors";
 import {systemZone} from "./zones/systemZone";
 import {fixedOffsetZone, parseFixedOffset, utcInstance} from "./zones/fixedOffsetZone";
-import {createIANAZone, isValidIANASpecifier} from "./zones/IANAZone";
+import {createIANAZone, isValidIANASpecifier, parseGMTOffset} from "./zones/IANAZone";
 
 const MAX_DATE = 8.64e15;
 
@@ -115,10 +120,21 @@ export const getCalendarValue = <TDate extends CalendarDate>(dt: DateTime, calen
     }
 }
 
-export const set = <TDate extends CalendarDate>(dt: DateTime, calendar: Calendar<TDate>, obj: Partial<TDate & Time>): DateTime => {
+export const set = <TDate extends CalendarDate>(
+    dt: DateTime,
+    calendar: Calendar<TDate>,
+    obj: Partial<TDate & Time>,
+    adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time) => {
+
     const current = getCalendarValue(dt, calendar);
-    const mixed = {...current, ...dt.time, ...obj} as TDate & Time;
+    let mixed = {...current, ...dt.time, ...obj} as TDate & Time;
+
+    if (adjust){
+        mixed = adjust(obj, mixed);
+    }
+
     const gregorian = calendar.toGregorian(mixed);
+
     const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
     return alter(dt, ts, dt.zone, o);
 }
@@ -150,6 +166,12 @@ export default class DateTime {
     toBSON = (): Date => new Date(this.ts);
     valueOf = (): number => this.ts;
 
+    equals = (other: any): boolean =>
+        !!other
+        && other.isLuxonDateTime !== undefined
+        && this.valueOf() === other.valueOf()
+        && this.zone.equals(other.zone);
+
     constructor(
         ts: number,
         zone: Zone,
@@ -173,8 +195,16 @@ export const normalizeZone = (zoneish: Zoneish): Zone => {
     if (isString(zoneish)) {
         const lowered = zoneish.toLowerCase();
         if (lowered === "default") return getDefaultZone();
-        if (lowered === "system") return systemZone();
-        if (lowered === "utc") return utcInstance();
+        if (lowered === "system") return systemZone;
+        if (lowered === "utc") return utcInstance;
+
+        // todo - update this logic from upstream
+        const gmtOffset = parseGMTOffset(lowered);
+        if (gmtOffset != null) {
+            // handle Etc/GMT-4, which V8 chokes on
+            return fixedOffsetZone(gmtOffset);
+        }
+
         if (isValidIANASpecifier(lowered)) return createIANAZone(zoneish);
 
         const parsed = parseFixedOffset(lowered);
