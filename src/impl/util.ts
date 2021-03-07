@@ -1,7 +1,7 @@
 // todo: clean this up, once enough of the rest is in place
 // should have no dependencies
 
-import { InvalidArgumentError } from "../model/errors"
+import {InvalidArgumentError} from "../model/errors"
 
 /**
  * @private
@@ -136,26 +136,23 @@ export function untruncateYear(year: number) {
 
 export function parseZoneInfo(
     ts: number,
-    offsetFormat?: string,
+    offsetFormat?: "long" | "short",
     locale?: string,
     timeZone?: string
 ) {
-    const date = new Date(ts),
-        intlOptions = {
-            hour12: false,
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone
-        };
+    const date = new Date(ts);
+    const intlOptions: Intl.DateTimeFormatOptions = {
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone
+    };
 
-    const modified: Intl.DateTimeFormatOptions = Object.assign(
-        { timeZoneName: offsetFormat },
-        intlOptions
-        ),
-        intl = hasIntl();
+    const modified: Intl.DateTimeFormatOptions = { timeZoneName: offsetFormat, ...intlOptions};
+    const intl = hasIntl();
 
     if (intl && hasFormatToParts()) {
         const parsed = new Intl.DateTimeFormat(locale, modified)
@@ -164,11 +161,10 @@ export function parseZoneInfo(
         return parsed ? parsed.value : null;
     } else if (intl) {
         // this probably doesn't work for all locales
-        const without = new Intl.DateTimeFormat(locale, intlOptions).format(date),
-            included = new Intl.DateTimeFormat(locale, modified).format(date),
-            diffed = included.substring(without.length),
-            trimmed = diffed.replace(/^[, \u200e]+/, "");
-        return trimmed;
+        const without = new Intl.DateTimeFormat(locale, intlOptions).format(date);
+        const included = new Intl.DateTimeFormat(locale, modified).format(date);
+        const diffed = included.substring(without.length);
+        return diffed.replace(/^[, \u200e]+/, "");
     } else {
         return null;
     }

@@ -8,16 +8,6 @@ let singleton: SystemZone | null = null;
  * @implements {Zone}
  */
 export default class SystemZone implements Zone {
-  /**
-   * Get a singleton instance of the system's local zone
-   * @return {SystemZone}
-   */
-  static get instance() {
-    if (singleton === null) {
-      singleton = new SystemZone();
-    }
-    return singleton;
-  }
 
   get type() {
     return "system";
@@ -40,8 +30,15 @@ export default class SystemZone implements Zone {
   equals(other: Zone) {
     return other.type === "system";
   }
+}
 
-  get isValid() {
-    return true;
+/**
+ * Get a singleton instance of the system's local zone
+ * @return {SystemZone}
+ */
+export const systemZone = (): SystemZone => {
+  if (singleton === null) {
+    singleton = new SystemZone();
   }
+  return singleton;
 }

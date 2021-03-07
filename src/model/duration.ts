@@ -12,7 +12,8 @@ export interface DurationValues {
     readonly milliseconds: number;
 }
 
-const durationValueKeys: Array<keyof DurationValues> = ["years", "quarters", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"];
+const durationZeroes: DurationValues = { years: 0, quarters: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+const durationValueKeys: Array<keyof DurationValues> = Object.keys(durationZeroes) as Array<keyof DurationValues>;
 
 export type ConversionAccuracy = "casual" | "longterm";
 type Trie = Record<string, Record<string, number>>;
@@ -146,7 +147,4 @@ export default class Duration {
     valueOf = (): number => quickBoil(this.values, this.conversionAccuracy);
 }
 
-export const zeroed = (dur: Duration): DurationValues => {
-    const template: DurationValues = { years: 0, quarters: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
-    return {...template, ...dur.values};
-}
+export const defaultEmpties = (dur: Duration): DurationValues => ({...durationZeroes, ...dur.values})

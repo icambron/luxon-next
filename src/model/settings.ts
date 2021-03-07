@@ -1,7 +1,7 @@
 import Zone from "./zone";
-import SystemZone from "./zones/systemZone";
+import {systemZone} from "./zones/systemZone";
 
-let defaultZone: Zone = SystemZone.instance;
+let defaultZone: Zone = systemZone();
 let nowFn : () => number = () => Date.now();
 
 export const getDefaultZone = (): Zone => defaultZone;

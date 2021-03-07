@@ -3,7 +3,7 @@ import {bestBy} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
 import {daysInMonth, gregorianInstance, gregorianToTS, objToLocalTS} from "../model/calendars/gregorian";
-import Duration, {quickBoil, zeroed} from "../model/duration";
+import Duration, {quickBoil, defaultEmpties} from "../model/duration";
 
 /**
  * Return the max of several date times
@@ -61,7 +61,7 @@ export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
 
 const adjustTime = (dt: DateTime, dur: Duration) : [number, number] => {
 
-   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds} = zeroed(dur);
+   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds} = defaultEmpties(dur);
 
    // todo: need to normalize the units to handle fractions. in the old one we do that with shiftTo
 

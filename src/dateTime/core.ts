@@ -24,8 +24,8 @@ export const toMillis = (dt: DateTime): number => dt.ts;
 export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 
 // FROM ESSENTIALS
-export const now = (zone?: Zoneish) => fromMillis(getDefaultNowFn()(), normalizeZone(zone));
-export const fromMillis = fromMillisInternal;
+export const now = (zone?: Zoneish) => fromMillisInternal(getDefaultNowFn()(), normalizeZone(zone));
+export const fromMillis = (ms: number, zone?: Zoneish) => fromMillisInternal(ms, normalizeZone(zone));
 
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>

@@ -75,76 +75,13 @@ let ianaZoneCache: Record<string, IANAZone> = {};
  * @implements {Zone}
  */
 export default class IANAZone implements Zone {
-  private readonly zoneName: string;
-  private readonly valid: boolean;
+  private readonly _zoneName: string;
 
-  /**
-   * @param {string} name - Zone name
-   * @return {IANAZone}
-   */
-  static create(name: string) {
-    if (!ianaZoneCache[name]) {
-      ianaZoneCache[name] = new IANAZone(name);
+  constructor(name: string) {
+    if (!isValidZone(name)) {
+      throw new InvalidZoneError(name);
     }
-    return ianaZoneCache[name];
-  }
-
-  /**
-   * Reset local caches. Should only be necessary in testing scenarios.
-   * @return {void}
-   */
-  static resetCache() {
-    ianaZoneCache = {};
-    dtfCache = {};
-  }
-
-  /**
-   * Returns whether the provided string is a valid specifier. This only checks the string's format, not that the specifier identifies a known zone; see isValidZone for that.
-   * @param {string} s - The string to check validity on
-   * @example IANAZone.isValidSpecifier("America/New_York") //=> true
-   * @example IANAZone.isValidSpecifier("Fantasia/Castle") //=> true
-   * @example IANAZone.isValidSpecifier("Sport~~blorp") //=> false
-   * @return {boolean}
-   */
-  static isValidSpecifier(s: string) {
-    return !!(s && matchingRegex.exec(s) !== null);
-  }
-
-  /**
-   * Returns whether the provided string identifies a real zone
-   * @param {string} zone - The string to check
-   * @example IANAZone.isValidZone("America/New_York") //=> true
-   * @example IANAZone.isValidZone("Fantasia/Castle") //=> false
-   * @example IANAZone.isValidZone("Sport~~blorp") //=> false
-   * @return {boolean}
-   */
-  static isValidZone(zone: string) {
-    try {
-      new Intl.DateTimeFormat("en-US", { timeZone: zone }).format();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Etc/GMT+8 -> -480
-  /** @ignore */
-  static parseGMTOffset(specifier: string) {
-    if (specifier) {
-      const regexp = /^Etc\/GMT([+-]\d{1,2})$/i;
-      const match = regexp.exec(specifier);
-      if (match !== null) {
-        return -60 * parseInt(match[1]);
-      }
-    }
-    return null;
-  }
-
-  private constructor(name: string) {
-    /** @private **/
-    this.zoneName = name;
-    /** @private **/
-    this.valid = IANAZone.isValidZone(name);
+    this._zoneName = name;
   }
 
   get type() {
@@ -152,7 +89,7 @@ export default class IANAZone implements Zone {
   }
 
   get name() {
-    return this.zoneName;
+    return this._zoneName;
   }
 
   get isUniversal() {
@@ -181,8 +118,66 @@ export default class IANAZone implements Zone {
   equals(other: Zone) {
     return other.type === "iana" && other.name === this.name;
   }
+}
 
-  get isValid() {
-    return this.valid;
+/**
+ * @param {string} name - Zone name
+ * @return {IANAZone}
+ */
+export const createIANAZone = (name: string): IANAZone => {
+  if (!ianaZoneCache[name]) {
+    ianaZoneCache[name] = new IANAZone(name);
   }
+  return ianaZoneCache[name];
+}
+
+/**
+ * Reset local caches. Should only be necessary in testing scenarios.
+ * @return {void}
+ */
+export const resetCache = () => {
+  ianaZoneCache = {};
+  dtfCache = {};
+}
+
+/**
+ * Returns whether the provided string is a valid specifier. This only checks the string's format, not that the specifier identifies a known zone; see isValidZone for that.
+ * @param {string} s - The string to check validity on
+ * @example IANAZone.isValidSpecifier("America/New_York") //=> true
+ * @example IANAZone.isValidSpecifier("Fantasia/Castle") //=> true
+ * @example IANAZone.isValidSpecifier("Sport~~blorp") //=> false
+ * @return {boolean}
+ */
+export const isValidIANASpecifier = (s: string): boolean => {
+  return !!(s && matchingRegex.exec(s) !== null);
+}
+
+/**
+ * Returns whether the provided string identifies a real zone
+ * @param {string} zone - The string to check
+ * @example IANAZone.isValidZone("America/New_York") //=> true
+ * @example IANAZone.isValidZone("Fantasia/Castle") //=> false
+ * @example IANAZone.isValidZone("Sport~~blorp") //=> false
+ * @return {boolean}
+ */
+export const isValidZone = (zone: string): boolean => {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: zone }).format();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Etc/GMT+8 -> -480
+/** @ignore */
+export const parseGMTOffset = (specifier: string): number | null => {
+  if (specifier) {
+    const regexp = /^Etc\/GMT([+-]\d{1,2})$/i;
+    const match = regexp.exec(specifier);
+    if (match !== null) {
+      return -60 * parseInt(match[1]);
+    }
+  }
+  return null;
 }

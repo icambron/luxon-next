@@ -4,10 +4,12 @@ import {GregorianDate, gregorianInstance, gregorianToTS, tsToGregorian} from "./
 import Time, {hasInvalidTimeData} from "./time";
 import {formatOffset, isNumber, isString, isUndefined} from "../impl/util";
 import {getDefaultNowFn, getDefaultZone} from "./settings";
-import {InvalidZoneError, UnitOutOfRangeError} from "./errors";
-import SystemZone from "./zones/systemZone";
-import FixedOffsetZone from "./zones/fixedOffsetZone";
-import IANAZone from "./zones/IANAZone";
+import {InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError} from "./errors";
+import {systemZone} from "./zones/systemZone";
+import {fixedOffsetZone, parseFixedOffset, utcInstance} from "./zones/fixedOffsetZone";
+import {createIANAZone, isValidIANASpecifier} from "./zones/IANAZone";
+
+const MAX_DATE = 8.64e15;
 
 const quickIso = (dt: DateTime) => {
     // a quick and dirty version of toISO with no options
@@ -16,7 +18,7 @@ const quickIso = (dt: DateTime) => {
     const yearStr: string = year > 9999 ? `+${year}` : year.toString();
     const {hour, minute, second, millisecond} = time;
     const formattedOffset = formatOffset(offset, "techie");
-    return `${yearStr}-${month}-${day}T${hour}:${minute}:${second}.${millisecond}${formattedOffset})}`;
+    return `${yearStr}-${month}-${day}T${hour}:${minute}:${second}.${millisecond}${formattedOffset}`;
 }
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
@@ -44,6 +46,13 @@ const quick = (ts: number, zone: Zone): [GregorianDate, Time, number] => {
 }
 
 export const fromMillis = (ts: number, zone?: Zone) => {
+    if (!isNumber(ts)) {
+        throw new InvalidArgumentError(`timestamps must be numerical, but received a ${typeof ts} with value ${ts}`);
+    }
+    else if (ts < -MAX_DATE || ts > MAX_DATE) {
+        // this isn't perfect because because we can still end up out of range because of additional shifting, but it's a start
+        throw new InvalidArgumentError("Timestamp out of range");
+    }
     const zoneToUse = zone || getDefaultZone();
     const [gregorian, time, offset] = quick(ts, zoneToUse);
     return new DateTime(ts, zoneToUse, gregorian, time, offset);
@@ -164,11 +173,11 @@ export const normalizeZone = (zoneish: Zoneish): Zone => {
     if (isString(zoneish)) {
         const lowered = zoneish.toLowerCase();
         if (lowered === "default") return getDefaultZone();
-        if (lowered === "system") return SystemZone.instance;
-        if (lowered === "utc") return FixedOffsetZone.utcInstance;
-        if (IANAZone.isValidSpecifier(lowered)) return IANAZone.create(zoneish);
+        if (lowered === "system") return systemZone();
+        if (lowered === "utc") return utcInstance();
+        if (isValidIANASpecifier(lowered)) return createIANAZone(zoneish);
 
-        const parsed = FixedOffsetZone.parseSpecifier(lowered);
+        const parsed = parseFixedOffset(lowered);
 
         if (!parsed) {
             throw new InvalidZoneError(zoneish);
@@ -176,6 +185,6 @@ export const normalizeZone = (zoneish: Zoneish): Zone => {
 
         return parsed;
     }
-    if (isNumber(zoneish)) return FixedOffsetZone.instance(zoneish);
+    if (isNumber(zoneish)) return fixedOffsetZone(zoneish);
     throw new InvalidZoneError(zoneish);
 }

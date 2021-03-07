@@ -34,12 +34,6 @@ export default interface Zone {
    * @return {boolean}
    */
   equals(other: Zone) : boolean;
-
-  /**
-   * Return whether this Zone is valid.
-   * @type {boolean}
-   */
-  isValid: boolean;
 }
 
 export type Zoneish = Zone | number | string | null | undefined;

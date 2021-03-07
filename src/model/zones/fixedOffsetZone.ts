@@ -1,57 +1,18 @@
 import { formatOffset, signedOffset } from "../../impl/util";
 import Zone from "../zone";
 
-let singleton: FixedOffsetZone | undefined;
+let singleton: FixedOffsetZone | null = null;
 
 /**
  * A zone with a fixed offset (meaning no DST)
  * @implements {Zone}
  */
 export default class FixedOffsetZone implements Zone {
-  private readonly fixed: number;
-
-  /**
-   * Get a singleton instance of UTC
-   * @return {FixedOffsetZone}
-   */
-  static get utcInstance() {
-    if (singleton === undefined) {
-      singleton = new FixedOffsetZone(0);
-    }
-    return singleton;
-  }
-
-  /**
-   * Get an instance with a specified offset
-   * @param {number} offset - The offset in minutes
-   * @return {FixedOffsetZone}
-   */
-  static instance(offset: number) {
-    return offset === 0 ? FixedOffsetZone.utcInstance : new FixedOffsetZone(offset);
-  }
-
-  /**
-   * Get an instance of FixedOffsetZone from a UTC offset string, like "UTC+6"
-   * @param {string} s - The offset string to parse
-   * @example FixedOffsetZone.parseSpecifier("UTC+6")
-   * @example FixedOffsetZone.parseSpecifier("UTC+06")
-   * @example FixedOffsetZone.parseSpecifier("UTC-6:00")
-   * @return {FixedOffsetZone | null}
-   */
-  static parseSpecifier(s: string) {
-    if (s) {
-      const regexp = /^utc(?:([+-]\d{1,2})(?::(\d{2}))?)?$/i;
-      const r = regexp.exec(s);
-      if (r !== null) {
-        return new FixedOffsetZone(signedOffset(r[1], r[2]));
-      }
-    }
-    return null;
-  }
+  private readonly _fixed: number;
 
   constructor(offset: number) {
     /** @private **/
-    this.fixed = offset;
+    this._fixed = offset;
   }
 
   get type() {
@@ -59,23 +20,54 @@ export default class FixedOffsetZone implements Zone {
   }
 
   get name() {
-    return this.fixed === 0 ? "UTC" : `UTC${formatOffset(this.fixed, "narrow")}`;
+    return this._fixed === 0 ? "UTC" : `UTC${formatOffset(this._fixed, "narrow")}`;
   }
 
   get isUniversal() {
     return true;
   }
 
-  offset(_ts?: number) {
-    return this.fixed;
-  }
+  offset = (_ts?: number) => this._fixed;
 
-  equals(other: Zone): boolean {
-    return other.type === "fixed" && (other as FixedOffsetZone).fixed === this.fixed;
-  }
-
-  /** @override **/
-  get isValid() {
-    return true;
-  }
+  equals = (other: Zone): boolean =>
+      other.type === "fixed" && (other as FixedOffsetZone)._fixed === this._fixed;
 }
+
+/**
+ * Get an instance of FixedOffsetZone from a UTC offset string, like "UTC+6"
+ * @param {string} s - The offset string to parse
+ * @example parseSpecifier("UTC+6")
+ * @example parseSpecifier("UTC+06")
+ * @example parseSpecifier("UTC-6:00")
+ * @return {FixedOffsetZone | null}
+ */
+export const parseFixedOffset = (s: string): FixedOffsetZone | null => {
+  if (s) {
+    const regexp = /^utc(?:([+-]\d{1,2})(?::(\d{2}))?)?$/i;
+    const r = regexp.exec(s);
+    if (r !== null) {
+      return new FixedOffsetZone(signedOffset(r[1], r[2]));
+    }
+  }
+  return null;
+};
+
+/**
+ * Get an instance with a specified offset
+ * @param {number} offset - The offset in minutes
+ * @return {FixedOffsetZone}
+ */
+export const fixedOffsetZone = (offset: number): FixedOffsetZone =>
+    offset === 0 ? utcInstance() : new FixedOffsetZone(offset)
+
+/**
+ * Get a singleton instance of UTC
+ * @return {FixedOffsetZone}
+ */
+export const utcInstance = (): FixedOffsetZone => {
+  if (singleton === null) {
+    singleton = new FixedOffsetZone(0);
+  }
+  return singleton;
+}
+
