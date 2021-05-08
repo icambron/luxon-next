@@ -2,10 +2,10 @@
 /* eslint no-global-assign: "off" */
 
 import {getDefaultNowFn, getDefaultZone, setDefaultNowFn, setDefaultZone} from "../src/model/settings";
-import IANAZone from "../src/model/zones/IANAZone";
+import {resetCache as resetIANACache} from "../src/model/zones/IANAZone";
 
 const resetCaches = () => {
-  IANAZone.resetCache();
+  resetIANACache();
 }
 
 export const withNow = (nowfn, f) => {
