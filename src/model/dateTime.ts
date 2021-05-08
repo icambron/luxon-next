@@ -7,23 +7,19 @@ import {
     tsToGregorian
 } from "./calendars/gregorian";
 import Time, {hasInvalidTimeData} from "./time";
-import {formatOffset, isNumber, isString, isUndefined} from "../impl/util";
+import {isNumber, isString, isUndefined} from "../impl/util";
 import {getDefaultNowFn, getDefaultZone} from "./settings";
 import {InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError} from "./errors";
 import {systemZone} from "./zones/systemZone";
 import {fixedOffsetZone, parseFixedOffset, utcInstance} from "./zones/fixedOffsetZone";
 import {createIANAZone, isValidIANASpecifier, parseGMTOffset} from "./zones/IANAZone";
 
-const MAX_DATE = 8.64e15;
+export const MAX_DATE = 8.64e15;
 
-const quickIso = (dt: DateTime) => {
-    // a quick and dirty version of toISO with no options
-    const {gregorian, time, offset} = dt;
-    const {year, month, day} = gregorian;
-    const yearStr: string = year > 9999 ? `+${year}` : year.toString();
-    const {hour, minute, second, millisecond} = time;
-    const formattedOffset = formatOffset(offset, "techie");
-    return `${yearStr}-${month}-${day}T${hour}:${minute}:${second}.${millisecond}${formattedOffset}`;
+const assertValidTs = (ts: number) => {
+    if (isNaN(ts) || ts > MAX_DATE || ts < -MAX_DATE) {
+        throw new InvalidArgumentError("Timestamp out of range");
+    }
 }
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
@@ -54,10 +50,7 @@ export const fromMillis = (ts: number, zone?: Zone) => {
     if (!isNumber(ts)) {
         throw new InvalidArgumentError(`timestamps must be numerical, but received a ${typeof ts} with value ${ts}`);
     }
-    else if (ts < -MAX_DATE || ts > MAX_DATE) {
-        // this isn't perfect because because we can still end up out of range because of additional shifting, but it's a start
-        throw new InvalidArgumentError("Timestamp out of range");
-    }
+
     const zoneToUse = zone || getDefaultZone();
     const [gregorian, time, offset] = quick(ts, zoneToUse);
     return new DateTime(ts, zoneToUse, gregorian, time, offset);
@@ -70,7 +63,7 @@ export const fromCalendar = <TDate extends CalendarDate>(calendar: Calendar<TDat
     const [gregorNow, timeNow, offsetProvis] = quick(tsNow, zoneToUse);
     const calendarNow = calendar.fromGregorian(gregorNow);
 
-    const [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, o);
+    let [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, o);
     const [time, _] = fillInDefaults<Time>(defaultTimeObject, timeNow, o, found);
 
     const error = calendar.isInvalid(date) || hasInvalidTimeData(time);
@@ -78,17 +71,26 @@ export const fromCalendar = <TDate extends CalendarDate>(calendar: Calendar<TDat
         throw new UnitOutOfRangeError(error[0], error[1]);
     }
 
+    const gregorian = calendar.toGregorian(date);
+    const [ts, finalOffset, isHoleTime] = gregorianToTS(gregorian, time, offsetProvis, zoneToUse);
+
+    // if it's a hole time, we'll adjust the calendar & time to the "real" one
+    const [gregorianFinal, timeFinal] = isHoleTime ? tsToGregorian(ts, finalOffset) : [gregorian, time];
+
     const calMap = new Map<string, CalendarDate>();
 
     // initialize with this calendar
     if (calendar.name !== "gregorian") {
+
+        // if the gregorian date changed, the originating date probably did too
+        if (!gregorianInstance.areEqual(gregorian, gregorianFinal)) {
+            date = calendar.fromGregorian(gregorian)
+        }
+
         calMap.set(calendar.name, date);
     }
 
-    const backToGregor = calendar.toGregorian(date);
-    const [ts, finalOffset] = gregorianToTS(backToGregor, time, offsetProvis, zoneToUse);
-
-    return new DateTime(ts, zoneToUse, backToGregor, time, finalOffset, calMap);
+    return new DateTime(ts, zoneToUse, gregorianFinal, timeFinal, finalOffset, calMap);
 };
 
 export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number) : DateTime => {
@@ -161,16 +163,17 @@ export default class DateTime {
     }
 
     // these are here so that automagic layers work as expected
-    toJSON = (): string => quickIso(this);
-    toString = (): string => quickIso(this);
-    toBSON = (): Date => new Date(this.ts);
-    valueOf = (): number => this.ts;
+    toJSON(): string {return this.toString();}
+    toString(): string {return new Date(this.ts).toISOString();}
+    toBSON(): Date {return new Date(this.ts)};
+    valueOf(): number {return this.ts};
 
-    equals = (other: any): boolean =>
-        !!other
-        && other.isLuxonDateTime !== undefined
-        && this.valueOf() === other.valueOf()
-        && this.zone.equals(other.zone);
+    equals(other: any): boolean {
+        return !!other
+            && other.isLuxonDateTime !== undefined
+            && this.valueOf() === other.valueOf()
+            && this.zone.equals(other.zone);
+    }
 
     constructor(
         ts: number,
@@ -179,6 +182,9 @@ export default class DateTime {
         time: Time,
         offset: number,
         otherCalendarDates: Map<string, CalendarDate> = new Map<string, CalendarDate>()) {
+
+        assertValidTs(ts);
+
         this.zone = zone;
         this.ts = ts;
         this._gregorian = gregorian;

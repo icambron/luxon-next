@@ -32,4 +32,8 @@ export class OrdinalCalendar implements  Calendar<OrdinalDate> {
 
     toGregorian = ({ year, ordinal }: OrdinalDate): GregorianDate =>
         ({year, ...uncomputeOrdinal(year, ordinal)});
+
+    areEqual = (obj1: OrdinalDate, obj2: OrdinalDate): boolean  =>
+        obj1.year === obj2.year &&
+        obj1.ordinal === obj2.ordinal;
 }

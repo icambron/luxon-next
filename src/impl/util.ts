@@ -92,6 +92,11 @@ export function floorMod(x: number, n: number) {
     return x - n * Math.floor(x / n);
 }
 
+export function intAndFraction(x: number) {
+    const iPart = Math.trunc(x);
+    return [iPart, Number(x-iPart)];
+}
+
 export function padStart(input: string | number, n = 2) {
     if (input.toString().length < n) {
         return ("0".repeat(n) + input).slice(-n);

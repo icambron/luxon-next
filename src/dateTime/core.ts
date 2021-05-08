@@ -56,8 +56,6 @@ export const hour = (dt: DateTime): number => dt.time.hour;
 export const minute = (dt: DateTime): number => dt.time.minute;
 export const second = (dt: DateTime): number => dt.time.second;
 export const millisecond = (dt: DateTime): number => dt.time.millisecond;
-
-// todo - move to a quarter-based calendar?
 export const quarter = (dt: DateTime): number => Math.ceil(month(dt) / 3);
 
 // MISC INFO

@@ -78,6 +78,11 @@ export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
         const { month, day } = uncomputeOrdinal(year, ordinal);
         return { year, month, day };
     }
+
+    areEqual = (obj1: ISOWeekDate, obj2: ISOWeekDate): boolean  =>
+        obj1.weekYear === obj2.weekYear &&
+        obj1.weekNumber === obj2.weekNumber &&
+        obj1.weekday === obj2.weekday;
 }
 
 export const isoCalendarInstance = new IsoWeekCalendar();

@@ -1,15 +1,13 @@
-import {roundTo} from "../impl/util";
+import {intAndFraction, isUndefined, roundTo} from "../impl/util";
+import {pluralizeUnit, PluralUnit, Unit} from "./units";
 
-export interface DurationValues {
-    readonly years: number;
-    readonly quarters: number;
-    readonly months: number;
-    readonly weeks: number;
-    readonly days: number;
-    readonly hours: number;
-    readonly minutes: number;
-    readonly seconds: number;
-    readonly milliseconds: number;
+export type DurationValues = {
+    readonly [unit in PluralUnit] : number
+};
+
+
+type MutableDurationValues = {
+    [unit in PluralUnit] : number
 }
 
 const durationZeroes: DurationValues = { years: 0, quarters: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
@@ -40,6 +38,7 @@ const lowOrderMatrix: Trie = {
 const casualMatrix: Trie = {
     years: {
         months: 12,
+        quarters: 4,
         weeks: 52,
         days: 365,
         hours: 365 * 24,
@@ -99,16 +98,43 @@ const accurateMatrix: Trie = {
     ...lowOrderMatrix
 };
 
-export const quickBoil = (values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy) => {
+export const toMillis = (values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual"): number => {
     const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
     return durationValueKeys.reduce((total: number, k) => {
         const val = values[k];
-        if (val === undefined) {
-            return total;
-        }
-        const ratio = matrix[k]["milliseconds"];
+        if (isUndefined(val)) return total;
+        const ratio = k === "milliseconds" ? 1 : matrix[k]["milliseconds"];
         return total + ratio * val;
     }, 0);
+}
+
+interface AccumulatedFractions {
+    ints: MutableDurationValues;
+    remainderMilliseconds: number
+}
+
+export const shiftFractionsToMillis = (dur: Duration) : Duration => {
+    const matrix = dur.conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
+
+    const vs =  {milliseconds: 0, ...dur.values};
+
+    const newVals = durationValueKeys.reduce((accum: AccumulatedFractions, k) => {
+        const val = vs[k] || 0;
+
+        const [whole, fraction] = intAndFraction(val);
+        accum.ints[k] = whole;
+
+        if (k !== "milliseconds") {
+            accum.remainderMilliseconds += matrix[k]["milliseconds"] * fraction;
+        }
+
+        return accum;
+    }, { ints: {}, remainderMilliseconds: 0,  } as AccumulatedFractions);
+
+    // no fractional millis please
+    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
+
+    return new Duration(newVals.ints as Partial<DurationValues>, dur.conversionAccuracy);
 }
 
 export const toIso = (dur: Duration): string => {
@@ -132,9 +158,10 @@ export const toIso = (dur: Duration): string => {
 export default class Duration {
     private readonly _values: Partial<DurationValues>;
     readonly conversionAccuracy: ConversionAccuracy;
+    readonly isLuxonDuration = true;
 
     constructor(values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual") {
-       this._values = values;
+       this._values = Object.fromEntries(Object.entries(values).map(([k, v]) => [pluralizeUnit(k), v]))
        this.conversionAccuracy = conversionAccuracy;
     };
 
@@ -142,9 +169,14 @@ export default class Duration {
         return this._values;
     }
 
-    toJson = (): string => toIso(this);
-    toString = (): string => toIso(this);
-    valueOf = (): number => quickBoil(this.values, this.conversionAccuracy);
+    toJson(): string {return toIso(this)};
+    toString(): string {return toIso(this)};
+    valueOf(): number {return toMillis(this.values, this.conversionAccuracy)};
 }
 
-export const defaultEmpties = (dur: Duration): DurationValues => ({...durationZeroes, ...dur.values})
+export const defaultEmpties = (values: Partial<DurationValues>): DurationValues => ({...durationZeroes, ...values})
+
+export const isDuration = (obj: any): obj is Duration => obj && obj.isLuxonDuration;
+
+export const alter = (dur: Duration, values: DurationValues, conversionAccuracy?: ConversionAccuracy) : Duration =>
+    new Duration({...dur.values, ...values}, conversionAccuracy || dur.conversionAccuracy)

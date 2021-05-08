@@ -30,6 +30,7 @@ test("setZone setZone sets the TZ to the specified zone", () => {
   expect(zoned |> hour).toBe(21);
 
   // pacific daylight time
+  // todo - implement isInDST
   // expect(zoned |> isInDST).toBe(true);
 });
 
@@ -41,7 +42,7 @@ test("setZone accepts 'system'", () => {
 test("setZone accepts 'system' and ignores the default zone", () => {
   const localZoneName = zoneName(now());
   withDefaultZone(createIANAZone("Europe/Paris"), () => {
-    expect(utcNow |> (x => setZone(x, "system")) |> zoneName).toBe(localZoneName);
+    expect(utcNow() |> (x => setZone(x, "system")) |> zoneName).toBe(localZoneName);
   });
 });
 
@@ -93,25 +94,23 @@ test("setZone accepts IANA zone names", () => {
 });
 
 test("setZone accepts a keepLocalTime option", () => {
+
+  const expectCorrectLocalTime = dt => {
+    expect(dt |> year).toBe(1982);
+    expect(dt |> month).toBe(5);
+    expect(dt |> day).toBe(25);
+    expect(dt |> hour).toBe(4);
+    expect(dt |> isOffsetFixed).toBe(false);
+  }
+
   const zoned = dt()
     |> toUTC
-    |> (x => setZone(x, "America/Los_Angeles", { keepLocalTime: true }));
+    |> (x => setZone(x, "America/Los_Angeles", {keepLocalTime: true}));
   expect(zoned |> zoneName).toBe("America/Los_Angeles");
-  expect(zoned |> year).toBe(1982);
-  expect(zoned |> month).toBe(5);
-  expect(zoned |> day).toBe(25);
-  expect(zoned |> hour).toBe(4);
-  expect(zoned |> isOffsetFixed).toBe(false);
+  expectCorrectLocalTime(zoned);
 
-  const zonedMore = setZone(zoned, "America/New_York", {
-    keepLocalTime: true
-  });
-  expect(zonedMore |> zoneName).toBe("America/New_York");
-  expect(zonedMore |> year).toBe(1982);
-  expect(zonedMore |> month).toBe(5);
-  expect(zonedMore |> day).toBe(25);
-  expect(zonedMore |> hour).toBe(4);
-  expect(zonedMore |> isOffsetFixed).toBe(false);
+  const zonedMore = setZone(zoned, "America/New_York", {keepLocalTime: true});
+  expectCorrectLocalTime(zonedMore);
 });
 
 test("setZone with keepLocalTime can span wacky offsets", () => {

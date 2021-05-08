@@ -8,7 +8,7 @@ import {
   minute,
   month,
   offset,
-  second,
+  second, toJSDate,
   year,
 } from "../../../src/dateTime/core"
 import {InvalidZoneError, UnitOutOfRangeError} from "../../../src/model/errors";
@@ -110,4 +110,10 @@ test("fromGregorian defaults lower-order values to their minimums if a high-orde
   expect(minute(dt)).toBe(0);
   expect(second(dt)).toBe(0);
   expect(millisecond(dt)).toBe(0);
+});
+
+test("fromGregorian handles years < 100", () => {
+  const dt = fromGregorian({ year: 99, month: 8, day: 6 });
+  expect(year(dt)).toBe(99);
+  expect(toJSDate(dt).getFullYear()).toBe(99);
 });

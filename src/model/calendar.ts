@@ -8,4 +8,5 @@ export interface Calendar<TDate extends CalendarDate> {
     isInvalid(obj: TDate) : [string, number] | null;
     fromGregorian(obj: GregorianDate) : TDate;
     toGregorian(obj: TDate) : GregorianDate;
+    areEqual(obj1: TDate, obj2: TDate): boolean;
 }

@@ -3,6 +3,7 @@ import Time from "../time";
 import Zone from "../zone";
 import {floorMod, integerBetween, isInteger} from "../../impl/util";
 import {isLeapYear} from "../../impl/dateMath";
+import {InvalidArgumentError} from "../errors";
 
 /*
 The Gregorian calendar (i.e. the dates we use in everyday life) is the lingua franca of Luxon. It's thus a sort of
@@ -32,6 +33,11 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
             return ["day", day];
         } else return null;
     };
+
+    areEqual = (obj1: GregorianDate, obj2: GregorianDate): boolean  =>
+        obj1.year === obj2.year &&
+        obj1.month === obj2.month &&
+        obj1.day === obj2.day;
 }
 
 export const gregorianInstance: GregorianCalendar = new GregorianCalendar();
@@ -44,6 +50,7 @@ export function daysInMonth(year: number, month: number) {
 
 // convert a calendar object to a local timestamp (epoch, but with the offset baked in)
 export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => {
+
     const ts = Date.UTC(
         gregorianDate.year,
         gregorianDate.month - 1,
@@ -55,7 +62,7 @@ export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => 
     );
 
     // for legacy reasons, years between 0 and 99 are interpreted as 19XX; revert that
-    if (0 < gregorianDate.year && gregorianDate.year < 99) {
+    if (0 < gregorianDate.year && gregorianDate.year <= 99) {
         const date = new Date(ts);
         date.setUTCFullYear(date.getUTCFullYear() - 1900);
         return date.getTime();
@@ -63,7 +70,7 @@ export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => 
     return ts;
 };
 
-export const gregorianToTS = (gregorianDate: GregorianDate, time: Time, offset: number, zone: Zone): [number, number] =>
+export const gregorianToTS = (gregorianDate: GregorianDate, time: Time, offset: number, zone: Zone): [number, number, boolean] =>
     fixOffset(gregorianToLocalTS(gregorianDate, time), offset, zone);
 
 // convert an epoch timestamp into a calendar object with the given offset
@@ -95,7 +102,7 @@ export const adjustCalendarOverflow = (greg: GregorianDate): GregorianDate => {
 
 // find the right offset at a given local time. The o input is our guess, which determines which
 // offset we'll pick in ambiguous cases (e.g. there are two 3 AMs b/c Fallback DST)
-const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number] => {
+const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number, boolean] => {
     // Our UTC time is just a guess because our offset is just a guess
     let utcGuess = localTS - offset * 60 * 1000;
 
@@ -104,7 +111,7 @@ const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number
 
     // If so, offset didn't change and we're done
     if (offset === o2) {
-        return [utcGuess, offset];
+        return [utcGuess, offset, false];
     }
 
     // If not, change the ts by the difference in the offset
@@ -113,9 +120,9 @@ const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number
     // If that gives us the local time we want, we're done
     const o3 = zone.offset(utcGuess);
     if (o2 === o3) {
-        return [utcGuess, o2];
+        return [utcGuess, o2, false];
     }
 
     // If it's different, we're in a hole time. The offset has changed, but the we don't adjust the time
-    return [localTS - Math.min(o2, o3) * 60 * 1000, Math.max(o2, o3)];
+    return [localTS - Math.min(o2, o3) * 60 * 1000, Math.max(o2, o3), true];
 };

@@ -3,7 +3,17 @@ import {bestBy} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
 import {daysInMonth, gregorianInstance, gregorianToTS} from "../model/calendars/gregorian";
-import Duration, {quickBoil, defaultEmpties} from "../model/duration";
+import Duration, {
+   toMillis,
+   defaultEmpties,
+   DurationValues,
+   isDuration,
+   ConversionAccuracy,
+   shiftFractionsToMillis
+} from "../model/duration";
+import {negate} from "../duration/core";
+import {InvalidUnitError} from "../model/errors";
+import {pluralizeUnit, singularizeUnit, SingularUnit} from "../model/units";
 
 /**
  * Return the max of several date times
@@ -19,12 +29,10 @@ export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueO
  */
 export const min = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueOf(), Math.min);
 
-// todo: use duration keys minus milliseconds, dealing with plurals somehow
-type StartableUnit = "year" | "quarter" | "month" | "week" | "day" | "hour" | "minute" | "second";
-
-export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
+export const startOf = (dt: DateTime, unit: SingularUnit): DateTime => {
+   const u = singularizeUnit(unit);
    const o = {} as Record<string, number>;
-   switch (unit) {
+   switch (u) {
       case "year":
          o.month = 1;
        // falls through
@@ -45,13 +53,14 @@ export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
       case "second":
          o.millisecond = 0;
          break;
+      default: throw new InvalidUnitError(unit);
    }
 
-   if (unit === "week") {
+   if (u === "week") {
       o.weekday = 1;
    }
 
-   if (unit === "quarter") {
+   if (u === "quarter") {
       const q = Math.ceil(month(dt) / 3);
       o.month = (q - 1) * 3 + 1;
    }
@@ -59,11 +68,16 @@ export const startOf = (dt: DateTime, unit: StartableUnit): DateTime => {
    return o.weekday ? set(dt, isoCalendarInstance, o) : set(dt, gregorianInstance, o);
 }
 
+export const endOf = (dt: DateTime, unit: SingularUnit): DateTime => {
+   // typescript not having |> gives me freaking hives
+   const added = plus(dt, {[pluralizeUnit(unit) as string]: 1});
+   const startOfNext = startOf(added, unit);
+   return minus(startOfNext, {milliseconds: 1});
+}
+
 const adjustTime = (dt: DateTime, dur: Duration) : [number, number] => {
-
-   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds} = defaultEmpties(dur);
-
-   // todo: need to normalize the units to handle fractions. in the old one we do that with shiftTo
+   const unfractioned = shiftFractionsToMillis(dur);
+   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds} = defaultEmpties(unfractioned.values);
 
    const greg = dt.gregorian;
 
@@ -73,7 +87,7 @@ const adjustTime = (dt: DateTime, dur: Duration) : [number, number] => {
 
    let [ts, offset] = gregorianToTS({ year, month, day}, dt.time, dt.offset, dt.zone);
 
-   const millisToAdd = quickBoil({ hours, minutes, seconds, milliseconds}, dur.conversionAccuracy);
+   const millisToAdd = toMillis({ hours, minutes, seconds, milliseconds});
    if (millisToAdd !== 0) {
       ts += millisToAdd;
       offset = dt.zone.offset(ts)
@@ -81,7 +95,15 @@ const adjustTime = (dt: DateTime, dur: Duration) : [number, number] => {
    return [ts, offset];
 }
 
-export const plus = (dt: DateTime, dur: Duration): DateTime => {
+export const plus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>): DateTime => {
+   const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj, "casual");
    const [ts, offset] = adjustTime(dt, dur);
+   return alter(dt, ts, dt.zone, offset);
+}
+
+export const minus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>): DateTime => {
+   const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj, "casual");
+   const negated = negate(dur);
+   const [ts, offset] = adjustTime(dt, negated);
    return alter(dt, ts, dt.zone, offset);
 }
