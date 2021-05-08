@@ -5,9 +5,6 @@
     "target": "es6",
     "sourceMap": true,
     "lib": ["esnext"],
-    "plugins": [
-      { "transform": "ts-transformer-keys/transformer" }
-    ],
     "strict": true,
     "noImplicitAny": true
   },

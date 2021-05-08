@@ -11,7 +11,7 @@ function makeDTF(zone: string) {
   if (!dtfCache[zone]) {
     try {
       dtfCache[zone] = new Intl.DateTimeFormat("en-US", {
-        hour12: false,
+        hourCycle: "h23",
         timeZone: zone,
         year: "numeric",
         month: "2-digit",
@@ -36,31 +36,12 @@ const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   second: 5
 };
 
-function hackyOffset(dtf: Intl.DateTimeFormat, date: Date) {
-  const formatted = dtf.format(date).replace(/\u200E/g, ""),
-    parsed = /(\d+)\/(\d+)\/(\d+),? (\d+):(\d+):(\d+)/.exec(formatted);
-
-  if (parsed !== null) {
-    const [, month, day, year, hour, minute, second] = parsed;
-    return [
-      parseInt(year, 10),
-      parseInt(month, 10),
-      parseInt(day, 10),
-      parseInt(hour, 10),
-      parseInt(minute, 10),
-      parseInt(second, 10)
-    ];
-  }
-
-  return [0, 0, 0, 0, 0, 0];
-}
-
 function partsOffset(dtf: Intl.DateTimeFormat, date: Date) {
-  const formatted = dtf.formatToParts(date),
-    filled = new Array<number>();
+  const formatted = dtf.formatToParts(date);
+  const filled = new Array<number>();
   for (let i = 0; i < formatted.length; i++) {
-    const { type, value } = formatted[i],
-      pos = typeToPos[type];
+    const { type, value } = formatted[i];
+    const pos = typeToPos[type];
 
     if (!isUndefined(pos)) {
       filled[pos] = parseInt(value, 10);
@@ -99,14 +80,11 @@ export default class IANAZone implements Zone {
   offset(ts: number) {
     const date = new Date(ts),
       dtf = makeDTF(this.name),
-      [year, month, day, hour, minute, second] =
-        dtf.formatToParts === undefined ? hackyOffset(dtf, date) : partsOffset(dtf, date),
-      // work around https://bugs.chromium.org/p/chromium/issues/detail?id=1025564&can=2&q=%2224%3A00%22%20datetimeformat
-      adjustedHour = hour === 24 ? 0 : hour;
+      [year, month, day, hour, minute, second] = partsOffset(dtf, date);
 
     const asUTC = gregorianToLocalTS(
         { year, month, day},
-        { hour: adjustedHour, minute, second, millisecond: 0}
+        { hour, minute, second, millisecond: 0}
     );
 
     let asTS = date.valueOf();

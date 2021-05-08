@@ -1,4 +1,3 @@
-import { hasIntl } from "../../impl/util";
 import Zone from "../zone";
 
 /**
@@ -12,9 +11,7 @@ export default class SystemZone implements Zone {
   }
 
   get name() {
-    if (hasIntl()) {
-      return new Intl.DateTimeFormat().resolvedOptions().timeZone;
-    } else return "system";
+    return new Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
 
   get isUniversal() {
