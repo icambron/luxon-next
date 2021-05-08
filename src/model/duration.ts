@@ -1,17 +1,11 @@
-import {intAndFraction, isUndefined, roundTo} from "../impl/util";
-import {pluralizeUnit, PluralUnit, Unit} from "./units";
+import {isUndefined, roundTo} from "../impl/util";
+import {pluralizeUnit, PluralUnit, pluralUnits} from "./units";
 
 export type DurationValues = {
     readonly [unit in PluralUnit] : number
 };
 
-
-type MutableDurationValues = {
-    [unit in PluralUnit] : number
-}
-
 const durationZeroes: DurationValues = { years: 0, quarters: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
-const durationValueKeys: Array<keyof DurationValues> = Object.keys(durationZeroes) as Array<keyof DurationValues>;
 
 export type ConversionAccuracy = "casual" | "longterm";
 type Trie = Record<string, Record<string, number>>;
@@ -98,43 +92,19 @@ const accurateMatrix: Trie = {
     ...lowOrderMatrix
 };
 
+export const convert = (val: number, from: PluralUnit, to: PluralUnit, conversionAccuracy: ConversionAccuracy) : number => {
+    const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
+    return matrix[from][to] * val;
+};
+
 export const toMillis = (values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual"): number => {
     const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
-    return durationValueKeys.reduce((total: number, k) => {
+    return Array.from(pluralUnits).reduce((total: number, k) => {
         const val = values[k];
         if (isUndefined(val)) return total;
         const ratio = k === "milliseconds" ? 1 : matrix[k]["milliseconds"];
         return total + ratio * val;
     }, 0);
-}
-
-interface AccumulatedFractions {
-    ints: MutableDurationValues;
-    remainderMilliseconds: number
-}
-
-export const shiftFractionsToMillis = (dur: Duration) : Duration => {
-    const matrix = dur.conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
-
-    const vs =  {milliseconds: 0, ...dur.values};
-
-    const newVals = durationValueKeys.reduce((accum: AccumulatedFractions, k) => {
-        const val = vs[k] || 0;
-
-        const [whole, fraction] = intAndFraction(val);
-        accum.ints[k] = whole;
-
-        if (k !== "milliseconds") {
-            accum.remainderMilliseconds += matrix[k]["milliseconds"] * fraction;
-        }
-
-        return accum;
-    }, { ints: {}, remainderMilliseconds: 0,  } as AccumulatedFractions);
-
-    // no fractional millis please
-    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
-
-    return new Duration(newVals.ints as Partial<DurationValues>, dur.conversionAccuracy);
 }
 
 export const toIso = (dur: Duration): string => {

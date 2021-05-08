@@ -156,26 +156,6 @@ export function signedOffset(offHourStr: string, offMinuteStr: string) {
     return offHour * 60 + offMinSigned;
 }
 
-// COERCION
-
-export function asNumber(value: unknown) {
-    const numericValue = Number(value);
-    if (typeof value === "boolean" || value === "" || Number.isNaN(numericValue))
-        throw new InvalidArgumentError(`Invalid unit value ${value}`);
-    return numericValue;
-}
-
-export function normalizeObject<T extends string>(
-    obj: Record<string, unknown>,
-    normalizer: (key: string) => T
-) {
-    return Object.keys(obj).reduce<Partial<Record<T, number>>>((normalized, key) => {
-        const value = obj[key];
-        if (value !== undefined && value !== null) normalized[normalizer(key)] = asNumber(value);
-        return normalized;
-    }, {});
-}
-
 export function formatOffset(offset: number, format: "narrow" | "short" | "techie") {
     const hours = Math.trunc(Math.abs(offset / 60)),
         minutes = Math.trunc(Math.abs(offset % 60)),

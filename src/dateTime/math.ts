@@ -1,5 +1,5 @@
 import DateTime, {alter, set} from "../model/dateTime";
-import {bestBy} from "../impl/util";
+import {bestBy, intAndFraction, roundTo} from "../impl/util";
 import {month} from "./core";
 import {isoCalendarInstance} from "../model/calendars/isoWeek";
 import {daysInMonth, gregorianInstance, gregorianToTS} from "../model/calendars/gregorian";
@@ -8,12 +8,11 @@ import Duration, {
    defaultEmpties,
    DurationValues,
    isDuration,
-   ConversionAccuracy,
-   shiftFractionsToMillis
+   convert
 } from "../model/duration";
 import {negate} from "../duration/core";
 import {InvalidUnitError} from "../model/errors";
-import {pluralizeUnit, singularizeUnit, SingularUnit} from "../model/units";
+import {pluralizeUnit, PluralUnit, pluralUnits, singularizeUnit, SingularUnit} from "../model/units";
 
 /**
  * Return the max of several date times
@@ -107,3 +106,36 @@ export const minus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>
    const [ts, offset] = adjustTime(dt, negated);
    return alter(dt, ts, dt.zone, offset);
 }
+
+
+type MutableDurationValues = {
+   [unit in PluralUnit] : number
+}
+
+interface AccumulatedFractions {
+   ints: MutableDurationValues;
+   remainderMilliseconds: number
+}
+
+function shiftFractionsToMillis(dur: Duration) : Duration {
+   const vs =  {milliseconds: 0, ...dur.values};
+
+   const newVals = Array.from(pluralUnits).reduce((accum: AccumulatedFractions, k) => {
+      const val = vs[k] || 0;
+
+      const [whole, fraction] = intAndFraction(val);
+      accum.ints[k] = whole;
+
+      if (k !== "milliseconds") {
+         accum.remainderMilliseconds += convert(fraction, k, "milliseconds", dur.conversionAccuracy);
+      }
+
+      return accum;
+   }, { ints: {}, remainderMilliseconds: 0,  } as AccumulatedFractions);
+
+   // no fractional millis please
+   newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
+
+   return new Duration(newVals.ints as Partial<DurationValues>, dur.conversionAccuracy);
+}
+
