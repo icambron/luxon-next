@@ -11,7 +11,7 @@ import {
 import { getDefaultConversionAccuracy } from "../settings";
 
 export type DurationValues = {
-  readonly [unit in DurationUnit]: number;
+  [unit in DurationUnit]: number;
 };
 
 const durationZeroes: DurationValues = {

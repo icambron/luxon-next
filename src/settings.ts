@@ -4,7 +4,8 @@ import { InvalidArgumentError } from "./model/errors";
 
 // todo - move this type
 import { ConversionAccuracy } from "./model/duration";
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+
+type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 let _zone: Zone = systemZone;
 let _nowFn: () => number = () => Date.now();

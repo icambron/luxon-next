@@ -151,12 +151,8 @@ export const minus = (dt: DateTime,
   return alter(dt, ts, dt.zone, offset);
 };
 
-type MutableDurationValues = {
-  [unit in DurationUnit]: number;
-};
-
 interface AccumulatedFractions {
-  ints: MutableDurationValues;
+  ints: DurationValues;
   remainderMilliseconds: number;
 }
 

@@ -52,6 +52,7 @@ export function bestBy<T, U>(arr: T[], by: (_: T) => U, compare: (_: U, __: U) =
   return best[1];
 }
 
+
 export function pick<T, K extends keyof T>(obj: T, keys: K[]) {
   return keys.reduce<Partial<Pick<T, K>>>((a, k) => {
     a[k] = obj[k];
@@ -105,6 +106,13 @@ export function roundTo(value: number, digits: number, towardZero = false) {
   const factor = 10 ** digits,
     rounder = towardZero ? Math.trunc : Math.round;
   return rounder(value * factor) / factor;
+}
+
+export function asNumber(value: any): number {
+  const numericValue = Number(value);
+  if (typeof value === "boolean" || value === "" || Number.isNaN(numericValue))
+    throw new InvalidArgumentError(`Invalid unit value ${value}`);
+  return numericValue;
 }
 
 // DATE BASICS
