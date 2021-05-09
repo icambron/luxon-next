@@ -37,7 +37,7 @@ export const utcNow = () => now(utcInstance);
 export const fromMillis = (ms: number, zone?: Zoneish) => fromMillisInternal(ms, normalizeZone(zone));
 
 export const fromJSDate = (jsDate: Date, zone?: Zoneish): DateTime => {
-    if (!isDate(jsDate) || Number.isNaN(jsDate.valueOf())) {
+    if (!isDate(jsDate) || Number.isNaN(+jsDate)) {
         throw new InvalidArgumentError("date argument must be a valid Date");
     }
     return fromMillis(+jsDate, zone);

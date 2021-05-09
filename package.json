@@ -4,6 +4,10 @@
   "description": "",
   "author": "",
   "license": "MIT",
+  "scripts": {
+    "test": "TZ=\"America/New_York\" jest",
+    "prettier": "prettier --write"
+  },
   "devDependencies": {
     "@babel/cli": "^7.13.0",
     "@babel/core": "^7.13.8",
@@ -11,6 +15,7 @@
     "@babel/preset-env": "^7.13.9",
     "@babel/preset-typescript": "^7.13.0",
     "jest": "^26.6.3",
+    "prettier": "latest",
     "typescript": "latest"
   }
 }
