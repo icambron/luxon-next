@@ -8,6 +8,7 @@ import {
   miscDurationUnitsPlural,
   normalizeUnitBundle,
 } from "./units";
+import { getDefaultConversionAccuracy } from "../settings";
 
 export type DurationValues = {
   readonly [unit in DurationUnit]: number;
@@ -24,6 +25,7 @@ const durationZeroes: DurationValues = {
   seconds: 0,
   milliseconds: 0,
 };
+
 export const durationUnits: Array<DurationUnit> = [
   ...gregorianUnitsPlural,
   ...timeUnitsPlural,
@@ -117,21 +119,23 @@ const accurateMatrix: Trie = {
   ...lowOrderMatrix,
 };
 
+const pickMatrix = (accuracy: ConversionAccuracy): Trie =>
+  accuracy === "casual" ? casualMatrix : accurateMatrix;
+
 export const convert = (
   val: number,
   from: DurationUnit,
   to: DurationUnit,
   conversionAccuracy: ConversionAccuracy
 ): number => {
-  const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
-  return matrix[from][to] * val;
+  return pickMatrix(conversionAccuracy)[from][to] * val;
 };
 
 export const toMillis = (
   values: Partial<DurationValues>,
-  conversionAccuracy: ConversionAccuracy = "casual"
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
 ): number => {
-  const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
+  const matrix = pickMatrix(conversionAccuracy);
   return durationUnits.reduce((total: number, k) => {
     const val = values[k];
     if (isUndefined(val)) return total;
@@ -161,32 +165,26 @@ export const toIso = (dur: Duration): string => {
 
 export class Duration {
   private readonly _values: Partial<DurationValues>;
-  readonly conversionAccuracy: ConversionAccuracy;
   readonly isLuxonDuration = true;
 
-  constructor(values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual") {
+  constructor(values: Partial<DurationValues>) {
     this._values = normalizeUnitBundle(values, normalizeDurationUnit);
-    this.conversionAccuracy = conversionAccuracy;
   }
 
   get values(): Partial<DurationValues> {
     return this._values;
   }
 
-  toJson(): string {
-    return toIso(this);
-  }
-  toString(): string {
-    return toIso(this);
-  }
-  valueOf(): number {
-    return toMillis(this.values, this.conversionAccuracy);
-  }
+  toJson = (): string => toIso(this);
+
+  toString = (): string => toIso(this);
+
+  valueOf = (): number => toMillis(this.values, getDefaultConversionAccuracy());
 }
 
 export const defaultEmpties = (values: Partial<DurationValues>): DurationValues => ({ ...durationZeroes, ...values });
 
 export const isDuration = (obj: any): obj is Duration => obj && obj.isLuxonDuration;
 
-export const alter = (dur: Duration, values: DurationValues, conversionAccuracy?: ConversionAccuracy): Duration =>
-  new Duration({ ...dur.values, ...values }, conversionAccuracy || dur.conversionAccuracy);
+export const alter = (dur: Duration, values: DurationValues): Duration =>
+  new Duration({ ...dur.values, ...values });

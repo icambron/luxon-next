@@ -1,7 +1,7 @@
 /* global test */
 /* eslint no-global-assign: "off" */
 
-import { getDefaultNowFn, getDefaultZone, setDefaultNowFn, setDefaultZone } from "../src/model/settings";
+import { getDefaultNowFn, getDefaultZone, setDefaultNowFn, setDefaultZone } from "../src/settings";
 import { resetCache as resetIANACache } from "../src/model/zones/IANAZone";
 
 const resetCaches = () => {

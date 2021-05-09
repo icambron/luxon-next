@@ -1,5 +1,5 @@
 import {Calendar} from "../calendar";
-import Time from "../time";
+import { Time} from "../time";
 import Zone from "../zone";
 import {floorMod, integerBetween, isInteger} from "../../impl/util";
 import {isLeapYear} from "../../impl/dateMath";

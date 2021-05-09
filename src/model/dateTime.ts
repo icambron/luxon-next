@@ -1,9 +1,9 @@
 import Zone, { isZone, Zoneish } from "./zone";
 import { Calendar } from "./calendar";
 import { GregorianDate, gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
-import Time, { fromObject, hasInvalidTimeData } from "./time";
+import {Time, fromObject, hasInvalidTimeData } from "./time";
 import { isNumber, isString, isUndefined } from "../impl/util";
-import { getDefaultNowFn, getDefaultZone } from "./settings";
+import { getDefaultNowFn, getDefaultZone } from "../settings";
 import { InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError } from "./errors";
 import { systemZone } from "./zones/systemZone";
 import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./zones/fixedOffsetZone";

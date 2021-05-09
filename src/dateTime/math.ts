@@ -10,7 +10,7 @@ import {
   DurationValues,
   isDuration,
   convert,
-  durationUnits,
+  durationUnits, ConversionAccuracy
 } from "../model/duration";
 import { negate } from "../duration/core";
 import { InvalidUnitError } from "../model/errors";
@@ -25,6 +25,7 @@ import {
   DurationUnit,
   simplePlural,
 } from "../model/units";
+import { getDefaultConversionAccuracy } from "../settings";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -131,17 +132,22 @@ export const endOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
  * ```
  * @param dt - the DateTime to add to
  * @param  durOrObj - The amount to add. Either a Luxon Duration, or an object like `{ hours: 2, minutes: 6 }`
+ * @param conversionAccuracy - the accuracy system to use when converting fractional values. Defaults to "casual"
  */
-export const plus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>): DateTime => {
-  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj, "casual");
-  const [ts, offset] = adjustTime(dt, dur);
+export const plus = (dt: DateTime,
+                     durOrObj: Duration | Partial<DurationValues>,
+                     conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): DateTime => {
+  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
+  const [ts, offset] = adjustTime(dt, dur, conversionAccuracy);
   return alter(dt, ts, dt.zone, offset);
 };
 
-export const minus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>): DateTime => {
-  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj, "casual");
+export const minus = (dt: DateTime,
+                      durOrObj: Duration | Partial<DurationValues>,
+                      conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): DateTime => {
+  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
   const negated = negate(dur);
-  const [ts, offset] = adjustTime(dt, negated);
+  const [ts, offset] = adjustTime(dt, negated, conversionAccuracy);
   return alter(dt, ts, dt.zone, offset);
 };
 
@@ -154,7 +160,7 @@ interface AccumulatedFractions {
   remainderMilliseconds: number;
 }
 
-function shiftFractionsToMillis(dur: Duration): Duration {
+function shiftFractionsToMillis(dur: Duration, conversionAccuracy: ConversionAccuracy): Duration {
   const vs = { milliseconds: 0, ...dur.values };
 
   const newVals = Array.from(durationUnits).reduce(
@@ -165,7 +171,7 @@ function shiftFractionsToMillis(dur: Duration): Duration {
       accum.ints[k] = whole;
 
       if (k !== "milliseconds") {
-        accum.remainderMilliseconds += convert(fraction, k, "milliseconds", dur.conversionAccuracy);
+        accum.remainderMilliseconds += convert(fraction, k, "milliseconds", conversionAccuracy);
       }
 
       return accum;
@@ -176,11 +182,11 @@ function shiftFractionsToMillis(dur: Duration): Duration {
   // no fractional millis please
   newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
 
-  return new Duration(newVals.ints as Partial<DurationValues>, dur.conversionAccuracy);
+  return new Duration(newVals.ints as Partial<DurationValues>);
 }
 
-function adjustTime(dt: DateTime, dur: Duration): [number, number] {
-  const unfractioned = shiftFractionsToMillis(dur);
+function adjustTime(dt: DateTime, dur: Duration, conversionAccuracy: ConversionAccuracy): [number, number] {
+  const unfractioned = shiftFractionsToMillis(dur, conversionAccuracy);
   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(
     unfractioned.values
   );

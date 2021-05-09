@@ -1,7 +1,7 @@
 import { integerBetween } from "../impl/util";
 import { buildNormalizer, normalizeUnitBundle, simplePlural, TimeUnit, timeUnits } from "./units";
 
-export default interface Time {
+export interface Time {
   readonly hour: number;
   readonly minute: number;
   readonly second: number;

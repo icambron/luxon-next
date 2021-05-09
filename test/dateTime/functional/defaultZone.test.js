@@ -1,6 +1,6 @@
 import { withDefaultZone } from "../../helpers";
 import { fromGregorian, now, zone, zoneName } from "../../../src/dateTime/core";
-import { getDefaultZone, setDefaultZone } from "../../../src/model/settings";
+import { getDefaultZone, setDefaultZone } from "../../../src/settings";
 import { createIANAZone } from "../../../src/model/zones/IANAZone";
 
 test("Setting the default zone results in a different creation zone", () => {
