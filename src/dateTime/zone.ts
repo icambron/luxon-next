@@ -1,10 +1,9 @@
-import FixedOffsetZone, {fixedOffsetZone} from "../model/zones/fixedOffsetZone";
-import SystemZone, {systemZone} from "../model/zones/systemZone";
-import DateTime, {alter, normalizeZone} from "../model/dateTime";
-import {getDefaultZone} from "../model/settings";
-import {gregorianToTS} from "../model/calendars/gregorian";
-import {Zoneish} from "../model/zone";
-
+import FixedOffsetZone, { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
+import SystemZone, { systemZone } from "../model/zones/systemZone";
+import DateTime, { alter, normalizeZone } from "../model/dateTime";
+import { getDefaultZone } from "../model/settings";
+import { gregorianToTS } from "../model/calendars/gregorian";
+import { Zoneish } from "../model/zone";
 
 /**
  * "Set" the DateTime's zone to specified zone. Returns a newly-constructed DateTime.
@@ -17,18 +16,18 @@ import {Zoneish} from "../model/zone";
  * @return {DateTime}
  */
 export const setZone = (dt: DateTime, zone: Zoneish, { keepLocalTime = false } = {}) => {
-    zone = normalizeZone(zone);
-    if (zone.equals(dt.zone)) {
-        return dt;
-    } else {
-        let newTS = dt.ts;
-        if (keepLocalTime) {
-            const offsetGuess = zone.offset(dt.ts);
-            [newTS] = gregorianToTS(dt.gregorian, dt.time, offsetGuess, zone);
-        }
-        return alter(dt, newTS, zone);
+  zone = normalizeZone(zone);
+  if (zone.equals(dt.zone)) {
+    return dt;
+  } else {
+    let newTS = dt.ts;
+    if (keepLocalTime) {
+      const offsetGuess = zone.offset(dt.ts);
+      [newTS] = gregorianToTS(dt.gregorian, dt.time, offsetGuess, zone);
     }
-}
+    return alter(dt, newTS, zone);
+  }
+};
 
 /**
  * "Set" the DateTime's zone to UTC. Returns a newly-constructed DateTime.
@@ -39,8 +38,7 @@ export const setZone = (dt: DateTime, zone: Zoneish, { keepLocalTime = false } =
  * @param {Object} [opts={}] - options to pass to `setZone()`
  * @return {DateTime}
  */
-export const toUTC = (dt: DateTime, offset = 0, opts = {}) =>
-    setZone(dt, fixedOffsetZone(offset), opts);
+export const toUTC = (dt: DateTime, offset = 0, opts = {}) => setZone(dt, fixedOffsetZone(offset), opts);
 
 /**
  * "Set" the DateTime's zone to the system's time zone. Returns a newly-constructed DateTime.

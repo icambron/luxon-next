@@ -1,7 +1,6 @@
 /* global test expect */
-import {setGregorian} from "../../../src/dateTime/core";
-import {ymd, year, month, day, hour, minute, second, millisecond} from "../../../src/dateTime/core";
-
+import { setGregorian } from "../../../src/dateTime/core";
+import { ymd, year, month, day, hour, minute, second, millisecond } from "../../../src/dateTime/core";
 
 test("setGregorian sets Gregorian fields", () => {
   const dt = ymd(1982, 4, 25, 9, 23, 54, 123);

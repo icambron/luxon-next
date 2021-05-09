@@ -9,12 +9,17 @@ import {
   hour,
   day,
   isOffsetFixed,
-  zoneName, year, month, fromGregorian, ymd, fromJSDate
+  zoneName,
+  year,
+  month,
+  fromGregorian,
+  ymd,
+  fromJSDate,
 } from "../../../src/dateTime/core";
-import {setZone, toUTC} from "../../../src/dateTime/zone";
-import {withDefaultZone} from "../../helpers";
-import {InvalidZoneError} from "../../../src/model/errors";
-import {createIANAZone} from "../../../src/model/zones/IANAZone";
+import { setZone, toUTC } from "../../../src/dateTime/zone";
+import { withDefaultZone } from "../../helpers";
+import { InvalidZoneError } from "../../../src/model/errors";
+import { createIANAZone } from "../../../src/model/zones/IANAZone";
 
 const millis = 391147200000,
   // 1982-05-25T04:00:00.000Z
@@ -42,18 +47,18 @@ test("setZone accepts 'system'", () => {
 test("setZone accepts 'system' and ignores the default zone", () => {
   const localZoneName = zoneName(now());
   withDefaultZone(createIANAZone("Europe/Paris"), () => {
-    expect(utcNow() |> (x => setZone(x, "system")) |> zoneName).toBe(localZoneName);
+    expect(utcNow() |> ((x) => setZone(x, "system")) |> zoneName).toBe(localZoneName);
   });
 });
 
 test("setZone accepts 'default'", () => {
   const zoned = setZone(utcNow(), "default");
-  expect(zoned.offset).toBe(now() |> offset)
+  expect(zoned.offset).toBe(now() |> offset);
 });
 
 test("setZone accepts 'default' and uses the default zone", () => {
   withDefaultZone(createIANAZone("Europe/Paris"), () => {
-    expect(utcNow() |> (x => setZone(x, "default")) |> zoneName).toBe("Europe/Paris");
+    expect(utcNow() |> ((x) => setZone(x, "default")) |> zoneName).toBe("Europe/Paris");
   });
 });
 
@@ -94,27 +99,24 @@ test("setZone accepts IANA zone names", () => {
 });
 
 test("setZone accepts a keepLocalTime option", () => {
-
-  const expectCorrectLocalTime = dt => {
+  const expectCorrectLocalTime = (dt) => {
     expect(dt |> year).toBe(1982);
     expect(dt |> month).toBe(5);
     expect(dt |> day).toBe(25);
     expect(dt |> hour).toBe(4);
     expect(dt |> isOffsetFixed).toBe(false);
-  }
+  };
 
-  const zoned = dt()
-    |> toUTC
-    |> (x => setZone(x, "America/Los_Angeles", {keepLocalTime: true}));
+  const zoned = dt() |> toUTC |> ((x) => setZone(x, "America/Los_Angeles", { keepLocalTime: true }));
   expect(zoned |> zoneName).toBe("America/Los_Angeles");
   expectCorrectLocalTime(zoned);
 
-  const zonedMore = setZone(zoned, "America/New_York", {keepLocalTime: true});
+  const zonedMore = setZone(zoned, "America/New_York", { keepLocalTime: true });
   expectCorrectLocalTime(zonedMore);
 });
 
 test("setZone with keepLocalTime can span wacky offsets", () => {
-  const d = fromGregorian({year: 1, month: 1, day: 1}, "UTC");
+  const d = fromGregorian({ year: 1, month: 1, day: 1 }, "UTC");
   const d2 = setZone(d, "America/Curacao", { keepLocalTime: true });
   expect(d2 |> year).toBe(1);
   expect(d2 |> month).toBe(1);
@@ -134,9 +136,7 @@ test("setZone rejects jibberish", () => {
 
 // #650
 test("setZone works for dates before 1970 with milliseconds", () => {
-  const o = fromJSDate(new Date("1967-01-01T00:00:00.001Z"))
-    |> (x => setZone(x, "America/New_York"))
-    |> offset;
+  const o = fromJSDate(new Date("1967-01-01T00:00:00.001Z")) |> ((x) => setZone(x, "America/New_York")) |> offset;
   expect(o).toBe(-300);
 });
 
@@ -151,4 +151,3 @@ test("Etc/GMT zones work even though V8 does not support them", () => {
   zoned = setZone(now(), "Etc/GMT-0");
   expect(zoned |> zoneName).toBe("UTC");
 });
-

@@ -1,7 +1,7 @@
 /* global test expect */
 
-const {fromGregorian, year, month, day, hour, minute, second, millisecond} = require("../../../src/dateTime/core");
-const {startOf, endOf} = require("../../../src/dateTime/math");
+const { fromGregorian, year, month, day, hour, minute, second, millisecond } = require("../../../src/dateTime/core");
+const { startOf, endOf } = require("../../../src/dateTime/math");
 
 function createDateTime() {
   return fromGregorian({
@@ -11,12 +11,12 @@ function createDateTime() {
     hour: 4,
     minute: 5,
     second: 6,
-    millisecond: 7
+    millisecond: 7,
   });
 }
 
 test("startOf('year') goes to the start of the year", () => {
-  const dt = createDateTime() |> (x => startOf(x, "year"));
+  const dt = createDateTime() |> ((x) => startOf(x, "year"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(1);
@@ -29,15 +29,16 @@ test("startOf('year') goes to the start of the year", () => {
 
 test("startOf('quarter') goes to the start of the quarter", () => {
   const monthToQuarterStart = (m, quarterStart) => {
-    const dt = fromGregorian({
-      year: 2017,
-      month: m,
-      day: 10,
-      hour: 4,
-      minute: 5,
-      second: 6,
-      millisecond: 7
-    }) |> (x => startOf(x, "quarter"));
+    const dt =
+      fromGregorian({
+        year: 2017,
+        month: m,
+        day: 10,
+        hour: 4,
+        minute: 5,
+        second: 6,
+        millisecond: 7,
+      }) |> ((x) => startOf(x, "quarter"));
 
     expect(dt |> year).toBe(2017);
     expect(dt |> month).toBe(quarterStart);
@@ -63,7 +64,7 @@ test("startOf('quarter') goes to the start of the quarter", () => {
 });
 
 test("startOf('month') goes to the start of the month", () => {
-  const dt = createDateTime() |> (x => startOf(x, "month"));
+  const dt = createDateTime() |> ((x) => startOf(x, "month"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -75,7 +76,7 @@ test("startOf('month') goes to the start of the month", () => {
 });
 
 test("startOf('day') goes to the start of the day", () => {
-  const dt = createDateTime() |> (x => startOf(x, "day"));
+  const dt = createDateTime() |> ((x) => startOf(x, "day"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -87,7 +88,7 @@ test("startOf('day') goes to the start of the day", () => {
 });
 
 test("startOf('hour') goes to the start of the hour", () => {
-  const dt = createDateTime() |> (x => startOf(x, "hour"));
+  const dt = createDateTime() |> ((x) => startOf(x, "hour"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -99,7 +100,7 @@ test("startOf('hour') goes to the start of the hour", () => {
 });
 
 test("startOf('minute') goes to the start of the minute", () => {
-  const dt = createDateTime() |> (x => startOf(x, "minute"));
+  const dt = createDateTime() |> ((x) => startOf(x, "minute"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -111,7 +112,7 @@ test("startOf('minute') goes to the start of the minute", () => {
 });
 
 test("startOf('second') goes to the start of the second", () => {
-  const dt = createDateTime() |> (x => startOf(x, "second"));
+  const dt = createDateTime() |> ((x) => startOf(x, "second"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -124,7 +125,7 @@ test("startOf('second') goes to the start of the second", () => {
 
 test("startOf('week') goes to the start of the week", () => {
   // using a different day so that it doesn't end up as the first of the month
-  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10}) |> (x => startOf(x, "week"));
+  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }) |> ((x) => startOf(x, "week"));
 
   expect(dt |> year).toBe(2016);
   expect(dt |> month).toBe(3);
@@ -136,15 +137,15 @@ test("startOf('week') goes to the start of the week", () => {
 });
 
 test("startOf throws on invalid units", () => {
-  expect(() => createDateTime() |> (x => startOf(x, "splork"))).toThrow();
-  expect(() => createDateTime() |> (x => startOf(x, ""))).toThrow();
+  expect(() => createDateTime() |> ((x) => startOf(x, "splork"))).toThrow();
+  expect(() => createDateTime() |> ((x) => startOf(x, ""))).toThrow();
 });
 
 //------
 // #endOf()
 //------
 test("endOf('year') goes to the start of the year", () => {
-  const dt = createDateTime() |> (x => endOf(x, "year"));
+  const dt = createDateTime() |> ((x) => endOf(x, "year"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(12);
@@ -156,7 +157,7 @@ test("endOf('year') goes to the start of the year", () => {
 });
 
 test("endOf('quarter') goes to the end of the quarter", () => {
-  const dt = createDateTime() |> (x => endOf(x, "quarter"));
+  const dt = createDateTime() |> ((x) => endOf(x, "quarter"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(3);
@@ -169,15 +170,16 @@ test("endOf('quarter') goes to the end of the quarter", () => {
 
 test("endOf('quarter') goes to the end of the quarter in December", () => {
   const monthToQuarterEnd = (m, endMonth) => {
-    const dt = fromGregorian({
-      year: 2017,
-      month: m,
-      day: 10,
-      hour: 4,
-      minute: 5,
-      second: 6,
-      millisecond: 7
-    }) |> (x => endOf(x, "quarter"));
+    const dt =
+      fromGregorian({
+        year: 2017,
+        month: m,
+        day: 10,
+        hour: 4,
+        minute: 5,
+        second: 6,
+        millisecond: 7,
+      }) |> ((x) => endOf(x, "quarter"));
 
     expect(dt |> year).toBe(2017);
     expect(dt |> month).toBe(endMonth);
@@ -203,7 +205,7 @@ test("endOf('quarter') goes to the end of the quarter in December", () => {
 });
 
 test("endOf('month') goes to the start of the month", () => {
-  const dt = createDateTime() |> (x => endOf(x, "month"));
+  const dt = createDateTime() |> ((x) => endOf(x, "month"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -215,7 +217,7 @@ test("endOf('month') goes to the start of the month", () => {
 });
 
 test("endOf('day') goes to the start of the day", () => {
-  const dt = createDateTime() |> (x => endOf(x, "day"));
+  const dt = createDateTime() |> ((x) => endOf(x, "day"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -227,7 +229,7 @@ test("endOf('day') goes to the start of the day", () => {
 });
 
 test("endOf('hour') goes to the start of the hour", () => {
-  const dt = createDateTime() |> (x => endOf(x, "hour"));
+  const dt = createDateTime() |> ((x) => endOf(x, "hour"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -239,7 +241,7 @@ test("endOf('hour') goes to the start of the hour", () => {
 });
 
 test("endOf('minute') goes to the start of the minute", () => {
-  const dt = createDateTime() |> (x => endOf(x, "minute"));
+  const dt = createDateTime() |> ((x) => endOf(x, "minute"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -251,7 +253,7 @@ test("endOf('minute') goes to the start of the minute", () => {
 });
 
 test("endOf('second') goes to the start of the second", () => {
-  const dt = createDateTime() |> (x => endOf(x, "second"));
+  const dt = createDateTime() |> ((x) => endOf(x, "second"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(2);
@@ -264,7 +266,7 @@ test("endOf('second') goes to the start of the second", () => {
 
 test("endOf('week') goes to the end of the week", () => {
   // using a different day so that it doesn't end up as the first of the month
-  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10}) |> (x => endOf(x, "week"));
+  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }) |> ((x) => endOf(x, "week"));
 
   expect(dt |> year).toBe(2016);
   expect(dt |> month).toBe(3);
@@ -275,13 +277,12 @@ test("endOf('week') goes to the end of the week", () => {
   expect(dt |> millisecond).toBe(999);
 });
 
-
 test("endOf throws on invalid units", () => {
-  expect(() => createDateTime() |> (x => endOf(x, "splork"))).toThrow();
+  expect(() => createDateTime() |> ((x) => endOf(x, "splork"))).toThrow();
 });
 
 test("endOf accepts plural units", () => {
-  const dt = createDateTime() |> (x => endOf(x, "years"));
+  const dt = createDateTime() |> ((x) => endOf(x, "years"));
 
   expect(dt |> year).toBe(2010);
   expect(dt |> month).toBe(12);

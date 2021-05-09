@@ -8,10 +8,12 @@ import {
   minute,
   month,
   offset,
-  second, toJSDate,
-  year, zone,
-} from "../../../src/dateTime/core"
-import {InvalidZoneError, UnitOutOfRangeError} from "../../../src/model/errors";
+  second,
+  toJSDate,
+  year,
+  zone,
+} from "../../../src/dateTime/core";
+import { InvalidZoneError, UnitOutOfRangeError } from "../../../src/model/errors";
 
 const baseObject = {
   year: 1982,
@@ -20,7 +22,7 @@ const baseObject = {
   hour: 9,
   minute: 23,
   second: 54,
-  millisecond: 123
+  millisecond: 123,
 };
 
 const expectLocallyCorrect = (dt) => {

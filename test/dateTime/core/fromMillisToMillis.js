@@ -8,9 +8,9 @@ import {
   year,
   zoneName,
   fromMillis,
-  toMillis
+  toMillis,
 } from "../../../src/dateTime/core";
-import {toUTC} from "../../../src/dateTime/zone";
+import { toUTC } from "../../../src/dateTime/zone";
 
 test("fromMillis results in the right timestamp", () => {
   const bigValue = 391147200000;
@@ -32,20 +32,19 @@ test("fromMillis translates to the right gregorian value", () => {
   expect(millisecond(dt)).toBe(814);
 });
 
- test("fromMillis accepts a zone option", () => {
-   const value = 391147200000;
-   const dt = fromMillis(value, "America/Santiago");
+test("fromMillis accepts a zone option", () => {
+  const value = 391147200000;
+  const dt = fromMillis(value, "America/Santiago");
 
-   expect(toMillis(dt)).toBe(value);
-   expect(zoneName(dt)).toBe("America/Santiago");
- });
+  expect(toMillis(dt)).toBe(value);
+  expect(zoneName(dt)).toBe("America/Santiago");
+});
 
- test("fromMillis throws InvalidArgumentError for non-numeric input", () => {
-   expect(() => fromMillis("slurp")).toThrow();
- });
+test("fromMillis throws InvalidArgumentError for non-numeric input", () => {
+  expect(() => fromMillis("slurp")).toThrow();
+});
 
- test("fromMillis does not accept out-of-bounds numbers", () => {
-   expect(() => fromMillis(-8.64e15 - 1)).toThrow();
-   expect(() => fromMillis(8.64e15 + 1)).toThrow();
- });
-
+test("fromMillis does not accept out-of-bounds numbers", () => {
+  expect(() => fromMillis(-8.64e15 - 1)).toThrow();
+  expect(() => fromMillis(8.64e15 + 1)).toThrow();
+});

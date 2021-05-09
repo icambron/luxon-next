@@ -4,14 +4,14 @@
 
 export const isLeapYear = (year: number) => year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 
-export const daysInYear = (year: number) => isLeapYear(year) ? 366 : 365;
+export const daysInYear = (year: number) => (isLeapYear(year) ? 366 : 365);
 
 export const computeOrdinal = (year: number, month: number, day: number) =>
-    day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
+  day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
 
 export const uncomputeOrdinal = (year: number, ordinal: number) => {
   const table = isLeapYear(year) ? leapLadder : nonLeapLadder;
-  const month0 = table.findIndex(i => i < ordinal);
+  const month0 = table.findIndex((i) => i < ordinal);
   const day = ordinal - table[month0];
   return { month: month0 + 1, day };
 };

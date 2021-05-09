@@ -33,10 +33,9 @@ export default interface Zone {
    * @param {Zone} other - the zone to compare
    * @return {boolean}
    */
-  equals(other: Zone) : boolean;
+  equals(other: Zone): boolean;
 }
 
 export type Zoneish = Zone | number | string | null | undefined;
 
 export const isZone = (maybeZone: any): maybeZone is Zone => maybeZone?.name !== undefined;
-
