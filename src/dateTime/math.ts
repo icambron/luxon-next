@@ -8,11 +8,19 @@ import Duration, {
    defaultEmpties,
    DurationValues,
    isDuration,
-   convert
+   convert, durationUnits
 } from "../model/duration";
 import {negate} from "../duration/core";
 import {InvalidUnitError} from "../model/errors";
-import {pluralizeUnit, PluralUnit, pluralUnits, singularizeUnit, SingularUnit} from "../model/units";
+import {
+   gregorianUnits,
+   GregorianUnit,
+   miscDurationUnits,
+   MiscDurationUnit,
+   TimeUnit,
+   timeUnits,
+   buildNormalizer, DurationUnit, simplePlural
+} from "../model/units";
 
 /**
  * Return the max of several date times
@@ -21,6 +29,10 @@ import {pluralizeUnit, PluralUnit, pluralUnits, singularizeUnit, SingularUnit} f
  */
 export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueOf(), Math.max);
 
+export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
+const startEndUnits: Array<StartEndUnit> = [...gregorianUnits , ...timeUnits, ...miscDurationUnits];
+const normalizeStartEndUnit = buildNormalizer(startEndUnits, simplePlural);
+
 /**
  * Return the min of several date times
  * @param {Array<DateTime>} dts - the DateTimes from which to choose the minimum
@@ -28,8 +40,8 @@ export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueO
  */
 export const min = (dts: Array<DateTime>): DateTime => bestBy(dts, i => i.valueOf(), Math.min);
 
-export const startOf = (dt: DateTime, unit: SingularUnit): DateTime => {
-   const u = singularizeUnit(unit);
+export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
+   const u = normalizeStartEndUnit(unit);
    const o = {} as Record<string, number>;
    switch (u) {
       case "year":
@@ -67,9 +79,9 @@ export const startOf = (dt: DateTime, unit: SingularUnit): DateTime => {
    return o.weekday ? set(dt, isoCalendarInstance, o) : set(dt, gregorianInstance, o);
 }
 
-export const endOf = (dt: DateTime, unit: SingularUnit): DateTime => {
+export const endOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
    // typescript not having |> gives me freaking hives
-   const added = plus(dt, {[pluralizeUnit(unit) as string]: 1});
+   const added = plus(dt, {[unit as string]: 1});
    const startOfNext = startOf(added, unit);
    return minus(startOfNext, {milliseconds: 1});
 }
@@ -107,9 +119,8 @@ export const minus = (dt: DateTime, durOrObj: Duration | Partial<DurationValues>
    return alter(dt, ts, dt.zone, offset);
 }
 
-
 type MutableDurationValues = {
-   [unit in PluralUnit] : number
+   [unit in DurationUnit] : number
 }
 
 interface AccumulatedFractions {
@@ -120,7 +131,7 @@ interface AccumulatedFractions {
 function shiftFractionsToMillis(dur: Duration) : Duration {
    const vs =  {milliseconds: 0, ...dur.values};
 
-   const newVals = Array.from(pluralUnits).reduce((accum: AccumulatedFractions, k) => {
+   const newVals = Array.from(durationUnits).reduce((accum: AccumulatedFractions, k) => {
       const val = vs[k] || 0;
 
       const [whole, fraction] = intAndFraction(val);

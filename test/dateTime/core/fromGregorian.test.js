@@ -9,7 +9,7 @@ import {
   month,
   offset,
   second, toJSDate,
-  year,
+  year, zone,
 } from "../../../src/dateTime/core"
 import {InvalidZoneError, UnitOutOfRangeError} from "../../../src/model/errors";
 
@@ -35,7 +35,7 @@ const expectLocallyCorrect = (dt) => {
 
 test("fromGregorian sets all the fields", () => {
   const dt = fromGregorian(baseObject);
-  expect(isOffsetFixed(dt)).toBe(false);
+  expect(zone(dt).type).toBe("system");
   expectLocallyCorrect(dt);
 });
 
@@ -64,18 +64,12 @@ test("fromGregorian rejects invalid zones", () => {
   expect(() => fromGregorian({}, "blorp")).toThrow(InvalidZoneError);
 });
 
-// TODO - UNIT NORMALIZATION
-
-// test("fromGregorian ignores the case of object keys", () => {
-//   const dt = fromGregorian({ Year: 2019, MONTH: 4, daYs: 10 });
-//   expect(year(dt)).toBe(2019);
-//   expect(month(dt)).toBe(4);
-//   expect(day(dt)).toBe(10);
-// });
-//
-// test("fromGregorian throws with invalid object key", () => {
-//   expect(() => fromGregorian({ invalidUnit: 42 })).toThrow();
-// });
+test("fromGregorian ignores the case of object keys", () => {
+  const dt = fromGregorian({ Year: 2019, MONTH: 4, daYs: 10 });
+  expect(year(dt)).toBe(2019);
+  expect(month(dt)).toBe(4);
+  expect(day(dt)).toBe(10);
+});
 
 test("fromGregorian throws with invalid value types", () => {
   expect(() => fromGregorian({ year: "blorp" })).toThrow();

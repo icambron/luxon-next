@@ -1,16 +1,21 @@
 import {GregorianDate} from "./gregorian";
 import {integerBetween, isInteger} from "../../impl/util";
 import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../impl/dateMath";
-import {Calendar, CalendarDate} from "../calendar";
+import {Calendar} from "../calendar";
+import {buildNormalizer, normalizeUnitBundle, simplePlural, OrdinalUnit, ordinalUnits} from "../units";
 
-export interface OrdinalDate extends CalendarDate {
+export interface OrdinalDate  {
     year: number;
     ordinal: number;
 }
 
+const ordinalNormalizer = buildNormalizer<OrdinalUnit>(ordinalUnits, simplePlural);
+
 export class OrdinalCalendar implements  Calendar<OrdinalDate> {
     defaultValues = { year: 1, ordinal: 1 };
     name = "ordinal"
+
+    fromObject = (obj: object) => normalizeUnitBundle<OrdinalDate>(obj, ordinalNormalizer);
 
     fromGregorian = (obj: GregorianDate): OrdinalDate => {
         const { year, month, day } = obj,

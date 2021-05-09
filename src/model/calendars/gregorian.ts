@@ -1,8 +1,9 @@
-import {Calendar, CalendarDate} from "../calendar";
+import {Calendar} from "../calendar";
 import Time from "../time";
 import Zone from "../zone";
 import {floorMod, integerBetween, isInteger} from "../../impl/util";
 import {isLeapYear} from "../../impl/dateMath";
+import {buildNormalizer, gregorianUnits, GregorianUnit, normalizeUnitBundle, simplePlural} from "../units";
 
 /*
 The Gregorian calendar (i.e. the dates we use in everyday life) is the lingua franca of Luxon. It's thus a sort of
@@ -10,15 +11,17 @@ privileged calendar, primarily because we know how to convert it to and from a t
 calendars too, but only by converting them to or from Gregorian first.
  */
 
-export interface GregorianDate extends CalendarDate {
-    year: number;
-    month: number;
-    day: number;
+export type GregorianDate = {
+    [key in GregorianUnit]: number;
 }
+
+const gregorianNormalizer = buildNormalizer<GregorianUnit>(gregorianUnits, simplePlural);
 
 export class GregorianCalendar implements Calendar<GregorianDate> {
     name = "gregorian";
     defaultValues = { year: 1, month: 1, day: 1 };
+
+    fromObject = (obj: object): GregorianDate => normalizeUnitBundle<GregorianDate>(obj, gregorianNormalizer);
 
     fromGregorian = (obj: GregorianDate): GregorianDate => obj;
     toGregorian = (obj: GregorianDate): GregorianDate => obj;

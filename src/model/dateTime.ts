@@ -1,12 +1,12 @@
 import Zone, {isZone, Zoneish} from "./zone";
-import {Calendar, CalendarDate} from "./calendar";
+import {Calendar } from "./calendar";
 import {
     GregorianDate,
     gregorianInstance,
     gregorianToTS,
     tsToGregorian
 } from "./calendars/gregorian";
-import Time, {hasInvalidTimeData} from "./time";
+import Time, {fromObject, hasInvalidTimeData} from "./time";
 import {isNumber, isString, isUndefined} from "../impl/util";
 import {getDefaultNowFn, getDefaultZone} from "./settings";
 import {InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError} from "./errors";
@@ -56,15 +56,15 @@ export const fromMillis = (ts: number, zone?: Zone) => {
     return new DateTime(ts, zoneToUse, gregorian, time, offset);
 }
 
-export const fromCalendar = <TDate extends CalendarDate>(calendar: Calendar<TDate>, o: Partial<TDate & Time> , zone?: Zone): DateTime =>{
+export const fromCalendar = <TDate extends object>(calendar: Calendar<TDate>, o: Partial<TDate & Time>, zone?: Zone): DateTime =>{
     const zoneToUse = zone || getDefaultZone();
     const tsNow = getDefaultNowFn()();
     // sub in the defaults
     const [gregorNow, timeNow, offsetProvis] = quick(tsNow, zoneToUse);
     const calendarNow = calendar.fromGregorian(gregorNow);
 
-    let [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, o);
-    const [time, _] = fillInDefaults<Time>(defaultTimeObject, timeNow, o, found);
+    let [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, calendar.fromObject(o));
+    const [time, _] = fillInDefaults<Time>(defaultTimeObject, timeNow, fromObject(o), found);
 
     const error = calendar.isInvalid(date) || hasInvalidTimeData(time);
     if (error != null) {
@@ -77,7 +77,7 @@ export const fromCalendar = <TDate extends CalendarDate>(calendar: Calendar<TDat
     // if it's a hole time, we'll adjust the calendar & time to the "real" one
     const [gregorianFinal, timeFinal] = isHoleTime ? tsToGregorian(ts, finalOffset) : [gregorian, time];
 
-    const calMap = new Map<string, CalendarDate>();
+    const calMap = new Map<string, any>();
 
     // initialize with this calendar
     if (calendar.name !== "gregorian") {
@@ -94,7 +94,7 @@ export const fromCalendar = <TDate extends CalendarDate>(calendar: Calendar<TDat
 };
 
 export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number) : DateTime => {
-    let calendarValues: Map<string, CalendarDate>,
+    let calendarValues: Map<string, any>,
         gregorian: GregorianDate,
         time: Time,
         newOffset: number;
@@ -106,12 +106,12 @@ export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number) : D
     } else {
         newOffset = offset || zone.offset(ts);
         [gregorian, time] = tsToGregorian(ts, newOffset);
-        calendarValues = new Map<string, CalendarDate>();
+        calendarValues = new Map<string, any>();
     }
     return new DateTime(ts, zone, gregorian, time, newOffset, calendarValues);
 }
 
-export const getCalendarValue = <TDate extends CalendarDate>(dt: DateTime, calendar: Calendar<TDate>) : TDate => {
+export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: Calendar<TDate>) : TDate => {
     const computed = dt.calendarDates.get(calendar.name);
     if (computed) {
         return computed as TDate;
@@ -122,7 +122,7 @@ export const getCalendarValue = <TDate extends CalendarDate>(dt: DateTime, calen
     }
 }
 
-export const set = <TDate extends CalendarDate>(
+export const set = <TDate extends object>(
     dt: DateTime,
     calendar: Calendar<TDate>,
     obj: Partial<TDate & Time>,
@@ -147,7 +147,7 @@ export default class DateTime {
     readonly offset: number;
     private readonly _gregorian: GregorianDate;
     private readonly _time: Time;
-    private readonly _calendarDates: Map<string, CalendarDate>;
+    private readonly _calendarDates: Map<string, any>;
     isLuxonDateTime : boolean = true;
 
     get gregorian(): GregorianDate {
@@ -158,8 +158,8 @@ export default class DateTime {
         return {...this._time};
     }
 
-    get calendarDates(): Map<string, CalendarDate> {
-        return new Map<string, CalendarDate>(this._calendarDates);
+    get calendarDates(): Map<string, any> {
+        return new Map<string, any>(this._calendarDates);
     }
 
     // these are here so that automagic layers work as expected
@@ -181,7 +181,7 @@ export default class DateTime {
         gregorian: GregorianDate,
         time: Time,
         offset: number,
-        otherCalendarDates: Map<string, CalendarDate> = new Map<string, CalendarDate>()) {
+        otherCalendarDates: Map<string, any> = new Map<string, any>()) {
 
         assertValidTs(ts);
 

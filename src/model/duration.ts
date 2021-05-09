@@ -1,11 +1,22 @@
 import {isUndefined, roundTo} from "../impl/util";
-import {pluralizeUnit, PluralUnit, pluralUnits} from "./units";
+import {
+    buildNormalizer,
+    DurationUnit,
+    simpleSingular,
+    gregorianUnitsPlural,
+    timeUnitsPlural,
+    miscDurationUnitsPlural,
+    normalizeUnitBundle
+} from "./units";
 
 export type DurationValues = {
-    readonly [unit in PluralUnit] : number
+    readonly [unit in DurationUnit] : number
 };
 
 const durationZeroes: DurationValues = { years: 0, quarters: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+export const durationUnits : Array<DurationUnit> = [...gregorianUnitsPlural, ...timeUnitsPlural, ...miscDurationUnitsPlural];
+
+export const normalizeDurationUnit = buildNormalizer<DurationUnit>(durationUnits, simpleSingular);
 
 export type ConversionAccuracy = "casual" | "longterm";
 type Trie = Record<string, Record<string, number>>;
@@ -92,14 +103,14 @@ const accurateMatrix: Trie = {
     ...lowOrderMatrix
 };
 
-export const convert = (val: number, from: PluralUnit, to: PluralUnit, conversionAccuracy: ConversionAccuracy) : number => {
+export const convert = (val: number, from: DurationUnit, to: DurationUnit, conversionAccuracy: ConversionAccuracy) : number => {
     const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
     return matrix[from][to] * val;
 };
 
 export const toMillis = (values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual"): number => {
     const matrix = conversionAccuracy === "casual" ? casualMatrix : accurateMatrix;
-    return Array.from(pluralUnits).reduce((total: number, k) => {
+    return durationUnits.reduce((total: number, k) => {
         const val = values[k];
         if (isUndefined(val)) return total;
         const ratio = k === "milliseconds" ? 1 : matrix[k]["milliseconds"];
@@ -131,7 +142,7 @@ export default class Duration {
     readonly isLuxonDuration = true;
 
     constructor(values: Partial<DurationValues>, conversionAccuracy: ConversionAccuracy = "casual") {
-       this._values = Object.fromEntries(Object.entries(values).map(([k, v]) => [pluralizeUnit(k), v]))
+       this._values = normalizeUnitBundle(values, normalizeDurationUnit);
        this.conversionAccuracy = conversionAccuracy;
     };
 

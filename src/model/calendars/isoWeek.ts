@@ -1,17 +1,26 @@
-import {Calendar, CalendarDate} from "../calendar";
+import {Calendar} from "../calendar";
 import {
     integerBetween,
     isInteger,
 } from "../../impl/util";
 import {GregorianDate} from "./gregorian";
 import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../impl/dateMath";
+import {
+    buildNormalizer,
+    IsoWeekUnit,
+    isoWeekUnits,
+    normalizeUnitBundle,
+    simplePlural
+} from "../units";
+
+const isoWeekNormalizer = buildNormalizer<IsoWeekUnit>(isoWeekUnits, simplePlural);
 
 const dayOfWeek = (year: number, month: number, day: number) => {
     const js = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
     return js === 0 ? 7 : js;
 };
 
-export interface ISOWeekDate extends CalendarDate {
+export interface ISOWeekDate {
     weekYear: number;
     weekNumber: number;
     weekday: number;
@@ -20,6 +29,8 @@ export interface ISOWeekDate extends CalendarDate {
 export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
     defaultValues = { weekYear: 1, weekNumber: 1, weekday: 1};
     name = "isoweekdate";
+
+    fromObject = (obj: object) => normalizeUnitBundle<ISOWeekDate>(obj, isoWeekNormalizer);
 
     fromGregorian(obj: GregorianDate): ISOWeekDate {
         const { year, month, day } = obj,
