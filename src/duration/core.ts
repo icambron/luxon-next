@@ -1,4 +1,5 @@
-import Duration, {
+import {
+  Duration,
   ConversionAccuracy,
   DurationValues,
   alter as alterInternal,

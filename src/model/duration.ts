@@ -159,7 +159,7 @@ export const toIso = (dur: Duration): string => {
   return s;
 };
 
-export default class Duration {
+export class Duration {
   private readonly _values: Partial<DurationValues>;
   readonly conversionAccuracy: ConversionAccuracy;
   readonly isLuxonDuration = true;

@@ -141,7 +141,7 @@ export const set = <TDate extends object>(
   return alter(dt, ts, dt.zone, o);
 };
 
-export default class DateTime {
+export class DateTime {
   readonly zone: Zone;
   readonly ts: number;
   readonly offset: number;

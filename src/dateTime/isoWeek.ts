@@ -1,4 +1,4 @@
-import DateTime, { fromCalendar, getCalendarValue } from "../model/dateTime";
+import {DateTime, fromCalendar, getCalendarValue } from "../model/dateTime";
 import { isoCalendarInstance, ISOWeekDate, weeksInWeekYear } from "../model/calendars/isoWeek";
 import Zone from "../model/zone";
 import Time from "../model/time";

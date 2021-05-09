@@ -1,6 +1,6 @@
-import FixedOffsetZone, { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
-import SystemZone, { systemZone } from "../model/zones/systemZone";
-import DateTime, { alter, normalizeZone } from "../model/dateTime";
+import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
+import { systemZone } from "../model/zones/systemZone";
+import { DateTime, alter, normalizeZone } from "../model/dateTime";
 import { getDefaultZone } from "../model/settings";
 import { gregorianToTS } from "../model/calendars/gregorian";
 import { Zoneish } from "../model/zone";
