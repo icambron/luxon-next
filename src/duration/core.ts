@@ -27,7 +27,7 @@ export const isDuration = (dur: Duration): boolean => isDurationInternal(dur);
 // todo - as(dur, unit)
 
 /**
- * Adds durations togeother to make them longer
+ * Adds durations together to make them longer
  * @param durs - Durations to add
  */
 export const plus = (...durs: Duration[]) => {
