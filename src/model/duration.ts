@@ -186,5 +186,6 @@ export const defaultEmpties = (values: Partial<DurationValues>): DurationValues 
 
 export const isDuration = (obj: any): obj is Duration => obj && obj.isLuxonDuration;
 
-export const alter = (dur: Duration, values: DurationValues): Duration =>
-  new Duration({ ...dur.values, ...values });
+// curry!
+export const alter = (values: DurationValues): (dur: Duration) => Duration =>
+  dur => new Duration({ ...dur.values, ...values });

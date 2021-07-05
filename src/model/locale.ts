@@ -69,19 +69,19 @@ function extract(jsDate: Date, df: Intl.DateTimeFormat, field: string) {
   return matching ? matching.value : null;
 }
 
-export const toLocaleString = (jsDate: Date, localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): string => {
+export const toLocaleString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
   const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate.toLocaleString(locale, opts);
+  return jsDate => jsDate.toLocaleString(locale, opts);
 }
 
-export const toLocaleDateString = (jsDate: Date, localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): string => {
+export const toLocaleDateString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
   const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate.toLocaleDateString(locale, opts);
+  return jsDate => jsDate.toLocaleDateString(locale, opts);
 }
 
-export const toLocaleTimeString = (jsDate: Date, localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): string => {
+export const toLocaleTimeString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
   const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate.toLocaleTimeString(locale, opts);
+  return jsDate => jsDate.toLocaleTimeString(locale, opts);
 }
 
 export const months = memo(([localeOpts, mode, width]: [LocaleOpts, "format" | "standalone", "narrow" | "short" | "long" | "numeric" | "2-digit"]) => {

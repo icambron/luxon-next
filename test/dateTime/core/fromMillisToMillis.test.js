@@ -19,7 +19,7 @@ test("fromMillis results in the right timestamp", () => {
 });
 
 test("fromMillis translates to the right gregorian value", () => {
-  const dt = fromMillis(1615082936814) |> toUTC;
+  const dt = fromMillis(1615082936814) |> toUTC();
 
   expect(toMillis(dt)).toBe(1615082936814);
 

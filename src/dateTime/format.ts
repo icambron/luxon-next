@@ -4,17 +4,16 @@ import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 import { DateTime } from "../model/dateTime";
 import { toJSDate } from "./core";
 
-export const toLocaleString = (dt: DateTime,
-                               format: DateTimeFormatOptions = getDefaultFormat(),
-                               localeOpts: LocaleOpts = defaultLocaleOpts()): string =>
-  toLocaleStringInternal(toJSDate(dt), localeOpts, format)
+const wrap = (f: (jsDate: Date) => string): (dt: DateTime) => string => dt => f(toJSDate(dt));
 
-export const toLocaleDateString = (dt: DateTime,
-                               format: DateTimeFormatOptions = getDefaultFormat(),
-                               localeOpts: LocaleOpts = defaultLocaleOpts()): string =>
-  toLocaleDateStringInternal(toJSDate(dt), localeOpts, format)
+export const toLocaleString = (format: DateTimeFormatOptions = getDefaultFormat(),
+                               localeOpts: LocaleOpts = defaultLocaleOpts()): (dt: DateTime) => string =>
+  wrap(toLocaleStringInternal(localeOpts, format));
 
-export const toLocaleTimeString = (dt: DateTime,
-                                   format: DateTimeFormatOptions = getDefaultFormat(),
-                                   localeOpts: LocaleOpts = defaultLocaleOpts()): string =>
-  toLocaleTimeStringInternal(toJSDate(dt), localeOpts, format)
+export const toLocaleDateString = (format: DateTimeFormatOptions = getDefaultFormat(),
+                               localeOpts: LocaleOpts = defaultLocaleOpts()): (dt: DateTime) => string =>
+  wrap(toLocaleDateStringInternal(localeOpts, format));
+
+export const toLocaleTimeString = (format: DateTimeFormatOptions = getDefaultFormat(),
+                                   localeOpts: LocaleOpts = defaultLocaleOpts()): (dt: DateTime) => string =>
+  wrap(toLocaleTimeStringInternal(localeOpts, format));

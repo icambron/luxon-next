@@ -97,19 +97,19 @@ export const fromCalendar = <TDate extends object>(
 };
 
 export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number): DateTime => {
-  let calendarValues: Map<string, any>, gregorian: GregorianDate, time: Time, newOffset: number;
-  if (ts === dt.ts && zone.equals(dt.zone)) {
-    newOffset = dt.offset;
-    gregorian = dt.gregorian;
-    time = dt.time;
-    calendarValues = dt.calendarDates;
-  } else {
-    newOffset = offset || zone.offset(ts);
-    [gregorian, time] = tsToGregorian(ts, newOffset);
-    calendarValues = new Map<string, any>();
-  }
-  return new DateTime(ts, zone, gregorian, time, newOffset, calendarValues);
-};
+    let calendarValues: Map<string, any>, gregorian: GregorianDate, time: Time, newOffset: number;
+    if (ts === dt.ts && zone.equals(dt.zone)) {
+      newOffset = dt.offset;
+      gregorian = dt.gregorian;
+      time = dt.time;
+      calendarValues = dt.calendarDates;
+    } else {
+      newOffset = offset || zone.offset(ts);
+      [gregorian, time] = tsToGregorian(ts, newOffset);
+      calendarValues = new Map<string, any>();
+    }
+    return new DateTime(ts, zone, gregorian, time, newOffset, calendarValues);
+  };
 
 export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: Calendar<TDate>): TDate => {
   const computed = dt.calendarDates.get(calendar.name);
@@ -126,20 +126,19 @@ export const set = <TDate extends object>(
   dt: DateTime,
   calendar: Calendar<TDate>,
   obj: Partial<TDate & Time>,
-  adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time
-) => {
-  const current = getCalendarValue(dt, calendar);
-  let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
+  adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time ) : DateTime => {
+    const current = getCalendarValue(dt, calendar);
+    let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
 
-  if (adjust) {
-    mixed = adjust(obj, mixed);
-  }
+    if (adjust) {
+      mixed = adjust(obj, mixed);
+    }
 
-  const gregorian = calendar.toGregorian(mixed);
+    const gregorian = calendar.toGregorian(mixed);
 
-  const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
-  return alter(dt, ts, dt.zone, o);
-};
+    const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
+    return alter(dt, ts, dt.zone, o);
+  };
 
 export class DateTime {
   readonly zone: Zone;

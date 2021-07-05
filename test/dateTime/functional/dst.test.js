@@ -34,49 +34,49 @@ test("Ambiguous dates pick the one with the current offset", () => {
 });
 
 test("Adding an hour to land on the Spring Forward springs forward", () => {
-  const d = ny(2017, 3, 12, 1) |> ((x) => plus(x, { hours: 1 }));
+  const d = ny(2017, 3, 12, 1) |> plus({ hours: 1 });
   expect(d |> hour).toBe(3);
   expect(d |> offset).toBe(-4 * 60);
 });
 
 test("Subtracting an hour to land on the Spring Forward springs forward", () => {
-  const d = ny(2017, 3, 12, 3) |> ((x) => minus(x, { hours: 1 }));
+  const d = ny(2017, 3, 12, 3) |> minus({ hours: 1 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-5 * 60);
 });
 
 test("Adding an hour to land on the Fall Back falls back", () => {
-  const d = ny(2017, 11, 5, 0) |> ((x) => plus(x, { hours: 2 }));
+  const d = ny(2017, 11, 5, 0) |> plus({ hours: 2 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-5 * 60);
 });
 
 test("Subtracting an hour to land on the Fall Back falls back", () => {
-  let d = ny(2017, 11, 5, 3) |> ((x) => minus(x, { hours: 2 }));
+  let d = ny(2017, 11, 5, 3) |> minus({ hours: 2 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-5 * 60);
 
-  d = minus(d, { hours: 1 });
+  d = d |> minus({ hours: 1 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-4 * 60);
 });
 
 test("Changing a calendar date to land on a hole bumps forward", () => {
-  let d = ny(2017, 3, 11, 2) |> ((x) => plus(x, { days: 1 }));
+  let d = ny(2017, 3, 11, 2) |> plus({ days: 1 });
   expect(d |> hour).toBe(3);
   expect(d |> offset).toBe(-4 * 60);
 
-  d = ny(2017, 3, 13, 2) |> ((x) => minus(x, { days: 1 }));
+  d = ny(2017, 3, 13, 2) |> minus({ days: 1 });
   expect(d |> hour).toBe(3);
   expect(d |> offset).toBe(-4 * 60);
 });
 
 test("Changing a calendar date to land on an ambiguous time chooses the closest one", () => {
-  let d = ny(2017, 11, 4, 1) |> ((x) => plus(x, { days: 1 }));
+  let d = ny(2017, 11, 4, 1) |> plus({ days: 1 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-4 * 60);
 
-  d = ny(2017, 11, 6, 1) |> ((x) => minus(x, { days: 1 }));
+  d = ny(2017, 11, 6, 1) |> minus({ days: 1 });
   expect(d |> hour).toBe(1);
   expect(d |> offset).toBe(-5 * 60);
 });
@@ -90,7 +90,7 @@ test("Start of a 0:00->1:00 DST day is 1:00", () => {
         day: 15,
       },
       "America/Sao_Paulo"
-    ) |> ((x) => startOf(x, "day"));
+    ) |> startOf("day");
   expect(d |> day).toBe(15);
   expect(d |> hour).toBe(1);
   expect(d |> minute).toBe(0);
@@ -106,7 +106,7 @@ test("End of a 0:00->1:00 DST day is 23:59", () => {
         day: 15,
       },
       "America/Sao_Paulo"
-    ) |> ((x) => endOf(x, "day"));
+    ) |> endOf("day");
   expect(d |> day).toBe(15);
   expect(d |> hour).toBe(23);
   expect(d |> minute).toBe(59);

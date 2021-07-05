@@ -6,13 +6,13 @@ import {Time} from "../model/time";
 export const fromISOWeek = (obj: Partial<ISOWeekDate & Time>, zone?: Zone): DateTime =>
   fromCalendar(isoCalendarInstance, obj, zone);
 
-export const toISOWeek = (dt: DateTime): ISOWeekDate & Time => ({
+export const toISOWeek = (): (dt: DateTime) => ISOWeekDate & Time => dt => ({
   ...getCalendarValue(dt, isoCalendarInstance),
-  ...dt.time,
+  ...dt.time
 });
 
-export const weekYear = (dt: DateTime): number => toISOWeek(dt).weekYear;
-export const weekNumber = (dt: DateTime): number => toISOWeek(dt).weekNumber;
-export const weekday = (dt: DateTime): number => toISOWeek(dt).weekday;
+export const weekYear = (dt: DateTime): number => toISOWeek()(dt).weekYear;
+export const weekNumber = (dt: DateTime): number => toISOWeek()(dt).weekNumber;
+export const weekday = (dt: DateTime): number => toISOWeek()(dt).weekday;
 
 export const weeksInCurrentWeekYear = (dt: DateTime): number => weeksInWeekYear(weekYear(dt));

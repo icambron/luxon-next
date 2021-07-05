@@ -8,9 +8,9 @@ const ordinalCalendar = new OrdinalCalendar();
 export const fromOrdinal = (obj: Partial<OrdinalDate & Time>, zone?: Zone): DateTime =>
   fromCalendar(ordinalCalendar, obj, zone);
 
-export const toOrdinal = (dt: DateTime): Partial<OrdinalCalendar & Time> => ({
+export const toOrdinal = ():  (dt: DateTime) => Partial<OrdinalCalendar & Time> => dt => ({
   ...getCalendarValue(dt, ordinalCalendar),
   ...dt.time,
 });
 
-export const ordinal = (dt: DateTime): number => getCalendarValue(dt, ordinalCalendar).ordinal;
+export const ordinal = (dt: DateTime): number =>  getCalendarValue(dt, ordinalCalendar).ordinal;
