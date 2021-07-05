@@ -115,6 +115,7 @@ export const endOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
   const started = startOf(unit);
   const minussed = minus({ milliseconds: 1 });
 
+  // need a pipe operator, please
   return dt => minussed(started(plussed(dt)));
 }
 

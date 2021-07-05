@@ -37,6 +37,7 @@ export const fromJSDate = (jsDate: Date, zone?: Zoneish): DateTime => {
   }
   return fromMillis(+jsDate, zone);
 };
+
 export const ymd = (
   year: number,
   month: number,

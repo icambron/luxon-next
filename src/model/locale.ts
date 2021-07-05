@@ -1,5 +1,6 @@
 import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+import { FormatMode, MonthFormatWidth } from "./formatting";
 
 export type LocaleOpts = {
   readonly locale: string;
@@ -63,7 +64,7 @@ function dateTimeFormat(localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = {})
   return getDtf(formattingOptions(localeOpts, fmt));
 }
 
-function extract(jsDate: Date, df: Intl.DateTimeFormat, field: string) {
+function extract(jsDate: Date, df: Intl.DateTimeFormat, field: string) : string | null {
   const results = df.formatToParts();
   const matching = results.find(m => m.type.toLowerCase() === field);
   return matching ? matching.value : null;
@@ -84,9 +85,33 @@ export const toLocaleTimeString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOp
   return jsDate => jsDate.toLocaleTimeString(locale, opts);
 }
 
-export const months = memo(([localeOpts, mode, width]: [LocaleOpts, "format" | "standalone", "narrow" | "short" | "long" | "numeric" | "2-digit"]) => {
+const usingEnglishMemo = memo(([localeOpts]: [LocaleOpts]): boolean => {
+  const isActuallyEnglish =
+    localeOpts.locale === "en" ||
+    localeOpts.locale.toLowerCase() === "en-us" ||
+    getDtf([localeOpts.locale, {}]).resolvedOptions().locale.startsWith("en-us")
+
+  const hasNoWeirdness =
+    (localeOpts.numberingSystem === null || localeOpts.numberingSystem === "latn") &&
+    (localeOpts.outputCalendar === null || localeOpts.outputCalendar === "gregory");
+
+  return isActuallyEnglish && hasNoWeirdness;
+});
+
+export const useEnglishFormatting = (localeOpts: LocaleOpts) => usingEnglishMemo([localeOpts]);
+
+const monthDtf = (localeOpts: LocaleOpts, mode: FormatMode, width: MonthFormatWidth): Intl.DateTimeFormat => {
   const fmt: DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
-  const dtf = getDtf(formattingOptions(localeOpts, fmt));
+  return getDtf(formattingOptions(localeOpts, fmt));
+};
+
+export const formatMonth = (localeOpts: LocaleOpts, mode: FormatMode, width: MonthFormatWidth): (jsDate: Date) => string | null => {
+  const dtf = monthDtf(localeOpts, mode, width);
+  return d => extract(d, dtf, "months");
+}
+
+export const months = memo(([localeOpts, mode, width]: [LocaleOpts, FormatMode, MonthFormatWidth]) : (string | null)[] => {
+  const dtf = monthDtf(localeOpts, mode, width);
 
   // @ts-ignore
   const d = new Date([2016, 6, 15]);
@@ -95,3 +120,15 @@ export const months = memo(([localeOpts, mode, width]: [LocaleOpts, "format" | "
       return extract(d, dtf, "months");
     });
   });
+
+const meridiemDtf = (localeOpts: LocaleOpts): Intl.DateTimeFormat => {
+  const fmt: DateTimeFormatOptions = { hour: "numeric", hourCycle: "h12" };
+  return getDtf(formattingOptions(localeOpts, fmt));
+};
+
+export const formatMeridiem = (localeOpts: LocaleOpts): (jsDate: Date) => string | null => {
+  const dtf = meridiemDtf(localeOpts);
+  return d => extract(d, dtf, "dayperiod");
+}
+
+// todo - list meridiems

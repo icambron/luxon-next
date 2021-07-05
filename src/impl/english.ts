@@ -1,3 +1,5 @@
+import { EraFormatLength, MonthFormatWidth, WeekdayFormatLength } from "../model/formatting";
+
 export const monthsLong = [
   "January",
   "February",
@@ -30,7 +32,7 @@ export const monthsShort = [
 
 export const monthsNarrow = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
-export function englishMonths(length: "narrow" | "short" | "long" | "numeric" | "2-digit") {
+export function englishMonths(length: MonthFormatWidth) {
   switch (length) {
     case "narrow":
       return [...monthsNarrow];
@@ -42,8 +44,6 @@ export function englishMonths(length: "narrow" | "short" | "long" | "numeric" | 
       return ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
     case "2-digit":
       return ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-    default:
-      return null;
   }
 }
 
@@ -61,7 +61,7 @@ export const weekdaysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export const weekdaysNarrow = ["M", "T", "W", "T", "F", "S", "S"];
 
-export function weekdays(length: "narrow" | "short" | "long" | "numeric") {
+export function weekdays(length: WeekdayFormatLength) {
   switch (length) {
     case "narrow":
       return [...weekdaysNarrow];
@@ -71,12 +71,10 @@ export function weekdays(length: "narrow" | "short" | "long" | "numeric") {
       return [...weekdaysLong];
     case "numeric":
       return ["1", "2", "3", "4", "5", "6", "7"];
-    default:
-      return null;
   }
 }
 
-export const meridiems = ["AM", "PM"];
+export const englishMeridiems = ["AM", "PM"];
 
 export const erasLong = ["Before Christ", "Anno Domini"];
 
@@ -84,7 +82,7 @@ export const erasShort = ["BC", "AD"];
 
 export const erasNarrow = ["B", "A"];
 
-export function eras(length: "narrow" | "short" | "long") {
+export function eras(length: EraFormatLength) {
   switch (length) {
     case "narrow":
       return [...erasNarrow];

@@ -1,5 +1,5 @@
 /**
- * An abstract Zone class
+ * An interface for defining time zones
  * @interface
  */
 export default interface Zone {
