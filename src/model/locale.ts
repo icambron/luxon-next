@@ -1,8 +1,13 @@
-import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
 import { FormatMode, MonthFormatWidth } from "./formatting";
+import { UnknownError } from "./errors";
+import Zone from "./zone";
+import { utcInstance } from "./zones/fixedOffsetZone";
+import IANAZone, { isValidZone } from "./zones/IANAZone";
 
-export type LocaleOpts = {
+export type LocaleOpts = Partial<FullLocaleOpts>;
+
+export type FullLocaleOpts = {
   readonly locale: string;
   readonly numberingSystem: string,
   readonly outputCalendar: string;
@@ -38,55 +43,58 @@ const memo = <TKey, TValue>(builder: (key: TKey) => TValue): (key: TKey) => TVal
   }
 }
 
-const getDtf = memo(([locale, opts]: [string, DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
+const getDtf = memo(([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
 
-const supportsFastNumbers = memo((localeOpts: LocaleOpts) => {
-  if (localeOpts.numberingSystem && localeOpts.numberingSystem !== "latn") {
-    return false;
+const zoneOptionForZone = (zone: Zone): string | null => {
+  if (zone.isUniversal) {
+    const gmtOffset = zone.offset(0);
+    const offsetZ = gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
+    const isOffsetZoneSupported = isValidZone(offsetZ);
+    if (gmtOffset !== 0 && isOffsetZoneSupported) {
+      return offsetZ;
+    } else {
+      return "UTC";
+    }
+  } else if (zone.type === "system") {
+    return null;
   } else {
-    return (
-      localeOpts.numberingSystem === "latn" ||
-      !localeOpts.locale ||
-      localeOpts.locale.startsWith("en") || dateTimeFormat(localeOpts).resolvedOptions().numberingSystem === "latn");
+    return zone.name;
   }
-})
+}
 
-function formattingOptions(localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = {}) : [string, DateTimeFormatOptions] {
-  const fullOpts: DateTimeFormatOptions = { numberingSystem: localeOpts.numberingSystem, calendar: localeOpts.outputCalendar };
+export const formattingOptions = (localeOpts: LocaleOpts, zone: Zone, fmt: Intl.DateTimeFormatOptions = {}) : [string, Intl.DateTimeFormatOptions] => {
+  const fullOpts: Intl.DateTimeFormatOptions = { numberingSystem: localeOpts.numberingSystem, calendar: localeOpts.outputCalendar };
   if (localeOpts.hourCycle != null) {
     // @ts-ignore
     fullOpts.hourCycle = localeOpts.hourCycle;
   }
-  return [localeOpts.locale, {...fullOpts, ...fmt}];
+
+  const zOption = zoneOptionForZone(zone);
+
+  if (zOption != null) {
+    fullOpts.timeZone = zOption;
+  }
+
+  return [localeOpts.locale || "en-US", {...fullOpts, ...fmt}];
 }
 
-function dateTimeFormat(localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = {}): Intl.DateTimeFormat {
-  return getDtf(formattingOptions(localeOpts, fmt));
-}
+export const dateTimeFormatter = (localeOpts: LocaleOpts, zone: Zone, fmt: Intl.DateTimeFormatOptions = {}): Intl.DateTimeFormat =>
+  getDtf(formattingOptions(localeOpts, zone, fmt));
 
-function extract(jsDate: Date, df: Intl.DateTimeFormat, field: string) : string | null {
+function extract(jsDate: Date, df: Intl.DateTimeFormat, field: string) : string {
   const results = df.formatToParts();
   const matching = results.find(m => m.type.toLowerCase() === field);
-  return matching ? matching.value : null;
-}
 
-export const toLocaleString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
-  const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate => jsDate.toLocaleString(locale, opts);
-}
+  if (!matching) {
+    throw new UnknownError(`Can't find matching field ${field}`)
+  }
 
-export const toLocaleDateString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
-  const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate => jsDate.toLocaleDateString(locale, opts);
-}
-
-export const toLocaleTimeString = (localeOpts: LocaleOpts, fmt: DateTimeFormatOptions = getDefaultFormat()): (jsDate: Date) => string => {
-  const [locale, opts] = formattingOptions(localeOpts, fmt)
-  return jsDate => jsDate.toLocaleTimeString(locale, opts);
+  return matching.value;
 }
 
 const usingEnglishMemo = memo(([localeOpts]: [LocaleOpts]): boolean => {
   const isActuallyEnglish =
+    localeOpts.locale == null ||
     localeOpts.locale === "en" ||
     localeOpts.locale.toLowerCase() === "en-us" ||
     getDtf([localeOpts.locale, {}]).resolvedOptions().locale.startsWith("en-us")
@@ -100,18 +108,19 @@ const usingEnglishMemo = memo(([localeOpts]: [LocaleOpts]): boolean => {
 
 export const useEnglishFormatting = (localeOpts: LocaleOpts) => usingEnglishMemo([localeOpts]);
 
-const monthDtf = (localeOpts: LocaleOpts, mode: FormatMode, width: MonthFormatWidth): Intl.DateTimeFormat => {
-  const fmt: DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
-  return getDtf(formattingOptions(localeOpts, fmt));
+const monthDtf = (localeOpts: LocaleOpts, zone: Zone, mode: FormatMode, width: MonthFormatWidth): Intl.DateTimeFormat => {
+  const fmt: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
+  return getDtf(formattingOptions(localeOpts, zone, fmt));
 };
 
-export const formatMonth = (localeOpts: LocaleOpts, mode: FormatMode, width: MonthFormatWidth): (jsDate: Date) => string | null => {
-  const dtf = monthDtf(localeOpts, mode, width);
-  return d => extract(d, dtf, "months");
-}
+export const formatMonth = (localeOpts: LocaleOpts, mode: FormatMode, width: MonthFormatWidth): (jsDate: Date, zone: Zone) => string =>
+  (d, zone) => {
+    const dtf = monthDtf(localeOpts, zone, mode, width);
+    return extract(d, dtf, "months");
+  };
 
-export const months = memo(([localeOpts, mode, width]: [LocaleOpts, FormatMode, MonthFormatWidth]) : (string | null)[] => {
-  const dtf = monthDtf(localeOpts, mode, width);
+export const months = memo(([localeOpts, mode, width]: [LocaleOpts, FormatMode, MonthFormatWidth]) : string[] => {
+  const dtf = monthDtf(localeOpts, utcInstance, mode, width);
 
   // @ts-ignore
   const d = new Date([2016, 6, 15]);
@@ -121,14 +130,15 @@ export const months = memo(([localeOpts, mode, width]: [LocaleOpts, FormatMode, 
     });
   });
 
-const meridiemDtf = (localeOpts: LocaleOpts): Intl.DateTimeFormat => {
-  const fmt: DateTimeFormatOptions = { hour: "numeric", hourCycle: "h12" };
-  return getDtf(formattingOptions(localeOpts, fmt));
+const meridiemDtf = (localeOpts: LocaleOpts, zone: Zone): Intl.DateTimeFormat => {
+  const fmt: Intl.DateTimeFormatOptions = { hour: "numeric", hourCycle: "h12" };
+  return getDtf(formattingOptions(localeOpts, zone, fmt));
 };
 
-export const formatMeridiem = (localeOpts: LocaleOpts): (jsDate: Date) => string | null => {
-  const dtf = meridiemDtf(localeOpts);
-  return d => extract(d, dtf, "dayperiod");
-}
+export const formatMeridiem = (localeOpts: LocaleOpts): (jsDate: Date, zone: Zone) => string =>
+  (d, zone) => {
+    const dtf = meridiemDtf(localeOpts, zone);
+    return extract(d, dtf, "dayperiod");
+  }
 
 // todo - list meridiems

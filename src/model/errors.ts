@@ -88,3 +88,13 @@ export class InvalidArgumentError extends LuxonError {
     Object.setPrototypeOf(this, InvalidArgumentError.prototype);
   }
 }
+
+/**
+ * @private
+ */
+export class UnknownError extends LuxonError {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, InvalidArgumentError.prototype);
+  }
+}

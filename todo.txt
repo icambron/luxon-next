@@ -1,0 +1,4 @@
+Working on formatting, see toLocaleParts.test.js:
+
+ * need to fix up the interface: `formatX(localeOpts, formatOpts)` <-- allow for formatOpts in the first spot?
+ * dateStyle and timeStyle vs the individual options: just need to sort this out
