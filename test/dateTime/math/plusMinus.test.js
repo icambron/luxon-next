@@ -118,7 +118,7 @@ test("plus handles fractional large units", () => {
   const d = ymd(2016, 1, 31, 10);
   for (const unit of units) {
     const first = d |> plus({ [unit]: 8.7 });
-    const second = d |> plus({ [unit]: 8, milliseconds: duration({ [unit]: 0.7 }) |> toMillis()  });
+    const second = d |> plus({ [unit]: 8, milliseconds: duration({ [unit]: 0.7 }) |> toMillis() });
     expect(first).toEqual(second);
   }
 });

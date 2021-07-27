@@ -43,9 +43,7 @@ test("Duration#plus adds single values", () => {
 });
 
 test("Duration#plus results in the superset of units", () => {
-  let dur = plus(
-    duration({ hours: 1, minutes: 0 }),
-    duration({ seconds: 3, milliseconds: 0 }));
+  let dur = plus(duration({ hours: 1, minutes: 0 }), duration({ seconds: 3, milliseconds: 0 }));
   expect(dur.values).toEqual({ hours: 1, minutes: 0, seconds: 3, milliseconds: 0 });
 
   dur = plus(duration({ hours: 1, minutes: 0 }), duration({}));

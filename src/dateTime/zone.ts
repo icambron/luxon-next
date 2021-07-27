@@ -15,9 +15,9 @@ import { Zoneish } from "../model/zone";
  * @return {DateTime}
  */
 
-export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}) : (dt: DateTime) => DateTime => {
+export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}): ((dt: DateTime) => DateTime) => {
   const realZone = normalizeZone(zone);
-  return dt => {
+  return (dt) => {
     if (realZone.equals(dt.zone)) {
       return dt;
     } else {
@@ -28,7 +28,7 @@ export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}) : (dt: Da
       }
       return alter(dt, newTS, realZone);
     }
-  }
+  };
 };
 
 /**
@@ -39,7 +39,7 @@ export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}) : (dt: Da
  * @param {Object} [opts={}] - options to pass to `setZone()`
  * @return {DateTime}
  */
-export const toUTC = (offset = 0, opts = {}) : (dt: DateTime) => DateTime  => setZone(fixedOffsetZone(offset), opts);
+export const toUTC = (offset = 0, opts = {}): ((dt: DateTime) => DateTime) => setZone(fixedOffsetZone(offset), opts);
 
 /**
  * "Set" the DateTime's zone to the system's time zone. Returns a newly-constructed DateTime.
@@ -48,7 +48,7 @@ export const toUTC = (offset = 0, opts = {}) : (dt: DateTime) => DateTime  => se
  * Equivalent to `{@link setZone}("system")`
  * @return {DateTime}
  */
-export const toSystemZone = (): (dt: DateTime) => DateTime => setZone(systemZone);
+export const toSystemZone = (): ((dt: DateTime) => DateTime) => setZone(systemZone);
 
 /**
  * "Set" the DateTime's zone to the default zone. Returns a newly-constructed DateTime.
@@ -58,4 +58,4 @@ export const toSystemZone = (): (dt: DateTime) => DateTime => setZone(systemZone
  * Equivalent to `{@link setZone}(dt, "default")`
  * @return {DateTime}
  */
-export const toDefaultZone = (): (dt: DateTime) => DateTime => setZone(getDefaultZone());
+export const toDefaultZone = (): ((dt: DateTime) => DateTime) => setZone(getDefaultZone());

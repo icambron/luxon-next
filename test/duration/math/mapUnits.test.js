@@ -3,9 +3,7 @@
 import { mapUnits, duration, hours, minutes, seconds, milliseconds } from "../../../src/duration/core";
 
 test("mapUnits can multiply durations", () => {
-  const result =
-    duration({ hours: 1, minutes: 2, seconds: -3, milliseconds: -4 })
-    |> mapUnits(x => x * 5);
+  const result = duration({ hours: 1, minutes: 2, seconds: -3, milliseconds: -4 }) |> mapUnits((x) => x * 5);
 
   expect(result |> hours).toBe(5);
   expect(result |> minutes).toBe(10);
@@ -15,8 +13,8 @@ test("mapUnits can multiply durations", () => {
 
 test("mapUnits can take the unit into account", () => {
   const result =
-      duration({ hours: 1, minutes: 2, seconds: -3, milliseconds: -4 })
-      |> mapUnits((x, u) => x * (u === "milliseconds" ? 2 : 5));
+    duration({ hours: 1, minutes: 2, seconds: -3, milliseconds: -4 })
+    |> mapUnits((x, u) => x * (u === "milliseconds" ? 2 : 5));
 
   expect(result |> hours).toBe(5);
   expect(result |> minutes).toBe(10);

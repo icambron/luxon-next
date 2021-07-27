@@ -107,10 +107,7 @@ test("setZone accepts a keepLocalTime option", () => {
     expect(dt |> isOffsetFixed).toBe(false);
   };
 
-  const zoned =
-    dt()
-    |> toUTC()
-    |> setZone("America/Los_Angeles", { keepLocalTime: true });
+  const zoned = dt() |> toUTC() |> setZone("America/Los_Angeles", { keepLocalTime: true });
 
   expect(zoneName(zoned)).toBe("America/Los_Angeles");
   expectCorrectLocalTime(zoned);
@@ -120,9 +117,7 @@ test("setZone accepts a keepLocalTime option", () => {
 });
 
 test("setZone with keepLocalTime can span wacky offsets", () => {
-  const d =
-    fromGregorian({ year: 1, month: 1, day: 1 }, "UTC")
-    |> setZone("America/Curacao", { keepLocalTime: true });
+  const d = fromGregorian({ year: 1, month: 1, day: 1 }, "UTC") |> setZone("America/Curacao", { keepLocalTime: true });
   expect(d |> year).toBe(1);
   expect(d |> month).toBe(1);
   expect(d |> day).toBe(1);
@@ -130,21 +125,17 @@ test("setZone with keepLocalTime can span wacky offsets", () => {
 });
 
 test("setZone with keepLocalTime handles zones with very different offsets than the current one", () => {
-  const zoned =
-    ymd(2016, 10, 30, 2, 59)
-    |> setZone("Europe/Athens", { keepLocalTime: true });
+  const zoned = ymd(2016, 10, 30, 2, 59) |> setZone("Europe/Athens", { keepLocalTime: true });
   expect(hour(zoned)).toBe(2);
 });
 
 test("setZone rejects jibberish", () => {
-  expect(_ => setZone("blorp")).toThrow(InvalidZoneError);
+  expect((_) => setZone("blorp")).toThrow(InvalidZoneError);
 });
 
 // #650
 test("setZone works for dates before 1970 with milliseconds", () => {
-  const o = fromJSDate(new Date("1967-01-01T00:00:00.001Z"))
-    |> setZone("America/New_York")
-    |> offset;
+  const o = fromJSDate(new Date("1967-01-01T00:00:00.001Z")) |> setZone("America/New_York") |> offset;
   expect(o).toBe(-300);
 });
 

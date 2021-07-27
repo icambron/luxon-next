@@ -1,230 +1,119 @@
-import { getDefaultFormat } from "../settings";
 import {
-  defaultLocaleOpts,
-  LocaleOpts,
-  useEnglishFormatting, formatMonth as formatMonthInternal,
-  formatMeridiem as formatMeridiemInternal, formattingOptions, dateTimeFormatter
+  formatMonth as formatMonthInternal,
+  formatMeridiem as formatMeridiemInternal,
+  listMonths as listMonthsInternal,
+  getDtfArgs,
+  dateTimeFormatter,
 } from "../model/locale";
 import { DateTime } from "../model/dateTime";
 import { hour, month, toJSDate } from "./core";
-import { FormatMode, MonthFormatWidth } from "../model/formatting";
-import { englishMeridiems, englishMonths } from "../impl/english";
+import { FormatFirstArg, FormatMode, FormatSecondArg, MonthFormatOpts, MonthFormatWidth } from "../model/formatting";
 import Zone from "../model/zone";
+import { getDefaultFormat } from "../settings";
 
-type Formatter<T> = (locale: string, opts: Intl.DateTimeFormatOptions) => (jsDate: Date, zone: Zone) => T;
+type Formatter<T> = (
+  locale: string | undefined,
+  opts: Intl.DateTimeFormatOptions | undefined
+) => (jsDate: Date, zone: Zone) => T;
 type DtFer<T> = (dtf: Intl.DateTimeFormat) => (jsDate: Date, zone: Zone) => T;
 
-const toJs = <T>(f: (jsDate: Date, zone: Zone) => T): (dt: DateTime) => T => dt => f(toJSDate(dt), dt.zone);
+// allow (), ("de"), ("de" { calendar: "" }), ({ calendar: "" }) with the right defaults
+const getFormattingArgs = <T>(
+  firstArg: FormatFirstArg | T,
+  secondArg: FormatSecondArg | T,
+  thirdArg?: T,
+  f?: (a: any) => a is T
+): [string | undefined, Intl.DateTimeFormatOptions | undefined, T | undefined] => {
+  let locale: string | undefined = undefined;
+  let intlOpts: Intl.DateTimeFormatOptions | undefined = undefined;
+  let t: T | undefined = undefined;
 
-const withFormatting = <T>(localeOpts: LocaleOpts, fmt: Intl.DateTimeFormatOptions, f: Formatter<T>): (dt: DateTime) => T =>
+  if (typeof firstArg == "string") {
+    locale = firstArg;
+  } else if (f && f(firstArg)) {
+    t = firstArg;
+  } else {
+    intlOpts = firstArg;
+  }
+
+  if (!t && f && f(secondArg)) {
+    t = secondArg;
+  } else if (!t && !intlOpts) {
+    intlOpts = secondArg;
+  }
+
+  if (!t && !intlOpts && f && f(thirdArg)) {
+    t = thirdArg;
+  }
+
+  return [locale, intlOpts, t];
+};
+
+const toJs = <T>(f: (jsDate: Date, zone: Zone) => T): ((dt: DateTime) => T) => (dt) => f(toJSDate(dt), dt.zone);
+
+const hasKeys = <T>(...keys: string[]): ((o: any) => o is T) => (o: any): o is T =>
+  typeof o === "object" && keys.some((k) => o[k]);
+
+const withFormatting = <T>(
+  firstArg: FormatFirstArg,
+  secondArg: FormatSecondArg,
+  f: Formatter<T>
+): ((dt: DateTime) => T) =>
   toJs<T>((d, zone) => {
-      const [locale, opts] = formattingOptions(localeOpts, zone, fmt);
-      return f(locale, opts)(d, zone);
+    let [locale, opts] = getFormattingArgs(firstArg, secondArg);
+    opts = opts || getDefaultFormat();
+    return f(locale, opts)(d, zone);
   });
 
-const withDtf = <T>(localeOpts: LocaleOpts, format: Intl.DateTimeFormatOptions, f: DtFer<T>): (dt: DateTime) => T =>
+const withDtf = <T>(firstArg: FormatFirstArg, secondArg: FormatSecondArg, f: DtFer<T>): ((dt: DateTime) => T) =>
   toJs<T>((d, zone) => {
-    const dtf = dateTimeFormatter(localeOpts, zone, format);
+    let [locale, opts] = getFormattingArgs(firstArg, secondArg);
+    opts = opts || getDefaultFormat();
+    const dtf = dateTimeFormatter(locale, zone, opts);
     return f(dtf)(d, zone);
   });
 
-export const toLocaleString = (localeOpts: LocaleOpts = defaultLocaleOpts(),
-                               format: Intl.DateTimeFormatOptions = getDefaultFormat()): (dt: DateTime) => string =>
-  withFormatting<string>(localeOpts, format, (loc, fmt) => jsDate => jsDate.toLocaleString(loc, fmt));
+export const toLocaleString = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg): ((dt: DateTime) => string) =>
+  withFormatting<string>(firstArg, secondArg, (loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
 
-export const toLocaleParts = (localeOpts: LocaleOpts = defaultLocaleOpts(),
-                              format: Intl.DateTimeFormatOptions = getDefaultFormat()): (dt: DateTime) => Intl.DateTimeFormatPart[] =>
-  withDtf<Intl.DateTimeFormatPart[]>(localeOpts, format, dtf => jsDate => dtf.formatToParts(jsDate));
+export const toLocaleParts = (
+  firstArg?: FormatFirstArg,
+  secondArg?: FormatSecondArg
+): ((dt: DateTime) => Intl.DateTimeFormatPart[]) =>
+  withDtf<Intl.DateTimeFormatPart[]>(firstArg, secondArg, (dtf) => (jsDate) => dtf.formatToParts(jsDate));
 
-export const toLocaleDateString = (localeOpts: LocaleOpts = defaultLocaleOpts(),
-                                   format: Intl.DateTimeFormatOptions = getDefaultFormat()): (dt: DateTime) => string =>
-  withFormatting<string>(localeOpts, format, (loc, fmt) => jsDate => jsDate.toLocaleDateString(loc, fmt));
+export const toLocaleDateString = (
+  firstArg?: FormatFirstArg,
+  format?: Intl.DateTimeFormatOptions
+): ((dt: DateTime) => string) =>
+  withFormatting<string>(firstArg, format, (loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
 
-export const toLocaleTimeString = (localeOpts: LocaleOpts = defaultLocaleOpts(),
-                                   format: Intl.DateTimeFormatOptions = getDefaultFormat()) : (dt: DateTime) => string =>
-  withFormatting<string>(localeOpts, format, (loc, fmt) => jsDate => jsDate.toLocaleTimeString(loc, fmt));
-
-export const formatMonth = (localeOpts: LocaleOpts, mode: FormatMode, width : MonthFormatWidth): (dt: DateTime) => string =>
-  dt =>
-    useEnglishFormatting(localeOpts) ?
-      englishMonths(width)[month(dt) - 1]
-      : formatMonthInternal(localeOpts, mode, width)(toJSDate(dt), dt.zone);
-
-export const formatMeridiem = (localeOpts: LocaleOpts): (dt: DateTime) => string =>
-  dt =>
-    useEnglishFormatting(localeOpts) ?
-      englishMeridiems[hour(dt) < 12 ? 0 : 1]
-      : formatMeridiemInternal(localeOpts)(toJSDate(dt), dt.zone);
-
-const n = "numeric",
-  s = "short",
-  l = "long";
-
-export const DATE_SHORT: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: n,
-  day: n,
+export const toLocaleTimeString = (
+  firstArg?: FormatFirstArg,
+  secondArg?: FormatSecondArg
+): ((dt: DateTime) => string) => {
+  return withFormatting<string>(firstArg, secondArg, (loc, fmt) => (jsDate) => jsDate.toLocaleTimeString(loc, fmt));
 };
 
-export const DATE_MED: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: s,
-  day: n,
+export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): ((dt: DateTime) => string) => {
+  const [locale, opts, monthFormatOpts] = getFormattingArgs<MonthFormatOpts>(
+    firstArg,
+    undefined,
+    secondArg,
+    hasKeys("mode", "width")
+  );
+  return (dt) => formatMonthInternal(locale, opts, monthFormatOpts)(toJSDate(dt), dt.zone);
 };
 
-export const DATE_MED_WITH_WEEKDAY: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: s,
-  day: n,
-  weekday: s,
-};
+export const formatMeridiem = (locale?: string): ((dt: DateTime) => string) => (dt) =>
+  formatMeridiemInternal(locale)(toJSDate(dt), dt.zone);
 
-export const DATE_FULL: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-};
-
-export const DATE_HUGE: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-  weekday: l,
-};
-
-export const TIME_SIMPLE: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-};
-
-export const TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-};
-
-export const TIME_WITH_SHORT_OFFSET: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-  timeZoneName: s,
-};
-
-export const TIME_WITH_LONG_OFFSET: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-  timeZoneName: l,
-};
-
-export const TIME_24_SIMPLE: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  hourCycle: "h23",
-};
-
-export const TIME_24_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-  hourCycle: "h23",
-};
-
-export const TIME_24_WITH_SHORT_OFFSET: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-  hourCycle: "h23",
-  timeZoneName: s,
-};
-
-export const TIME_24_WITH_LONG_OFFSET: Intl.DateTimeFormatOptions = {
-  hour: n,
-  minute: n,
-  second: n,
-  hourCycle: "h23",
-  timeZoneName: l,
-};
-
-export const DATETIME_SHORT: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: n,
-  day: n,
-  hour: n,
-  minute: n,
-};
-
-export const DATETIME_SHORT_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: n,
-  day: n,
-  hour: n,
-  minute: n,
-  second: n,
-};
-
-export const DATETIME_MED: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: s,
-  day: n,
-  hour: n,
-  minute: n,
-};
-
-export const DATETIME_MED_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: s,
-  day: n,
-  hour: n,
-  minute: n,
-  second: n,
-};
-
-export const DATETIME_MED_WITH_WEEKDAY: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: s,
-  day: n,
-  weekday: s,
-  hour: n,
-  minute: n,
-};
-
-export const DATETIME_FULL: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-  hour: n,
-  minute: n,
-  timeZoneName: s,
-};
-
-export const DATETIME_FULL_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-  hour: n,
-  minute: n,
-  second: n,
-  timeZoneName: s,
-};
-
-export const DATETIME_HUGE: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-  weekday: l,
-  hour: n,
-  minute: n,
-  timeZoneName: l,
-};
-
-export const DATETIME_HUGE_WITH_SECONDS: Intl.DateTimeFormatOptions = {
-  year: n,
-  month: l,
-  day: n,
-  weekday: l,
-  hour: n,
-  minute: n,
-  second: n,
-  timeZoneName: l,
+export const listMonths = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): string[] => {
+  const [locale, opts, monthFormatOpts] = getFormattingArgs<MonthFormatOpts>(
+    firstArg,
+    undefined,
+    secondArg,
+    hasKeys("mode", "width")
+  );
+  return listMonthsInternal([locale, opts, monthFormatOpts]);
 };

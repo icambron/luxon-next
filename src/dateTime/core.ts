@@ -1,7 +1,7 @@
 // rule: only depends on model and impl
 import Zone, { Zoneish } from "../model/zone";
 import { adjustCalendarOverflow, daysInMonth, GregorianDate, gregorianInstance } from "../model/calendars/gregorian";
-import {DateTime, fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set } from "../model/dateTime";
+import { DateTime, fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set } from "../model/dateTime";
 import { Time } from "../model/time";
 import { daysInYear, isLeapYear } from "../impl/dateMath";
 import { getDefaultNowFn } from "../settings";
@@ -19,7 +19,7 @@ export const offset = (dt: DateTime): number => dt.offset;
 // TO/FROM A TIME
 export const fromTime = (obj: Partial<Time>, zone?: Zoneish): DateTime => fromGregorian(obj, normalizeZone(zone));
 export const toTime = (dt: DateTime): Time => ({ ...dt.time });
-export const setTime = (obj: Partial<Time>): (dt: DateTime) => DateTime => setGregorian(obj);
+export const setTime = (obj: Partial<Time>): ((dt: DateTime) => DateTime) => setGregorian(obj);
 
 // CONVERSIONS
 export const toJSDate = (dt: DateTime): Date => new Date(dt.ts);
@@ -51,13 +51,15 @@ export const ymd = (
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
   fromCalendar(gregorianInstance, obj, normalizeZone(zone));
-export const toGregorian = () : (dt: DateTime) => Partial<GregorianDate & Time> => dt => ({ ...dt.gregorian, ...dt.time });
+export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>) => (dt) => ({
+  ...dt.gregorian,
+  ...dt.time,
+});
 
-export const setGregorian = (obj: object): (dt: DateTime) => DateTime =>
-    dt =>
-      set(dt, gregorianInstance, obj, (original, unadjusted) =>
-      original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
-    );
+export const setGregorian = (obj: object): ((dt: DateTime) => DateTime) => (dt) =>
+  set(dt, gregorianInstance, obj, (original, unadjusted) =>
+    original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
+  );
 
 // GREGORIAN GETTERS
 export const year = (dt: DateTime): number => dt.gregorian.year;

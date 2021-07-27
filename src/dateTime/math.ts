@@ -1,4 +1,4 @@
-import {DateTime,  alter, set } from "../model/dateTime";
+import { DateTime, alter, set } from "../model/dateTime";
 import { bestBy, intAndFraction, roundTo } from "../impl/util";
 import { month } from "./core";
 import { isoCalendarInstance } from "../model/calendars/isoWeek";
@@ -10,7 +10,8 @@ import {
   DurationValues,
   isDuration,
   convert,
-  durationUnits, ConversionAccuracy
+  durationUnits,
+  ConversionAccuracy,
 } from "../model/duration";
 import { negate } from "../duration/core";
 import { InvalidUnitError } from "../model/errors";
@@ -49,15 +50,15 @@ const normalizeStartEndUnit = buildNormalizer(startEndUnits, simplePlural);
 /**
  * Return the DateTime representing the beginning of a unit of time, relative to the input date time
  * ```js
- * ymd(2014, 3, 3) |> startOf("month") |> toISODate; //=> "2014-03-01"
- * ymd(2014, 3, 3) |> startOf("year") |> toISODate; //=> "2014-01-01"
- * ymd(2014, 3, 3) |> startOf("week") |> toISODate; //=> "2014-03-03", weeks always start on Mondays
- * ymd(2014, 3, 3, 5, 30) |> startOf("day") |> toISOTime; //=> "00:00.000-05:00"
- * ymd(2014, 3, 3, 5, 30) |> startOf("hour") |> toISOTime; //=> "05:00:00.000-05:00"
+ * ymd(2014, 3, 3) |> startOf("month") |> toISODate(); //=> "2014-03-01"
+ * ymd(2014, 3, 3) |> startOf("year") |> toISODate(); //=> "2014-01-01"
+ * ymd(2014, 3, 3) |> startOf("week") |> toISODate(); //=> "2014-03-03", weeks always start on Mondays
+ * ymd(2014, 3, 3, 5, 30) |> startOf("day") |> toISOTime(); //=> "00:00.000-05:00"
+ * ymd(2014, 3, 3, 5, 30) |> startOf("hour") |> toISOTime(); //=> "05:00:00.000-05:00"
  * ```
  * @param unit - The unit to go to the beginning of. Can be "year", "quarter", "month", "week", "day", "hour", "minute", "second", or "millisecond".
  */
-export const startOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
+export const startOf = (unit: StartEndUnit): ((dt: DateTime) => DateTime) => {
   const u = normalizeStartEndUnit(unit);
   const o = {} as Record<string, number>;
   switch (u) {
@@ -89,14 +90,14 @@ export const startOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
     o.weekday = 1;
   }
 
-  return dt => {
+  return (dt) => {
     if (u === "quarter") {
       const q = Math.ceil(month(dt) / 3);
       o.month = (q - 1) * 3 + 1;
     }
 
-    return set(dt, o.weekday ? isoCalendarInstance : gregorianInstance, o)
-  }
+    return set(dt, o.weekday ? isoCalendarInstance : gregorianInstance, o);
+  };
 };
 
 /**
@@ -110,15 +111,14 @@ export const startOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
  * ```
  * @param  unit - The unit to go to the end of. Can be 'year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', or 'millisecond'.
  */
-export const endOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
+export const endOf = (unit: StartEndUnit): ((dt: DateTime) => DateTime) => {
   const plussed = plus({ [unit as string]: 1 });
   const started = startOf(unit);
   const minussed = minus({ milliseconds: 1 });
 
   // need a pipe operator, please
-  return dt => minussed(started(plussed(dt)));
-}
-
+  return (dt) => minussed(started(plussed(dt)));
+};
 
 /**
  * Add a period of time to this DateTime and return the resulting DateTime
@@ -135,25 +135,29 @@ export const endOf = (unit: StartEndUnit): (dt: DateTime) => DateTime => {
  * @param  durOrObj - The amount to add. Either a Luxon Duration, or an object like `{ hours: 2, minutes: 6 }`
  * @param conversionAccuracy - the accuracy system to use when converting fractional values. Defaults to "casual"
  */
-export const plus = (durOrObj: Duration | Partial<DurationValues>,
-                     conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): (dt: DateTime) => DateTime => {
+export const plus = (
+  durOrObj: Duration | Partial<DurationValues>,
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
+): ((dt: DateTime) => DateTime) => {
   const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
   const adjustment = adjustTime(dur, conversionAccuracy);
-  return dt => {
+  return (dt) => {
     const [ts, offset] = adjustment(dt);
     return alter(dt, ts, dt.zone, offset);
-  }
+  };
 };
 
-export const minus = (durOrObj: Duration | Partial<DurationValues>,
-                      conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): (dt: DateTime) => DateTime => {
+export const minus = (
+  durOrObj: Duration | Partial<DurationValues>,
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
+): ((dt: DateTime) => DateTime) => {
   const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
   const negated = negate()(dur);
   const adjustment = adjustTime(negated, conversionAccuracy);
-  return dt => {
+  return (dt) => {
     const [ts, offset] = adjustment(dt);
     return alter(dt, ts, dt.zone, offset);
-  }
+  };
 };
 
 interface AccumulatedFractions {
@@ -161,7 +165,7 @@ interface AccumulatedFractions {
   remainderMilliseconds: number;
 }
 
-const shiftFractionsToMillis = (conversionAccuracy: ConversionAccuracy): (dur: Duration) => Duration => dur => {
+const shiftFractionsToMillis = (conversionAccuracy: ConversionAccuracy): ((dur: Duration) => Duration) => (dur) => {
   const vs = { milliseconds: 0, ...dur.values };
 
   const newVals = Array.from(durationUnits).reduce(
@@ -184,16 +188,16 @@ const shiftFractionsToMillis = (conversionAccuracy: ConversionAccuracy): (dur: D
   newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
 
   return new Duration(newVals.ints as Partial<DurationValues>);
-}
+};
 
-const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): (dt: DateTime) => [number, number] => {
+const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): ((dt: DateTime) => [number, number]) => {
   const unfractioned = shiftFractionsToMillis(conversionAccuracy);
 
   const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(
     unfractioned(dur).values
   );
 
-  return dt => {
+  return (dt) => {
     const greg = dt.gregorian;
 
     const year = greg.year + years;
@@ -208,6 +212,5 @@ const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): (dt:
       offset = dt.zone.offset(ts);
     }
     return [ts, offset];
-  }
-}
-
+  };
+};

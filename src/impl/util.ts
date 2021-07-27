@@ -52,7 +52,6 @@ export function bestBy<T, U>(arr: T[], by: (_: T) => U, compare: (_: U, __: U) =
   return best[1];
 }
 
-
 export function pick<T, K extends keyof T>(obj: T, keys: K[]) {
   return keys.reduce<Partial<Pick<T, K>>>((a, k) => {
     a[k] = obj[k];
