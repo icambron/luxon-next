@@ -1,12 +1,9 @@
 import { integerBetween } from "../impl/util";
-import { buildNormalizer, normalizeUnitBundle, simplePlural, TimeUnit, timeUnits } from "./units";
+import { buildNormalizer, GregorianUnit, normalizeUnitBundle, simplePlural, TimeUnit, timeUnits } from "./units";
 
-export interface Time {
-  readonly hour: number;
-  readonly minute: number;
-  readonly second: number;
-  readonly millisecond: number;
-}
+export type Time = {
+  [key in TimeUnit]: number;
+};
 
 const timeNormalizer = buildNormalizer<TimeUnit>(timeUnits, simplePlural);
 const normalizedTimeUnits = (obj: object) => normalizeUnitBundle<Time>(obj, timeNormalizer);

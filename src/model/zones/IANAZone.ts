@@ -7,7 +7,7 @@ const matchingRegex = RegExp(`^${ianaRegex.source}$`);
 
 let dtfCache: Record<string, Intl.DateTimeFormat> = {};
 
-function makeDTF(zone: string) {
+function makeDTF(zone: string): Intl.DateTimeFormat {
   if (!dtfCache[zone]) {
     try {
       dtfCache[zone] = new Intl.DateTimeFormat("en-US", {

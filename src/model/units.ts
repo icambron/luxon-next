@@ -27,6 +27,21 @@ export type DurationUnit = GregorianUnitPlural | TimeUnitPlural | MiscDurationUn
 export const simplePlural = <T extends string>(unit: string): T => (unit + "s") as T;
 export const simpleSingular = <T extends string>(unit: string): T => unit.slice(0, -1) as T;
 
+export type AnyDateTimeUnit = GregorianUnit | OrdinalUnit | IsoWeekUnit | TimeUnit;
+export type MixedDateTimeUnitBundle = Partial<{
+  [key in AnyDateTimeUnit]: number;
+}>
+
+export type AnyDurationUnit = GregorianUnitPlural | TimeUnitPlural | MiscDurationUnitPlural;
+export type MixedDurationUnitBundle = Partial<{
+  [key in AnyDurationUnit]: number;
+}>
+
+export type AnyParsableUnit = GregorianUnit | OrdinalUnit | IsoWeekUnit | TimeUnit | GregorianUnitPlural | TimeUnitPlural | MiscDurationUnitPlural;
+export type MixedParsableUnitBundle = Partial<{
+  [key in AnyParsableUnit]: number;
+}>
+
 export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) => keyof T | null): T => {
   const entries = Object.entries(obj)
     .map(([k, v]) => [normalizer(k), v])

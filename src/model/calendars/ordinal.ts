@@ -18,9 +18,8 @@ export class OrdinalCalendar implements  Calendar<OrdinalDate> {
     fromObject = (obj: object) => normalizeUnitBundle<OrdinalDate>(obj, ordinalNormalizer);
 
     fromGregorian = (obj: GregorianDate): OrdinalDate => {
-        const { year, month, day } = obj,
-            ordinal = computeOrdinal(year, month, day);
-        return { year, ordinal };
+        const { year, month, day } = obj;
+        return { year, ordinal: computeOrdinal(year, month, day) };
     };
 
     isInvalid = (obj: OrdinalDate): [string, number] | null => {

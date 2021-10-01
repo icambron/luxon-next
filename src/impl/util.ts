@@ -83,9 +83,9 @@ export function padStart(input: string | number, n = 2) {
   }
 }
 
-export function parseInteger(text: string) {
+export function parseInteger(text: string): number {
   if (isUndefined(text) || text === null || text === "") {
-    return undefined;
+    return NaN;
   } else {
     return parseInt(text, 10);
   }
