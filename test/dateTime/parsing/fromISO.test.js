@@ -1,7 +1,7 @@
 import { fromISO } from "../../../src/parse";
 import { now, offset, toGregorian } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
-import { NoMatchingParserPattern, UnitOutOfRangeError } from "../../../src/model/errors";
+import { UnitOutOfRangeError } from "../../../src/model/errors";
 
 test("fromISO() parses as local by default", () => {
   const dt = fromISO("2016-05-25T09:08:34.123");
@@ -532,7 +532,7 @@ test("fromISO() doesn't accept 24:23", () => {
 });
 
 test("fromISO() accepts some technically incorrect stuff", () => {
-  // these are formats that aren't technically valid but we parse anyway.
+  // these are formats that aren't technically valid but we parsing anyway.
   // Testing them more to document them than anything else
   isSame("2016-05-25T0924:15.123", {
     year: 2016,

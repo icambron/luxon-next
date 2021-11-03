@@ -1,15 +1,19 @@
 import { Calendar } from "../model/calendar";
 import Zone from "../model/zone";
-import { isNumber, isUndefined, parseInteger } from "../impl/util";
+import { isNumber, isUndefined, parseInteger, untruncateYear } from "../lib/util";
 import { createIANAZone } from "../model/zones/IANAZone";
 import { InvalidArgumentError, NoMatchingParserPattern } from "../model/errors";
+import { Time } from "../model/time";
+import { englishMonthsShort } from "../lib/english";
+import { gregorianInstance } from "../model/calendars/gregorian";
+import { utcInstance } from "../model/zones/fixedOffsetZone";
 
 export type Cursor = number;
 
 export interface ExtractedResult {
   calendar: Calendar<any> | null;
   calendarUnits: object;
-  timeUnits: object;
+  timeUnits: Partial<Time>;
   zone: Zone | null
   cursor: Cursor;
 }
@@ -47,7 +51,7 @@ export const combineExtractors = (...extractors: Extractor[]) : Extractor => {
 };
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
-  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No parse input provided");
+  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No parsing input provided");
 
   for (const { regex, extractor } of patterns) {
     const m = regex.exec(s);
@@ -85,6 +89,31 @@ export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extract
     };
   };
 }
+
+
+export const fromStrings = (yearStr: string, monthStr: string, dayStr: string, hourStr: string, minuteStr: string, secondStr: string, cursor: number): ExtractedResult => {
+
+  const calendarUnits = {
+    day: parseInteger(dayStr),
+    year: yearStr.length === 2 ? untruncateYear(parseInteger(yearStr)) : parseInteger(yearStr),
+    month: englishMonthsShort.indexOf(monthStr) + 1,
+  };
+
+  const timeUnits: Partial<Time> = {
+    hour: parseInteger(hourStr),
+    minute: parseInteger(minuteStr),
+  }
+
+  if (secondStr) timeUnits.second = parseInteger(secondStr);
+
+  return {
+    calendar: gregorianInstance,
+    calendarUnits,
+    timeUnits,
+    zone: utcInstance,
+    cursor: cursor
+  }
+};
 
 export const extractIANAZone = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const zone = match[cursor] ? createIANAZone(match[cursor]) : null;

@@ -13,7 +13,6 @@ import { Zoneish } from "../model/zone";
  * @param {boolean} [opts.keepLocalTime=false] - If true, adjust the underlying time so that the local time stays the same, but in the target zone. You should rarely need this.
  * @return {DateTime}
  */
-
 export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}): ((dt: DateTime) => DateTime) => {
   const realZone = normalizeZone(zone);
   return (dt) => {

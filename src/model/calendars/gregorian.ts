@@ -1,8 +1,8 @@
 import {Calendar} from "../calendar";
 import { Time} from "../time";
 import Zone from "../zone";
-import {floorMod, integerBetween, isInteger} from "../../impl/util";
-import {isLeapYear} from "../../impl/dateMath";
+import {floorMod, integerBetween, isInteger} from "../../lib/util";
+import {isLeapYear} from "../../lib/dateMath";
 import {buildNormalizer, gregorianUnits, GregorianUnit, normalizeUnitBundle, simplePlural} from "../units";
 
 /*
@@ -22,7 +22,6 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
     defaultValues = { year: 1, month: 1, day: 1 };
 
     fromObject = (obj: object): GregorianDate => normalizeUnitBundle<GregorianDate>(obj, gregorianNormalizer);
-
     fromGregorian = (obj: GregorianDate): GregorianDate => obj;
     toGregorian = (obj: GregorianDate): GregorianDate => obj;
 

@@ -9,7 +9,7 @@ import {
 } from "../model/duration";
 import { DurationUnit } from "../model/units";
 import { InvalidUnitError } from "../model/errors";
-import { asNumber } from "../impl/util";
+import { asNumber } from "../lib/util";
 
 export const duration = (values: Partial<DurationValues>) => new Duration(values);
 
@@ -65,8 +65,8 @@ export const minus = (dur: Duration, ...durs: Duration[]) => {
  * Scale this Duration by the specified amount. Return a newly-constructed Duration.
  * ```js
  * const dur = duration({ hours: 1, minutes: 30 });
- * dur |> mapUnit( x => x * 2) |> toObject() //=> { hours: 2, minutes: 60 }
- * dur |> mapUnit( (x, u) => u === "hour" ? x * 2 : x) |> toObject() //=> { hours: 2, minutes: 30 }
+ * dur |> mapUnit( x => x * 2) |> toGregorian() //=> { hours: 2, minutes: 60 }
+ * dur |> mapUnit( (x, u) => u === "hour" ? x * 2 : x) |> toGregorian() //=> { hours: 2, minutes: 30 }
  * ```
  * @param fn - The function to apply to each unit. Arity is 1 or 2: the value of the unit and, optionally, the unit name. Must return a number.
  */

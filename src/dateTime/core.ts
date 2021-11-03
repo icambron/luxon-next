@@ -1,13 +1,13 @@
-// rule: only depends on model and impl
+// rule: only depends on model and lib
 import Zone, { Zoneish } from "../model/zone";
 import { adjustCalendarOverflow, daysInMonth, GregorianDate, gregorianInstance } from "../model/calendars/gregorian";
 import { DateTime, fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set } from "../model/dateTime";
 import { Time } from "../model/time";
-import { daysInYear, isLeapYear } from "../impl/dateMath";
+import { daysInYear, isLeapYear } from "../lib/dateMath";
 import { getDefaultNowFn } from "../settings";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { InvalidArgumentError } from "../model/errors";
-import { isDate } from "../impl/util";
+import { isDate } from "../lib/util";
 
 // BASICS
 // these are strictly unneeded but they make the interface more consistent
@@ -56,6 +56,9 @@ export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>)
   ...dt.gregorian,
   ...dt.time,
 });
+
+// friendly alias for Luxon users
+export const toObject = toGregorian;
 
 export const setGregorian = (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) => dt =>
   set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>

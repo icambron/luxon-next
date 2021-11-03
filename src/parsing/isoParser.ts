@@ -1,5 +1,5 @@
 import { gregorianInstance } from "../model/calendars/gregorian";
-import { parseMillis, signedOffset } from "../impl/util";
+import { parseMillis, signedOffset } from "../lib/util";
 import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
 import {
   ExtractedResult,
@@ -15,8 +15,9 @@ import { ordinalInstance } from "../model/calendars/ordinal";
 // REGEX
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;
 const isoTimeBaseRegex = /(\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d{1,30}))?)?)?/;
-const isoTimeRegex = RegExp(`${isoTimeBaseRegex.source}${offsetRegex.source}?`);
-const isoTimeExtensionRegex = RegExp(`(?:T${isoTimeRegex.source})?`);
+const isoTimeAndOffsetRegex = RegExp(`${isoTimeBaseRegex.source}${offsetRegex.source}?`);
+const isoTimeExtensionRegex = RegExp(`(?:T${isoTimeAndOffsetRegex.source})?`);
+const isoTimeCombinedRegex = combineRegexes(isoTimeAndOffsetRegex);
 
 const isoYmdRegex = /([+-]\d{6}|\d{4})(?:-?(\d\d)(?:-?(\d\d))?)?/;
 const isoWeekRegex = /(\d{4})-?W(\d\d)(?:-?(\d))?/;
@@ -94,5 +95,5 @@ export const parseISODateTime = (s: string): ExtractedResult =>
     { regex: isoYmdWithTimeExtensionRegex, extractor: extractISOYmdTimeAndOffset },
     { regex: isoWeekWithTimeExtensionRegex, extractor: extractISOWeekTimeAndOffset },
     { regex: isoOrdinalWithTimeExtensionRegex, extractor: extractISOOrdinalDateAndTime },
-    { regex: combineRegexes(isoTimeRegex), extractor: extractISOTimeAndOffset }
+    { regex: isoTimeCombinedRegex, extractor: extractISOTimeAndOffset }
   )

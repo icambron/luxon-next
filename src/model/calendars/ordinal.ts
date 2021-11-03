@@ -1,6 +1,6 @@
 import {GregorianDate} from "./gregorian";
-import {integerBetween, isInteger} from "../../impl/util";
-import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../impl/dateMath";
+import {integerBetween, isInteger} from "../../lib/util";
+import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../lib/dateMath";
 import {Calendar} from "../calendar";
 import {buildNormalizer, normalizeUnitBundle, simplePlural, OrdinalUnit, ordinalUnits} from "../units";
 

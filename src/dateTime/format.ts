@@ -2,12 +2,11 @@ import {
   formatMonth as formatMonthInternal,
   formatMeridiem as formatMeridiemInternal,
   listMonths as listMonthsInternal,
-  getDtfArgs,
   dateTimeFormatter,
 } from "../model/locale";
 import { DateTime } from "../model/dateTime";
-import { hour, month, toJSDate } from "./core";
-import { FormatFirstArg, FormatMode, FormatSecondArg, MonthFormatOpts, MonthFormatWidth } from "../model/formatting";
+import { toJSDate } from "./core";
+import { FormatFirstArg, FormatSecondArg, MonthFormatOpts} from "../model/formatting";
 import Zone from "../model/zone";
 import { getDefaultFormat } from "../settings";
 

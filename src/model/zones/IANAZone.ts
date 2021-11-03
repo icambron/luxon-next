@@ -1,4 +1,4 @@
-import { isUndefined, ianaRegex } from "../../impl/util";
+import { isUndefined, ianaRegex } from "../../lib/util";
 import Zone from "../zone";
 import { InvalidZoneError } from "../errors";
 import {gregorianToLocalTS} from "../calendars/gregorian";

@@ -1,4 +1,4 @@
-import { integerBetween } from "../impl/util";
+import { integerBetween } from "../lib/util";
 import { buildNormalizer, GregorianUnit, normalizeUnitBundle, simplePlural, TimeUnit, timeUnits } from "./units";
 
 export type Time = {

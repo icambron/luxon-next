@@ -2,9 +2,9 @@ import {Calendar} from "../calendar";
 import {
     integerBetween,
     isInteger,
-} from "../../impl/util";
+} from "../../lib/util";
 import {GregorianDate} from "./gregorian";
-import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../impl/dateMath";
+import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../lib/dateMath";
 import {
     buildNormalizer,
     IsoWeekUnit,

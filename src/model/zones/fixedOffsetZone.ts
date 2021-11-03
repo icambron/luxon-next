@@ -1,4 +1,4 @@
-import { formatOffset, signedOffset } from "../../impl/util";
+import { formatOffset, signedOffset } from "../../lib/util";
 import Zone from "../zone";
 
 /**
@@ -33,7 +33,7 @@ export default class FixedOffsetZone implements Zone {
 
 /**
  * Get an instance of FixedOffsetZone from a UTC offset string, like "UTC+6"
- * @param {string} s - The offset string to parse
+ * @param {string} s - The offset string to parsing
  * @example parseSpecifier("UTC+6")
  * @example parseSpecifier("UTC+06")
  * @example parseSpecifier("UTC-6:00")
