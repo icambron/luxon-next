@@ -5,6 +5,5 @@ Just finished:
   * regex parsing (everything except sql, which I think i'll let be)
   * shiftTo and normalize
 
-Small thing to add: duration's as()
 Next big challenge is diff()
 Or could do token parsing

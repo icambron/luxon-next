@@ -55,6 +55,12 @@ const normalizeValues = (matrix: Trie, vals: Map<DurationUnit, number>) => {
   }, null);
 };
 
+export const as = (unit: DurationUnit): (dur: Duration) => number =>
+  (dur) => {
+    const shifted = shiftTo([unit])(dur);
+    return shifted.values[unit] || 0;
+  }
+
 /**
  * Reduce this Duration to its canonical representation in its current units.
  * @example Duration.fromObject({ years: 2, days: 5000 }).normalize().toObject() //=> { years: 15, days: 255 }
