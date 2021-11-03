@@ -1,7 +1,7 @@
 import { DurationUnit } from "../model/units";
 import { ConversionAccuracy, Duration, normalizeDurationUnit, pickMatrix, Trie } from "../model/duration";
 import { getDefaultConversionAccuracy } from "../settings";
-import { antiTrunc, isNumber, isUndefined, pick } from "../lib/util";
+import { antiTrunc, isNumber, isUndefined} from "../lib/util";
 
 // convert ordered by size
 const orderedUnits: DurationUnit[] = [
@@ -70,8 +70,8 @@ export const as =
 
 /**
  * Reduce this Duration to its canonical representation in its current convert.
- * @example Duration.fromObject({ years: 2, days: 5000 }).normalize().toObject() //=> { years: 15, days: 255 }
- * @example Duration.fromObject({ hours: 12, minutes: -45 }).normalize().toObject() //=> { hours: 11, minutes: 15 }
+ * @example fromValues({ years: 2, days: 5000 }) |> normalize() |> values //=> { years: 15, days: 255 }
+ * @example fromValues({ hours: 12, minutes: -45 }) |> normalize() |> values //=> { hours: 11, minutes: 15 }
  * @return {Duration}
  */
 export const normalize =
@@ -131,8 +131,6 @@ export const shiftTo =
       } else if (isNumber(valueMap.get(k))) {
         accumulated.set(k, valueMap.get(k) as number);
       }
-
-      // console.log({k, built, accumulated, lastUnit, vals: valueMap})
     }
 
     // anything leftover becomes the decimal for the last unit
