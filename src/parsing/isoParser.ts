@@ -1,15 +1,8 @@
 import { gregorianInstance } from "../model/calendars/gregorian";
 import { parseMillis, signedOffset } from "../lib/util";
 import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
-import {
-  ExtractedResult,
-  combineRegexes,
-  combineExtractors,
-  parse,
-  int,
-  simpleParse
-} from "./regexParser";
-import { isoCalendarInstance} from "../model/calendars/isoWeek";
+import { ExtractedResult, combineRegexes, combineExtractors, parse, int, simpleParse } from "./regexParser";
+import { isoCalendarInstance } from "../model/calendars/isoWeek";
 import { ordinalInstance } from "../model/calendars/ordinal";
 
 // REGEX
@@ -41,8 +34,8 @@ const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResul
     calendarUnits: {},
     timeUnits: item,
     zone: null,
-    cursor: cursor + 4
-  }
+    cursor: cursor + 4,
+  };
 };
 
 const extractISOOffset = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
@@ -54,10 +47,10 @@ const extractISOOffset = (match: RegExpMatchArray, cursor: number): ExtractedRes
     calendarUnits: {},
     timeUnits: {},
     zone,
-    cursor: cursor + 3
+    cursor: cursor + 3,
   };
 };
-const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult  => {
+const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const item = {
     year: int(match, cursor, 1),
     month: int(match, cursor + 1, 1),
@@ -69,8 +62,8 @@ const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult
     calendarUnits: item,
     timeUnits: {},
     zone: null,
-    cursor: cursor + 3
-  }
+    cursor: cursor + 3,
+  };
 };
 
 const extractISOWeekData = simpleParse(isoCalendarInstance, "weekYear", "weekNumber", "weekday");
@@ -78,16 +71,8 @@ const extractISOOrdinalData = simpleParse(ordinalInstance, "year", "ordinal");
 
 const extractISOTimeAndOffset = combineExtractors(extractISOTime, extractISOOffset);
 const extractISOYmdTimeAndOffset = combineExtractors(extractISOYmd, extractISOTime, extractISOOffset);
-const extractISOWeekTimeAndOffset = combineExtractors(
-  extractISOWeekData,
-  extractISOTime,
-  extractISOOffset
-);
-const extractISOOrdinalDateAndTime = combineExtractors(
-  extractISOOrdinalData,
-  extractISOTime,
-  extractISOOffset
-);
+const extractISOWeekTimeAndOffset = combineExtractors(extractISOWeekData, extractISOTime, extractISOOffset);
+const extractISOOrdinalDateAndTime = combineExtractors(extractISOOrdinalData, extractISOTime, extractISOOffset);
 
 export const parseISODateTime = (s: string): ExtractedResult =>
   parse(
@@ -96,4 +81,4 @@ export const parseISODateTime = (s: string): ExtractedResult =>
     { regex: isoWeekWithTimeExtensionRegex, extractor: extractISOWeekTimeAndOffset },
     { regex: isoOrdinalWithTimeExtensionRegex, extractor: extractISOOrdinalDateAndTime },
     { regex: isoTimeCombinedRegex, extractor: extractISOTimeAndOffset }
-  )
+  );

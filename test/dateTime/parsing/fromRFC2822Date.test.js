@@ -25,16 +25,15 @@ test.each([
   ["Mon, 02 Jan 2017 06:00:00 +0330", [2017, 1, 2, 2, 30, 0]],
   ["Mon, 02 Jan 2017 06:00:00 -0330", [2017, 1, 2, 9, 30, 0]],
   ["Mon, 02 Jan 2017 06:00:00 PST", [2017, 1, 2, 6 + 8, 0, 0]],
-  ["Mon, 02 Jan 2017 06:00:00 PDT", [2017, 1, 2, 6 + 7, 0, 0]]])
-("fromRFC2822 can parse %p",
-  (input, expected) => {
-    const { day, hour, minute, month, second, year } = fromRFC2822(input) |> toUTC() |> toGregorian();
-    const actual = [year, month, day, hour, minute, second];
-    expect(actual).toEqual(expected);
-  });
+  ["Mon, 02 Jan 2017 06:00:00 PDT", [2017, 1, 2, 6 + 7, 0, 0]],
+])("fromRFC2822 can parse %p", (input, expected) => {
+  const { day, hour, minute, month, second, year } = fromRFC2822(input) |> toUTC() |> toGregorian();
+  const actual = [year, month, day, hour, minute, second];
+  expect(actual).toEqual(expected);
+});
 
 test("fromRFC2822() ignores incorrect days of the week", () => {
-  expect( fromRFC2822("Wed, 01 Nov 2016 13:23:12 +0600") |> day).toEqual(1);
+  expect(fromRFC2822("Wed, 01 Nov 2016 13:23:12 +0600") |> day).toEqual(1);
 });
 
 test("fromRFC2822() can elide the day of the week", () => {

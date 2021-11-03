@@ -121,7 +121,8 @@ const accurateMatrix: Trie = {
   ...lowOrderMatrix,
 };
 
-export const pickMatrix = (accuracy: ConversionAccuracy): Trie => (accuracy === "casual" ? casualMatrix : accurateMatrix);
+export const pickMatrix = (accuracy: ConversionAccuracy): Trie =>
+  accuracy === "casual" ? casualMatrix : accurateMatrix;
 
 export const convert = (
   val: number,
@@ -188,5 +189,7 @@ export const defaultEmpties = (values: Partial<DurationValues>): DurationValues 
 export const isDuration = (obj: any): obj is Duration => obj && obj.isLuxonDuration;
 
 // curry!
-export const alter = (values: Partial<DurationValues>): ((dur: Duration) => Duration) => (dur) =>
-  new Duration({ ...dur.values, ...values });
+export const alter =
+  (values: Partial<DurationValues>): ((dur: Duration) => Duration) =>
+  (dur) =>
+    new Duration({ ...dur.values, ...values });

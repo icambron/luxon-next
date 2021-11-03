@@ -14,15 +14,15 @@ export interface ExtractedResult {
   calendar: Calendar<any> | null;
   calendarUnits: object;
   timeUnits: Partial<Time>;
-  zone: Zone | null
+  zone: Zone | null;
   cursor: Cursor;
 }
 
 export type Extractor = (match: RegExpMatchArray, cursor: Cursor) => ExtractedResult;
 
 interface ParsingBlock {
-  regex: RegExp,
-  extractor: Extractor
+  regex: RegExp;
+  extractor: Extractor;
 }
 
 export const combineRegexes = (...regexes: RegExp[]): RegExp => {
@@ -30,24 +30,27 @@ export const combineRegexes = (...regexes: RegExp[]): RegExp => {
   return RegExp(`^${full}$`);
 };
 
-export const combineExtractors = (...extractors: Extractor[]) : Extractor => {
+export const combineExtractors = (...extractors: Extractor[]): Extractor => {
   return (m, cursor) =>
-    extractors.reduce<ExtractedResult>((merged, ex) => {
-      const next = ex(m, merged.cursor);
-      return {
-        calendar: next.calendar || merged.calendar,
-        calendarUnits: { ...merged.calendarUnits, ...next.calendarUnits},
-        timeUnits: {...merged.timeUnits, ...next.timeUnits},
-        zone: next.zone || merged.zone,
-        cursor: next.cursor
-      };
-    }, {
-      calendar: null,
-      calendarUnits: {},
-      timeUnits: {},
-      zone: null,
-      cursor
-    });
+    extractors.reduce<ExtractedResult>(
+      (merged, ex) => {
+        const next = ex(m, merged.cursor);
+        return {
+          calendar: next.calendar || merged.calendar,
+          calendarUnits: { ...merged.calendarUnits, ...next.calendarUnits },
+          timeUnits: { ...merged.timeUnits, ...next.timeUnits },
+          zone: next.zone || merged.zone,
+          cursor: next.cursor,
+        };
+      },
+      {
+        calendar: null,
+        calendarUnits: {},
+        timeUnits: {},
+        zone: null,
+        cursor,
+      }
+    );
 };
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
@@ -62,7 +65,7 @@ export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult =
   }
 
   throw new NoMatchingParserPattern(s);
-}
+};
 
 export const int = (match: RegExpMatchArray, pos: number, fallback: number): number => {
   const m = match[pos];
@@ -85,14 +88,20 @@ export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extract
       calendarUnits: ret,
       timeUnits: {},
       cursor: cursor + i,
-      zone: null
+      zone: null,
     };
   };
-}
+};
 
-
-export const fromStrings = (yearStr: string, monthStr: string, dayStr: string, hourStr: string, minuteStr: string, secondStr: string, cursor: number): ExtractedResult => {
-
+export const fromStrings = (
+  yearStr: string,
+  monthStr: string,
+  dayStr: string,
+  hourStr: string,
+  minuteStr: string,
+  secondStr: string,
+  cursor: number
+): ExtractedResult => {
   const calendarUnits = {
     day: parseInteger(dayStr),
     year: yearStr.length === 2 ? untruncateYear(parseInteger(yearStr)) : parseInteger(yearStr),
@@ -102,7 +111,7 @@ export const fromStrings = (yearStr: string, monthStr: string, dayStr: string, h
   const timeUnits: Partial<Time> = {
     hour: parseInteger(hourStr),
     minute: parseInteger(minuteStr),
-  }
+  };
 
   if (secondStr) timeUnits.second = parseInteger(secondStr);
 
@@ -111,8 +120,8 @@ export const fromStrings = (yearStr: string, monthStr: string, dayStr: string, h
     calendarUnits,
     timeUnits,
     zone: utcInstance,
-    cursor: cursor
-  }
+    cursor: cursor,
+  };
 };
 
 export const extractIANAZone = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
@@ -122,6 +131,6 @@ export const extractIANAZone = (match: RegExpMatchArray, cursor: number): Extrac
     calendarUnits: {},
     timeUnits: {},
     zone,
-    cursor: cursor + 1
-  }
+    cursor: cursor + 1,
+  };
 };

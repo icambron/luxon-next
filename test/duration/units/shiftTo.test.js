@@ -3,7 +3,7 @@ import { shiftTo } from "../../../src/duration/convert";
 
 test("shiftTo() rolls milliseconds up hours and minutes", () => {
   const dur = fromMillis(5760000);
-  let hrs = shiftTo(["hours"])(dur) |> hours
+  let hrs = shiftTo(["hours"])(dur) |> hours;
   expect(hrs).toBe(1.6);
 
   const mod = dur |> shiftTo(["hours", "minutes"]) |> values;
@@ -48,23 +48,23 @@ test("shiftTo without any units no-ops", () => {
 });
 
 test("shiftTo accumulates when rolling up", () => {
-  expect(
-    fromValues({ minutes: 59, seconds: 183 })
-      |> shiftTo(["hours", "minutes", "seconds"])
-      |> values
-  ).toEqual({ hours: 1, minutes: 2, seconds: 3 });
+  expect(fromValues({ minutes: 59, seconds: 183 }) |> shiftTo(["hours", "minutes", "seconds"]) |> values).toEqual({
+    hours: 1,
+    minutes: 2,
+    seconds: 3,
+  });
 });
 
 test("shiftTo keeps unnecessary higher-order negative units 0", () => {
-  expect(
-    fromValues({ milliseconds: -100 }) |> shiftTo(["hours", "minutes", "seconds"]) |> values
-  ).toEqual({ hours: 0, minutes: 0, seconds: -0.1 });
+  expect(fromValues({ milliseconds: -100 }) |> shiftTo(["hours", "minutes", "seconds"]) |> values).toEqual({
+    hours: 0,
+    minutes: 0,
+    seconds: -0.1,
+  });
 });
 
 test("shiftTo does not normalize values", () => {
   // Normalizing would convert to { quarters: 4, months: 1, days: 10 }
   // which would be converted back to 404 days instead
-  expect(
-    fromValues({ quarters: 0, months: 0, days: 400 }) |> shiftTo(["days"]) |> values
-  ).toEqual({ days: 400 });
+  expect(fromValues({ quarters: 0, months: 0, days: 400 }) |> shiftTo(["days"]) |> values).toEqual({ days: 400 });
 });

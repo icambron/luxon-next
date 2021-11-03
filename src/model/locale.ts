@@ -95,14 +95,16 @@ const monthDtf = (
   return getDtf(getDtfArgs(locale, zone, { ...options, ...fmt }));
 };
 
-export const formatMonth = (
-  locale: string | undefined,
-  fmt: Intl.DateTimeFormatOptions | undefined,
-  monthFormatOpts: MonthFormatOpts
-): ((jsDate: Date, zone: Zone) => string) => (d, zone) => {
-  const dtf = monthDtf(locale, zone, fmt, monthFormatOpts);
-  return extract(d, dtf, "month");
-};
+export const formatMonth =
+  (
+    locale: string | undefined,
+    fmt: Intl.DateTimeFormatOptions | undefined,
+    monthFormatOpts: MonthFormatOpts
+  ): ((jsDate: Date, zone: Zone) => string) =>
+  (d, zone) => {
+    const dtf = monthDtf(locale, zone, fmt, monthFormatOpts);
+    return extract(d, dtf, "month");
+  };
 
 export const listMonths = memo(
   ([locale, fmt, monthFormatOpts]: [
@@ -126,9 +128,11 @@ const meridiemDtf = (locale: string | undefined, zone: Zone): Intl.DateTimeForma
   return getDtf(getDtfArgs(locale, zone, fmt));
 };
 
-export const formatMeridiem = (locale: string | undefined): ((jsDate: Date, zone: Zone) => string) => (d, zone) => {
-  const dtf = meridiemDtf(locale, zone);
-  return extract(d, dtf, "dayperiod");
-};
+export const formatMeridiem =
+  (locale: string | undefined): ((jsDate: Date, zone: Zone) => string) =>
+  (d, zone) => {
+    const dtf = meridiemDtf(locale, zone);
+    return extract(d, dtf, "dayperiod");
+  };
 
 // todo - list meridiems

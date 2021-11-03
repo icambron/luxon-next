@@ -21,77 +21,67 @@ test.each([
     { months: 1, days: 32 },
     { months: 2, days: 2 },
   ],
-    [
-      { months: 1, days: 28 },
-      { months: 1, days: 28 },
-    ],
-    [
-      { months: 1, days: -32 },
-      { months: 0, days: -2 },
-    ],
-    [
-      { months: 1, days: -28 },
-      { months: 0, days: 2 },
-    ],
-    [
-      { months: -1, days: 32 },
-      { months: 0, days: 2 },
-    ],
-    [
-      { months: -1, days: 28 },
-      { months: 0, days: -2 },
-    ],
-    [
-      { months: -1, days: -32 },
-      { months: -2, days: -2 },
-    ],
-    [
-      { months: -1, days: -28 },
-      { months: -1, days: -28 },
-    ],
-    [
-      { months: 0, days: 32 },
-      { months: 1, days: 2 },
-    ],
-    [
-      { months: 0, days: 28 },
-      { months: 0, days: 28 },
-    ],
-    [
-      { months: 0, days: -32 },
-      { months: -1, days: -2 },
-    ],
-    [
-      { months: 0, days: -28 },
-      { months: 0, days: -28 },
-    ],
-  ])("normalize() handles %p", (input, expected) => {
-    expect(fromValues(input) |> normalize() |> values).toEqual(expected);
+  [
+    { months: 1, days: 28 },
+    { months: 1, days: 28 },
+  ],
+  [
+    { months: 1, days: -32 },
+    { months: 0, days: -2 },
+  ],
+  [
+    { months: 1, days: -28 },
+    { months: 0, days: 2 },
+  ],
+  [
+    { months: -1, days: 32 },
+    { months: 0, days: 2 },
+  ],
+  [
+    { months: -1, days: 28 },
+    { months: 0, days: -2 },
+  ],
+  [
+    { months: -1, days: -32 },
+    { months: -2, days: -2 },
+  ],
+  [
+    { months: -1, days: -28 },
+    { months: -1, days: -28 },
+  ],
+  [
+    { months: 0, days: 32 },
+    { months: 1, days: 2 },
+  ],
+  [
+    { months: 0, days: 28 },
+    { months: 0, days: 28 },
+  ],
+  [
+    { months: 0, days: -32 },
+    { months: -1, days: -2 },
+  ],
+  [
+    { months: 0, days: -28 },
+    { months: 0, days: -28 },
+  ],
+])("normalize() handles %p", (input, expected) => {
+  expect(fromValues(input) |> normalize() |> values).toEqual(expected);
 });
 
- test("normalize can convert all unit pairs", () => {
-   const units = [
-     "years",
-     "quarters",
-     "months",
-     "weeks",
-     "days",
-     "hours",
-     "minutes",
-     "seconds",
-     "milliseconds",
-   ];
+test("normalize can convert all unit pairs", () => {
+  const units = ["years", "quarters", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"];
 
-   for (let i = 0; i < units.length; i++) {
-     for (let j = i + 1; j < units.length; j++) {
-       const duration = fromValues({ [units[i]]: 1, [units[j]]: 2 });
-       const normalizedDuration = duration |> normalize() |> values;
-       expect(normalizedDuration[units[i]]).not.toBe(NaN);
-       expect(normalizedDuration[units[j]]).not.toBe(NaN);
+  for (let i = 0; i < units.length; i++) {
+    for (let j = i + 1; j < units.length; j++) {
+      const duration = fromValues({ [units[i]]: 1, [units[j]]: 2 });
+      const normalizedDuration = duration |> normalize() |> values;
+      expect(normalizedDuration[units[i]]).not.toBe(NaN);
+      expect(normalizedDuration[units[j]]).not.toBe(NaN);
 
-       const normalizedAccurateDuration = duration |> normalize("longterm") |> values
-       expect(normalizedAccurateDuration[units[i]]).not.toBe(NaN);
-       expect(normalizedAccurateDuration[units[j]]).not.toBe(NaN);
-     }
-   }
- });
+      const normalizedAccurateDuration = duration |> normalize("longterm") |> values;
+      expect(normalizedAccurateDuration[units[i]]).not.toBe(NaN);
+      expect(normalizedAccurateDuration[units[j]]).not.toBe(NaN);
+    }
+  }
+});

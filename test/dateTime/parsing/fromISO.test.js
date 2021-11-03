@@ -582,6 +582,8 @@ test.each([
   "2016-05-25T:03:4",
   "2016-05-25T08::4",
   "2016-W32-02",
-])("fromISO() rejects %p", (input) => expect(() => {
-  fromISO(input)
-}).toThrow());
+])("fromISO() rejects %p", (input) =>
+  expect(() => {
+    fromISO(input);
+  }).toThrow()
+);

@@ -6,7 +6,7 @@ import { ExtractedResult, fromStrings, parse } from "./regexParser";
 // These are a little braindead. EDT *should* tell us that we're in, say, America/New_York
 // and not just that we're in -240 *right now*. But since I don't think these are used that often
 // I'm just going to ignore that
-const obsOffsets: {[key: string]: number} = {
+const obsOffsets: { [key: string]: number } = {
   GMT: 0,
   EDT: -4 * 60,
   EST: -5 * 60,
@@ -29,23 +29,11 @@ const computeOffset = (obsOffset: string, milOffset: string, offHourStr: string,
   } else {
     return signedOffset(offHourStr, offMinuteStr);
   }
-}
+};
 
 const extractRFC2822 = (match: RegExpMatchArray, _: number): ExtractedResult => {
-  const [
-      ,
-      ,
-      dayStr,
-      monthStr,
-      yearStr,
-      hourStr,
-      minuteStr,
-      secondStr,
-      obsOffset,
-      milOffset,
-      offHourStr,
-      offMinuteStr,
-    ] = match;
+  const [, , dayStr, monthStr, yearStr, hourStr, minuteStr, secondStr, obsOffset, milOffset, offHourStr, offMinuteStr] =
+    match;
 
   const result = fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, 0); // ignore cursor
   result.zone = fixedOffsetZone(computeOffset(obsOffset, milOffset, offHourStr, offMinuteStr));
@@ -59,4 +47,4 @@ const preprocessRFC2822 = (s: string): string =>
     .replace(/(\s\s+)/g, " ")
     .trim();
 
-export const parseRFC2822 = (s: string) => parse(preprocessRFC2822(s), {regex: rfc2822, extractor: extractRFC2822});
+export const parseRFC2822 = (s: string) => parse(preprocessRFC2822(s), { regex: rfc2822, extractor: extractRFC2822 });

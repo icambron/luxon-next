@@ -6,7 +6,7 @@ import {
 } from "../model/locale";
 import { DateTime } from "../model/dateTime";
 import { toJSDate } from "./core";
-import { FormatFirstArg, FormatSecondArg, MonthFormatOpts} from "../model/formatting";
+import { FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../model/formatting";
 import Zone from "../model/zone";
 import { getDefaultFormat } from "../settings";
 
@@ -48,10 +48,15 @@ const getFormattingArgs = <T>(
   return [locale, intlOpts, t];
 };
 
-const toJs = <T>(f: (jsDate: Date, zone: Zone) => T): ((dt: DateTime) => T) => (dt) => f(toJSDate(dt), dt.zone);
+const toJs =
+  <T>(f: (jsDate: Date, zone: Zone) => T): ((dt: DateTime) => T) =>
+  (dt) =>
+    f(toJSDate(dt), dt.zone);
 
-const hasKeys = <T>(...keys: string[]): ((o: any) => o is T) => (o: any): o is T =>
-  typeof o === "object" && keys.some((k) => o[k]);
+const hasKeys =
+  <T>(...keys: string[]): ((o: any) => o is T) =>
+  (o: any): o is T =>
+    typeof o === "object" && keys.some((k) => o[k]);
 
 const withFormatting = <T>(
   firstArg: FormatFirstArg,
@@ -104,8 +109,10 @@ export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOp
   return (dt) => formatMonthInternal(locale, opts, monthFormatOpts)(toJSDate(dt), dt.zone);
 };
 
-export const formatMeridiem = (locale?: string): ((dt: DateTime) => string) => (dt) =>
-  formatMeridiemInternal(locale)(toJSDate(dt), dt.zone);
+export const formatMeridiem =
+  (locale?: string): ((dt: DateTime) => string) =>
+  (dt) =>
+    formatMeridiemInternal(locale)(toJSDate(dt), dt.zone);
 
 export const listMonths = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): string[] => {
   const [locale, opts, monthFormatOpts] = getFormattingArgs<MonthFormatOpts>(

@@ -177,4 +177,4 @@ export function formatOffset(offset: number, format: "narrow" | "short" | "techi
 
 export const ianaRegex = /[A-Za-z_+-]{1,256}(:?\/[A-Za-z_+-]{1,256}(\/[A-Za-z_+-]{1,256})?)?/;
 
-export const antiTrunc = (n: number) => n < 0 ? Math.floor(n) : Math.ceil(n);
+export const antiTrunc = (n: number) => (n < 0 ? Math.floor(n) : Math.ceil(n));

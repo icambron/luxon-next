@@ -60,10 +60,12 @@ export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>)
 // friendly alias for Luxon users
 export const toObject = toGregorian;
 
-export const setGregorian = (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) => dt =>
-  set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
-    original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
-  );
+export const setGregorian =
+  (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) =>
+  (dt) =>
+    set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
+      original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
+    );
 
 // GREGORIAN GETTERS
 export const year = (dt: DateTime): number => dt.gregorian.year;

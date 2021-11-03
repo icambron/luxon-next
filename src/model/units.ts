@@ -38,7 +38,7 @@ export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) =
 
 export const buildNormalizer = <T extends string>(
   valid: Array<T>,
-  mapper: (s: string) => T,
+  mapper: (s: string) => T
 ): ((s: string, throwOnInvalid?: boolean) => T | null) => {
   const map = new Map<string, T>();
   for (const s of valid) {

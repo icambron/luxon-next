@@ -20,7 +20,7 @@ const extractASCII = (match: RegExpMatchArray, cursor: number): ExtractedResult 
 export function parseHTTPDate(s: string) {
   return parse(
     s,
-    {regex: rfc1123Regex, extractor: extractRFC1123Or850},
+    { regex: rfc1123Regex, extractor: extractRFC1123Or850 },
     { regex: rfc850Regex, extractor: extractRFC1123Or850 },
     { regex: asciiRegex, extractor: extractASCII }
   );

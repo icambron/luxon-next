@@ -165,30 +165,32 @@ interface AccumulatedFractions {
   remainderMilliseconds: number;
 }
 
-const shiftFractionsToMillis = (conversionAccuracy: ConversionAccuracy): ((dur: Duration) => Duration) => (dur) => {
-  const vs = { milliseconds: 0, ...dur.values };
+const shiftFractionsToMillis =
+  (conversionAccuracy: ConversionAccuracy): ((dur: Duration) => Duration) =>
+  (dur) => {
+    const vs = { milliseconds: 0, ...dur.values };
 
-  const newVals = Array.from(durationUnits).reduce(
-    (accum: AccumulatedFractions, k) => {
-      const val = vs[k] || 0;
+    const newVals = Array.from(durationUnits).reduce(
+      (accum: AccumulatedFractions, k) => {
+        const val = vs[k] || 0;
 
-      const [whole, fraction] = intAndFraction(val);
-      accum.ints[k] = whole;
+        const [whole, fraction] = intAndFraction(val);
+        accum.ints[k] = whole;
 
-      if (k !== "milliseconds") {
-        accum.remainderMilliseconds += convert(fraction, k, "milliseconds", conversionAccuracy);
-      }
+        if (k !== "milliseconds") {
+          accum.remainderMilliseconds += convert(fraction, k, "milliseconds", conversionAccuracy);
+        }
 
-      return accum;
-    },
-    { ints: {}, remainderMilliseconds: 0 } as AccumulatedFractions
-  );
+        return accum;
+      },
+      { ints: {}, remainderMilliseconds: 0 } as AccumulatedFractions
+    );
 
-  // no fractional millis please
-  newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
+    // no fractional millis please
+    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
 
-  return new Duration(newVals.ints as Partial<DurationValues>);
-};
+    return new Duration(newVals.ints as Partial<DurationValues>);
+  };
 
 const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): ((dt: DateTime) => [number, number]) => {
   const unfractioned = shiftFractionsToMillis(conversionAccuracy);

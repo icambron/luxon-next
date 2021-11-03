@@ -19,7 +19,13 @@ const orderedUnits: DurationUnit[] = [
 const reverseUnits: DurationUnit[] = orderedUnits.slice(0).reverse();
 
 // NB: mutates parameters
-const convertInternal = (matrix: Trie, fromMap: Map<DurationUnit, number>, fromUnit: DurationUnit, toMap: Map<DurationUnit, number>, toUnit: DurationUnit) => {
+const convertInternal = (
+  matrix: Trie,
+  fromMap: Map<DurationUnit, number>,
+  fromUnit: DurationUnit,
+  toMap: Map<DurationUnit, number>,
+  toUnit: DurationUnit
+) => {
   const conv = matrix[toUnit][fromUnit];
 
   let fromValue = fromMap.get(fromUnit) as number;
@@ -39,7 +45,7 @@ const convertInternal = (matrix: Trie, fromMap: Map<DurationUnit, number>, fromU
 const durToMap = (dur: Duration): Map<DurationUnit, number> => {
   const entries = Object.entries(dur.values) as [DurationUnit, number][];
   return new Map<DurationUnit, number>(entries);
-}
+};
 
 // NB: mutates parameters
 const normalizeValues = (matrix: Trie, vals: Map<DurationUnit, number>) => {
@@ -55,11 +61,12 @@ const normalizeValues = (matrix: Trie, vals: Map<DurationUnit, number>) => {
   }, null);
 };
 
-export const as = (unit: DurationUnit): (dur: Duration) => number =>
+export const as =
+  (unit: DurationUnit): ((dur: Duration) => number) =>
   (dur) => {
     const shifted = shiftTo([unit])(dur);
     return shifted.values[unit] || 0;
-  }
+  };
 
 /**
  * Reduce this Duration to its canonical representation in its current units.
@@ -67,16 +74,20 @@ export const as = (unit: DurationUnit): (dur: Duration) => number =>
  * @example Duration.fromObject({ hours: 12, minutes: -45 }).normalize().toObject() //=> { hours: 11, minutes: 15 }
  * @return {Duration}
  */
-export const normalize = (conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): (dur: Duration) => Duration =>
+export const normalize =
+  (conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): ((dur: Duration) => Duration) =>
   (dur) => {
-    const map = durToMap(dur)
+    const map = durToMap(dur);
     normalizeValues(pickMatrix(conversionAccuracy), map);
     return new Duration(Object.fromEntries(map));
   };
 
-export const shiftTo = (units: DurationUnit[], conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): (dur:Duration) => Duration =>
+export const shiftTo =
+  (
+    units: DurationUnit[],
+    conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
+  ): ((dur: Duration) => Duration) =>
   (dur) => {
-
     if (units.length === 0) {
       return dur;
     }
