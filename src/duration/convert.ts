@@ -3,7 +3,7 @@ import { ConversionAccuracy, Duration, normalizeDurationUnit, pickMatrix, Trie }
 import { getDefaultConversionAccuracy } from "../settings";
 import { antiTrunc, isNumber, isUndefined, pick } from "../lib/util";
 
-// units ordered by size
+// convert ordered by size
 const orderedUnits: DurationUnit[] = [
   "years",
   "quarters",
@@ -69,7 +69,7 @@ export const as =
   };
 
 /**
- * Reduce this Duration to its canonical representation in its current units.
+ * Reduce this Duration to its canonical representation in its current convert.
  * @example Duration.fromObject({ years: 2, days: 5000 }).normalize().toObject() //=> { years: 15, days: 255 }
  * @example Duration.fromObject({ hours: 12, minutes: -45 }).normalize().toObject() //=> { hours: 11, minutes: 15 }
  * @return {Duration}

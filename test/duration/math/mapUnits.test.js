@@ -1,5 +1,3 @@
-/* global test expect */
-
 import { mapUnits, duration, hours, minutes, seconds, milliseconds } from "../../../src/duration/core";
 
 test("mapUnits can multiply durations", () => {

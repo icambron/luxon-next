@@ -40,7 +40,7 @@ export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, (i) => i.valu
 export const min = (dts: Array<DateTime>): DateTime => bestBy(dts, (i) => i.valueOf(), Math.min);
 
 /**
- * Valid units to pass to `startOf` and `endOf`
+ * Valid convert to pass to `startOf` and `endOf`
  */
 export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
 

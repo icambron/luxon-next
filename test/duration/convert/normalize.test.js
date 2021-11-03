@@ -1,7 +1,7 @@
 import { normalize } from "../../../src/duration/convert";
 import { fromValues, values } from "../../../src/duration/core";
 
-test("normalize() rebalances negative units", () => {
+test("normalize() rebalances negative convert", () => {
   const dur = fromValues({ years: 2, days: -2 }) |> normalize() |> values;
   expect(dur).toEqual({ years: 1, days: 363 });
 });

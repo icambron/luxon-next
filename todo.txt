@@ -3,7 +3,21 @@
 
 Just finished:
   * regex parsing (everything except sql, which I think i'll let be)
-  * shiftTo and normalize
+  * shiftTo and normalize and as
 
 Next big challenge is diff()
 Or could do token parsing
+Also need to figure out how to make { setZone } work
+
+A quick sketch of parsing options:
+
+{
+  interpretationZone: ...,
+  targetZone: ...,
+  useTargetZoneFromInput: true
+}
+
+* useTargetZoneFromInput trumps targetZone so that it can fall back to targetZone on strings with no offset/zone
+* the string trumps interpretationZone, obviously
+* provide simpleParsingOptions(zone) that returns { intepretationZone: zone, targetZone: zone, useTargetZoneFromInput: false }
+* all zones args are Zoneish

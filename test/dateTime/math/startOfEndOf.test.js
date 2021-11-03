@@ -136,7 +136,7 @@ test("startOf('week') goes to the start of the week", () => {
   expect(dt |> millisecond).toBe(0);
 });
 
-test("startOf throws on invalid units", () => {
+test("startOf throws on invalid convert", () => {
   expect(() => createDateTime() |> startOf("splork")).toThrow();
   expect(() => createDateTime() |> startOf("")).toThrow();
 });
@@ -277,11 +277,11 @@ test("endOf('week') goes to the end of the week", () => {
   expect(dt |> millisecond).toBe(999);
 });
 
-test("endOf throws on invalid units", () => {
+test("endOf throws on invalid convert", () => {
   expect(() => createDateTime() |> endOf("splork")).toThrow();
 });
 
-test("endOf accepts plural units", () => {
+test("endOf accepts plural convert", () => {
   const dt = createDateTime() |> endOf("years");
 
   expect(dt |> year).toBe(2010);

@@ -113,7 +113,7 @@ test("plus handles fractional days", () => {
   );
 });
 
-test("plus handles fractional large units", () => {
+test("plus handles fractional large convert", () => {
   const units = ["weeks", "months", "quarters", "years"];
   const d = ymd(2016, 1, 31, 10);
   for (const unit of units) {
@@ -123,7 +123,7 @@ test("plus handles fractional large units", () => {
   }
 });
 
-test("plus supports singular units", () => {
+test("plus supports singular convert", () => {
   const i = fromGregorian({ year: 2106, month: 3, day: 12, hour: 10, minute: 13 });
 
   // same as the multi unit test
@@ -134,7 +134,7 @@ test("plus supports singular units", () => {
 });
 
 // #645
-test("plus supports a mix of positive and negative duration units", () => {
+test("plus supports a mix of positive and negative duration convert", () => {
   const d = ymd(2020, 1, 8, 12, 34);
 
   // expect(plus(d, { months: 1, days: -1 })).toEqual(plus(d, { months: 1 }) |> (x => plus(x, { days: -1 })));

@@ -25,7 +25,7 @@ test("shiftTo boils down and then rolls up", () => {
   expect(vals).toEqual({ months: 30, days: 28, minutes: 8 * 60 });
 });
 
-test("shiftTo throws on invalid units", () => {
+test("shiftTo throws on invalid convert", () => {
   expect(() => {
     fromValues({ years: 2, hours: 5000 }) |> shiftTo(["months", "glorp"]);
   }).toThrow();
@@ -42,7 +42,7 @@ test("shiftTo deconstructs decimal inputs", () => {
   expect(dur |> minutes).toBeCloseTo(18, 8);
 });
 
-test("shiftTo without any units no-ops", () => {
+test("shiftTo without any convert no-ops", () => {
   const dur = fromValues({ years: 3 }) |> shiftTo([]) |> values;
   expect(dur).toEqual({ years: 3 });
 });
@@ -55,7 +55,7 @@ test("shiftTo accumulates when rolling up", () => {
   });
 });
 
-test("shiftTo keeps unnecessary higher-order negative units 0", () => {
+test("shiftTo keeps unnecessary higher-order negative convert 0", () => {
   expect(fromValues({ milliseconds: -100 }) |> shiftTo(["hours", "minutes", "seconds"]) |> values).toEqual({
     hours: 0,
     minutes: 0,

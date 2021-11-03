@@ -15,8 +15,6 @@ const dtMaker = () =>
     "utc"
   );
 
-const dt = dtMaker();
-
 test("formatMonth defaults to English", () => {
   expect(formatMonth()(dtMaker())).toEqual("August");
 });
