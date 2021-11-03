@@ -35,7 +35,7 @@ export function maybeArray<T>(thing: T | T[]) {
   return Array.isArray(thing) ? thing : [thing];
 }
 
-export function bestBy<T, U>(arr: T[], by: (_: T) => U, compare: (_: U, __: U) => U) {
+export function bestBy<T, U>(arr: T[], by: (_: T) => U, compare: (_: U, __: U) => U): T | null {
   const best = arr.reduce<[U, T] | undefined>((best, next) => {
     const pair: [U, T] = [by(next), next];
     if (best === undefined) {
@@ -47,7 +47,7 @@ export function bestBy<T, U>(arr: T[], by: (_: T) => U, compare: (_: U, __: U) =
     }
   }, undefined);
 
-  if (best === undefined) throw new InvalidArgumentError("bestBy expects a non empty array");
+  if (best === undefined) return null;
 
   return best[1];
 }

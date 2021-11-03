@@ -31,13 +31,13 @@ import { getDefaultConversionAccuracy } from "../settings";
  * Return the max of several date times, or `undefined` if the input array is empty
  * @param dts - the DateTimes from which to choose the maximum
  */
-export const max = (dts: Array<DateTime>): DateTime => bestBy(dts, (i) => i.valueOf(), Math.max);
+export const max = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.max);
 
 /**
  * Return the min of several date times, or `undefined` if the input array is empty
  * @param {Array<DateTime>} dts - the DateTimes from which to choose the minimum
  */
-export const min = (dts: Array<DateTime>): DateTime => bestBy(dts, (i) => i.valueOf(), Math.min);
+export const min = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.min);
 
 /**
  * Valid convert to pass to `startOf` and `endOf`
