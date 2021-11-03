@@ -6,29 +6,42 @@ import { setZone } from "./dateTime/zone";
 import { ExtractedResult } from "./parsing/regexParser";
 import { parseRFC2822 } from "./parsing/rfc2822Parser";
 import { parseHTTPDate } from "./parsing/httpParser";
+import { getDefaultZone } from "./settings";
 
-const fromRegexParse = (extracted: ExtractedResult, zone?: Zoneish): DateTime => {
-  const calendar = extracted.calendar || gregorianInstance;
-  const conversionZone = zone ? normalizeZone(zone) : null;
-  const interpretationZone: Zone = extracted.zone || conversionZone || normalizeZone(zone);
-  const provisional = fromCalendar(calendar, {...extracted.calendarUnits, ...extracted.timeUnits}, interpretationZone);
-  return interpretationZone == conversionZone ? provisional : setZone(conversionZone)(provisional);
+interface ParsingOptions {
+  interpretationZone?: Zoneish;
+  targetZone?: Zoneish;
+  useTargetZoneFromInput?: boolean
 }
 
-const wrapError = (fn: (input: string, zone?: Zoneish) => DateTime ): (i: string, z?: Zoneish) => DateTime | null =>
-  (i, z) => {
+export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingOptions =>
+  ({ interpretationZone: zone, targetZone: zone, useTargetZoneFromInput: false });
+
+export const defaultParsingOptions = simpleParsingOptions();
+
+const fromRegexParse = (extracted: ExtractedResult, opts: ParsingOptions): DateTime => {
+  const interpretationZone: Zone = extracted.zone || normalizeZone(opts.interpretationZone) || getDefaultZone();
+  const targetZone = opts.useTargetZoneFromInput && extracted.zone ? extracted.zone : normalizeZone(opts.targetZone) || getDefaultZone();
+
+  const calendar = extracted.calendar || gregorianInstance;
+  const provisional = fromCalendar(calendar, {...extracted.calendarUnits, ...extracted.timeUnits}, interpretationZone);
+  return interpretationZone.equals(targetZone) ? provisional : setZone(targetZone)(provisional);
+}
+
+const wrapError = (fn: (input: string, opts?: ParsingOptions) => DateTime ): (i: string, opts?: ParsingOptions) => DateTime | null =>
+  (i, opts) => {
     try {
-      return fn(i, z);
+      return fn(i, opts);
     } catch (e) {
       return null;
     }
   };
 
-export const fromISO = (iso: string, zone?: Zoneish): DateTime => fromRegexParse(parseISODateTime(iso), zone);
+export const fromISO = (iso: string, opts: ParsingOptions = defaultParsingOptions): DateTime => fromRegexParse(parseISODateTime(iso), opts);
 export const tryFromISO = wrapError(fromISO);
 
-export const fromRFC2822 = (input: string, zone?: Zoneish): DateTime => fromRegexParse(parseRFC2822(input), zone);
+export const fromRFC2822 = (input: string, opts: ParsingOptions = defaultParsingOptions): DateTime => fromRegexParse(parseRFC2822(input), opts);
 export const tryFromRFC2822 = wrapError(fromRFC2822);
 
-export const fromHTTP = (input: string, zone?: Zoneish): DateTime => fromRegexParse(parseHTTPDate(input), zone);
+export const fromHTTP = (input: string, opts: ParsingOptions = defaultParsingOptions): DateTime => fromRegexParse(parseHTTPDate(input), opts);
 export const tryFromHTTP = wrapError(fromHTTP);

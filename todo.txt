@@ -1,23 +1,20 @@
 * figure out what to do with all the random types floating around
+* figure out how to export the core types better?
 * tests for defaultLocale
 
 Just finished:
   * regex parsing (everything except sql, which I think i'll let be)
   * shiftTo and normalize and as
+  * parsing options that allow separate interpretation and target zones
 
 Next big challenge is diff()
 Or could do token parsing
 Also need to figure out how to make { setZone } work
 
-A quick sketch of parsing options:
+Did a deep drive into the future of the pipeline operator:
 
-{
-  interpretationZone: ...,
-  targetZone: ...,
-  useTargetZoneFromInput: true
-}
-
-* useTargetZoneFromInput trumps targetZone so that it can fall back to targetZone on strings with no offset/zone
-* the string trumps interpretationZone, obviously
-* provide simpleParsingOptions(zone) that returns { intepretationZone: zone, targetZone: zone, useTargetZoneFromInput: false }
-* all zones args are Zoneish
+ * We are currently using "minimal" which assumes the LHS of the pipe is a unary expression. That's why we curry everything
+ * There are three proposals: minimal F# (as above), F# with other bells and whistles, and hack-style. (There was also smart-mix, which basically means "use hack-style if there's a topic, otherwise use F#". This is the best proposal, but it's been rejected. So it goes)
+ * All are implemented by the babel plugin, but I can only find editor support (e.g. in Webstorm) for the minimal one. So sticking with that for now
+ * The TC committee seems to be leaning toward hack. That's fine, but it means we'll uncurry everything. Instead of foo() |> bar(options) |> baz() |> quux, we'll want foo() |> bar(%, options), baz(%), quux(%). `dt` always in the first arg position
+ * Going to leave all this in place until we get editor support for hack-style. It's a huge refactor, because you have to uncurry everything all at once, but just a chore in the end

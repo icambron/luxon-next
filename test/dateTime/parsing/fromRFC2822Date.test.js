@@ -1,6 +1,8 @@
-import { fromRFC2822 } from "../../../src/parse";
-import { day, millisecond, toGregorian } from "../../../src/dateTime/core";
+import { fromRFC2822, simpleParsingOptions } from "../../../src/parse";
+import { day, millisecond, offset, toGregorian, zone } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
+import SystemZone from "../../../src/model/zones/systemZone";
+import FixedOffsetZone from "../../../src/model/zones/fixedOffsetZone";
 
 test("fromRFC2822() accepts full format", () => {
   const dt = fromRFC2822("Tue, 01 Nov 2016 13:23:12 +0630");
@@ -82,6 +84,33 @@ test("fromRFC2822() can use a weird subset of offset abbreviations", () => {
     month: 11,
     day: 1,
     hour: 18,
+    minute: 23,
+    second: 12,
+    millisecond: 0,
+  });
+});
+
+test("fromRFC2822() uses -0000 to indicate that the zone is unknown", () => {
+  let dt = fromRFC2822("01 Nov 2016 13:23:12 -0000");
+  expect(zone(dt)).toBeInstanceOf(SystemZone);
+  expect(dt |> toGregorian()).toEqual({
+    year: 2016,
+    month: 11,
+    day: 1,
+    hour: 13,
+    minute: 23,
+    second: 12,
+    millisecond: 0,
+  });
+
+  dt = fromRFC2822("01 Nov 2016 13:23:12 -0000", simpleParsingOptions("utc"));
+  expect(zone(dt)).toBeInstanceOf(FixedOffsetZone);
+  expect(offset(dt)).toEqual(0)
+  expect(dt |> toGregorian()).toEqual({
+    year: 2016,
+    month: 11,
+    day: 1,
+    hour: 13,
     minute: 23,
     second: 12,
     millisecond: 0,

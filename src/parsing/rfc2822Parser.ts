@@ -21,12 +21,30 @@ const obsOffsets: { [key: string]: number } = {
 const rfc2822 =
   /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|(?:([+-]\d\d)(\d\d)))$/;
 
-const computeOffset = (obsOffset: string, milOffset: string, offHourStr: string, offMinuteStr: string): number => {
+const computeOffset = (obsOffset: string, milOffset: string, offHourStr: string, offMinuteStr: string): number | null => {
+
+  // named offsets like GMT and EDT
   if (obsOffset) {
     return obsOffsets[obsOffset];
-  } else if (milOffset) {
+  }
+
+  // z or Z
+  else if (milOffset) {
     return 0;
-  } else {
+  }
+
+  // from the spec:
+  //    Though "-0000" also indicates Universal Time, it is
+  //    used to indicate that the time was generated on a system that may be
+  //    in a local time zone other than Universal Time and therefore
+  //    indicates that the date-time contains no information about the local
+  //    time zone.
+  else if (offHourStr === "-00" && offMinuteStr === "00") {
+    return null;
+  }
+
+  // +1030 is 10 hours and 30 minutes offset
+  else {
     return signedOffset(offHourStr, offMinuteStr);
   }
 };
@@ -36,7 +54,8 @@ const extractRFC2822 = (match: RegExpMatchArray, _: number): ExtractedResult => 
     match;
 
   const result = fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, 0); // ignore cursor
-  result.zone = fixedOffsetZone(computeOffset(obsOffset, milOffset, offHourStr, offMinuteStr));
+  const offset = computeOffset(obsOffset, milOffset, offHourStr, offMinuteStr);
+  result.zone = offset != null ? fixedOffsetZone(offset) : null;
   return result;
 };
 
