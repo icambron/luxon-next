@@ -74,7 +74,6 @@ export const normalize = (conversionAccuracy: ConversionAccuracy = getDefaultCon
     return new Duration(Object.fromEntries(map));
   };
 
-
 export const shiftTo = (units: DurationUnit[], conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): (dur:Duration) => Duration =>
   (dur) => {
 

@@ -12,7 +12,7 @@ test("Duration#plus add straightforward durations", () => {
   expect(result |> milliseconds).toBe(14);
 });
 
-test("Duration#plus noops empty druations", () => {
+test("Duration#plus noops empty durations", () => {
   const first = duration({ hours: 4, minutes: 12, seconds: 2 });
   const second = duration({});
   const result = plus(first, second);

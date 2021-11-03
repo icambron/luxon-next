@@ -1,5 +1,5 @@
 import { fromMillis, fromValues, values, hours, minutes, milliseconds } from "../../../src/duration/core";
-import { shiftTo } from "../../../src/duration/units";
+import { shiftTo } from "../../../src/duration/convert";
 
 test("shiftTo() rolls milliseconds up hours and minutes", () => {
   const dur = fromMillis(5760000);

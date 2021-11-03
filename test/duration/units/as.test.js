@@ -1,5 +1,5 @@
 import { fromMillis } from "../../../src/duration/core";
-import { as } from "../../../src/duration/units";
+import { as } from "../../../src/duration/convert";
 
 test("Duration#as shifts to one unit and returns it", () => {
   const dur = fromMillis(5760000);

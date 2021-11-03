@@ -1,4 +1,4 @@
-import { normalize } from "../../../src/duration/units";
+import { normalize } from "../../../src/duration/convert";
 import { fromValues, values } from "../../../src/duration/core";
 
 test("normalize() rebalances negative units", () => {
