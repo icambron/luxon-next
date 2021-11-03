@@ -1,6 +1,10 @@
 * figure out what to do with all the random types floating around
 * tests for defaultLocale
 
-Here's what I'm in the middle of: making the parsing work. Right now the regex stuff just returns a pile of units
-(for DTs and Durations, but even for DTs, could be gregorian units or could ordinal, iso week, etc). Need to figure out
-how to not make the caller a mess -- e.g. return Calendar + Time pairs? Etc
+Just finished:
+  * regex parsing (everything except sql, which I think i'll let be)
+  * shiftTo and normalize
+
+Small thing to add: duration's as()
+Next big challenge is diff()
+Or could do token parsing

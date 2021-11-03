@@ -35,7 +35,7 @@ export const durationUnits: Array<DurationUnit> = [
 export const normalizeDurationUnit = buildNormalizer<DurationUnit>(durationUnits, simpleSingular);
 
 export type ConversionAccuracy = "casual" | "longterm";
-type Trie = Record<string, Record<string, number>>;
+export type Trie = Record<string, Record<string, number>>;
 
 const lowOrderMatrix: Trie = {
   weeks: {
@@ -73,6 +73,7 @@ const casualMatrix: Trie = {
     days: 91,
     hours: 91 * 24,
     minutes: 91 * 24 * 60,
+    seconds: 91 * 24 * 60 * 60,
     milliseconds: 91 * 24 * 60 * 60 * 1000,
   },
   months: {
@@ -92,6 +93,7 @@ const daysInMonthAccurate = 146097.0 / 4800;
 const accurateMatrix: Trie = {
   years: {
     months: 12,
+    quarters: 4,
     weeks: daysInYearAccurate / 7,
     days: daysInYearAccurate,
     hours: daysInYearAccurate * 24,
@@ -119,13 +121,13 @@ const accurateMatrix: Trie = {
   ...lowOrderMatrix,
 };
 
-const pickMatrix = (accuracy: ConversionAccuracy): Trie => (accuracy === "casual" ? casualMatrix : accurateMatrix);
+export const pickMatrix = (accuracy: ConversionAccuracy): Trie => (accuracy === "casual" ? casualMatrix : accurateMatrix);
 
 export const convert = (
   val: number,
   from: DurationUnit,
   to: DurationUnit,
-  conversionAccuracy: ConversionAccuracy
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
 ): number => {
   return pickMatrix(conversionAccuracy)[from][to] * val;
 };
@@ -186,5 +188,5 @@ export const defaultEmpties = (values: Partial<DurationValues>): DurationValues 
 export const isDuration = (obj: any): obj is Duration => obj && obj.isLuxonDuration;
 
 // curry!
-export const alter = (values: DurationValues): ((dur: Duration) => Duration) => (dur) =>
+export const alter = (values: Partial<DurationValues>): ((dur: Duration) => Duration) => (dur) =>
   new Duration({ ...dur.values, ...values });

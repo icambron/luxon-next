@@ -1,3 +1,5 @@
+import { InvalidUnitError } from "./errors";
+
 export type GregorianUnit = "year" | "month" | "day";
 export const gregorianUnits: Array<GregorianUnit> = ["year", "month", "day"];
 
@@ -36,17 +38,20 @@ export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) =
 
 export const buildNormalizer = <T extends string>(
   valid: Array<T>,
-  mapper: (s: string) => T
-): ((s: string) => T | null) => {
+  mapper: (s: string) => T,
+): ((s: string, throwOnInvalid?: boolean) => T | null) => {
   const map = new Map<string, T>();
   for (const s of valid) {
     map.set(s.toLowerCase(), s);
     map.set(mapper(s.toLowerCase()), s);
   }
-  return (unit: string): T | null => {
+  return (unit: string, throwOnInvalid?: boolean): T | null => {
     const lowered = unit.toLowerCase();
     const result = map.get(lowered) as T | undefined;
     if (result === undefined) {
+      if (throwOnInvalid) {
+        throw new InvalidUnitError(unit);
+      }
       return null;
     } else {
       return result;

@@ -12,6 +12,7 @@ import { InvalidUnitError } from "../model/errors";
 import { asNumber } from "../lib/util";
 
 export const duration = (values: Partial<DurationValues>) => new Duration(values);
+export const fromMillis = (milliseconds: number) => duration({milliseconds});
 
 export const negate = (): ((dur: Duration) => Duration) => {
   const negated = {} as Record<keyof DurationValues, number>;
@@ -23,12 +24,13 @@ export const negate = (): ((dur: Duration) => Duration) => {
   };
 };
 
+export const fromValues = (values: Partial<DurationValues>): Duration => new Duration(values);
+
 export const toMillis = (): ((dur: Duration) => number) => (dur) => dur.valueOf();
 export const toIso = (): ((dur: Duration) => string) => (dur) => toIsoInternal(dur);
-export const alter = (values: DurationValues): ((dur: Duration) => Duration) => alterInternal(values);
+export const alter = (values: Partial<DurationValues>): ((dur: Duration) => Duration) => alterInternal(values);
 export const isDuration = (dur: Duration): boolean => isDurationInternal(dur);
-
-// todo - as(dur, unit)
+export const values = (dur: Duration): Partial<DurationValues> =>  ({...dur.values});
 
 /**
  * Adds durations together to make them longer
