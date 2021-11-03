@@ -2,17 +2,20 @@
 
 import { Zoneish } from "./zone";
 
-/**
- * @private
- */
-class LuxonError extends Error {}
+export class LuxonError extends Error {}
 
 /**
  * @private
  */
 export class UnitOutOfRangeError extends LuxonError {
-  constructor(unit: string, value: unknown) {
-    super(`you specified ${value} (of type ${typeof value}) as a ${unit}, which is invalid`);
+  unit: string;
+  value: any;
+
+  constructor(unit: string, value: any) {
+    super(`You specified ${value} (of type ${typeof value}) as a ${unit}, which is invalid`);
+
+    this.unit = unit;
+    this.value = value;
 
     // See https://github.com/facebook/jest/issues/8279#issuecomment-539775425
     Object.setPrototypeOf(this, UnitOutOfRangeError.prototype);
@@ -96,5 +99,14 @@ export class UnknownError extends LuxonError {
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, InvalidArgumentError.prototype);
+  }
+}
+
+export class NoMatchingParserPattern extends LuxonError {
+  input: string;
+
+  constructor(input: string) {
+    super(`Couldn't find a way to parse '${input}'`);
+    this.input = input;
   }
 }

@@ -51,13 +51,14 @@ export const ymd = (
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
   fromCalendar(gregorianInstance, obj, normalizeZone(zone));
+
 export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>) => (dt) => ({
   ...dt.gregorian,
   ...dt.time,
 });
 
-export const setGregorian = (obj: object): ((dt: DateTime) => DateTime) => (dt) =>
-  set(dt, gregorianInstance, obj, (original, unadjusted) =>
+export const setGregorian = (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) => dt =>
+  set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
     original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
   );
 

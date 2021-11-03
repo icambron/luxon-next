@@ -171,7 +171,7 @@ export function formatOffset(offset: number, format: "narrow" | "short" | "techi
     case "techie":
       return `${sign}${padStart(hours, 2)}${padStart(minutes, 2)}`;
     default:
-      throw new RangeError(`Value format ${format} is out of range for property format`);
+      throw new InvalidArgumentError(`Format ${format} isn't supported`);
   }
 }
 

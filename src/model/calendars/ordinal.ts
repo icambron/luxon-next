@@ -41,3 +41,5 @@ export class OrdinalCalendar implements  Calendar<OrdinalDate> {
         obj1.year === obj2.year &&
         obj1.ordinal === obj2.ordinal;
 }
+
+export const ordinalInstance = new OrdinalCalendar();

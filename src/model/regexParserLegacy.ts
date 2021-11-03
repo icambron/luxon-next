@@ -35,21 +35,6 @@ type Extractor = (match: RegExpMatchArray, cursor: Cursor) => ExtractedResult;
 type Cursor = number;
 type ExtractedResult = [MixedParsableUnitBundle | null, Zone | null, Cursor]
 
-type Extractor2 = (match: RegExpMatchArray, cursor: Cursor) => ExtractedResult2;
-
-interface ExtractedResult2 {
-  calendar: Calendar<any> | null;
-  calendarUnits: object;
-  timeUnits: object;
-  zone: Zone | null
-  cursor: Cursor;
-}
-
-interface ParsingBlock {
-  regex: RegExp,
-  extractor: Extractor2
-}
-
 const combineRegexes = (...regexes: RegExp[]): RegExp => {
   const full = regexes.reduce((f, r) => f + r.source, "");
   return RegExp(`^${full}$`);
@@ -62,43 +47,6 @@ const combineExtractors = (...extractors: Extractor[]) : Extractor => {
       return [{ ...mergedVals, ...val }, mergedZone || zone, next];
     }, [{}, null, 1]);
 };
-
-const combineExtractors2 = (...extractors: Extractor2[]) : Extractor2 => {
-  return (m, cursor) =>
-    extractors.reduce<ExtractedResult2>((merged, ex) => {
-      const next = ex(m, cursor);
-      return {
-        calendar: next.calendar || merged.calendar,
-        calendarUnits: { ...merged.calendarUnits, ...next.calendarUnits},
-        timeUnits: {...merged.timeUnits, ...next.timeUnits},
-        zone: next.zone || merged.zone,
-        cursor: next.cursor
-      };
-    }, {
-      calendar: null,
-      calendarUnits: {},
-      timeUnits: {},
-      zone: null,
-      cursor: 1
-    });
-};
-
-const parse2 = (s: string, ...patterns: ParsingBlock[]): ExtractedResult2 | null => {
-  if (s == null) {
-    return null;
-  }
-
-  for (const {regex, extractor } of patterns) {
-    const m = regex.exec(s);
-    let i = 0;
-
-    if (m) {
-      return extractor(m, 0);
-    }
-  }
-
-  return null;
-}
 
 const parse = <TCal>(s: string, ...patterns: [RegExp, Extractor][]): ExtractedResult => {
   if (s == null) {
@@ -124,24 +72,6 @@ const simpleParse = (...keys: Array<AnyParsableUnit>): Extractor => {
       ret[keys[i]] = parseInteger(match[cursor + i]);
     }
     return [ret, null, cursor + i];
-  };
-}
-
-const simpleParse2 = (cal: Calendar<any>, ...keys: Array<string>): Extractor2 => {
-  return (match, cursor) => {
-    const ret: any = {};
-    let i;
-
-    for (i = 0; i < keys.length; i++) {
-      ret[keys[i]] = parseInteger(match[cursor + i]);
-    }
-    return {
-      calendar: cal,
-      calendarUnits: ret,
-      timeUnits: {},
-      cursor: i + 1,
-      zone: null
-    };
   };
 }
 
@@ -178,22 +108,6 @@ const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult
   return [item, null, cursor + 3];
 };
 
-const extractISOYmd2 = (match: RegExpMatchArray, cursor: number): ExtractedResult2  => {
-  const item = {
-    year: int(match, cursor, 1),
-    month: int(match, cursor + 1, 1),
-    day: int(match, cursor + 2, 1),
-  };
-
-  return {
-    calendar: gregorianInstance,
-    calendarUnits: item,
-    timeUnits: {},
-    zone: null,
-    cursor: cursor + 3
-  }
-};
-
 const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const item = {
     hour: int(match, cursor, 0),
@@ -203,23 +117,6 @@ const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResul
   };
 
   return [item, null, cursor + 4];
-};
-
-const extractISOTime2 = (match: RegExpMatchArray, cursor: number): ExtractedResult2 => {
-  const item = {
-    hour: int(match, cursor, 0),
-    minute: int(match, cursor + 1, 0),
-    second: int(match, cursor + 2, 0),
-    millisecond: parseMillis(match[cursor + 3]),
-  };
-
-  return {
-    calendar: null,
-    calendarUnits: {},
-    timeUnits: item,
-    zone: null,
-    cursor: cursor + 4
-  }
 };
 
 const extractISOOffset = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
@@ -344,11 +241,11 @@ const preprocessRFC2822 = (s: string): string =>
 // http date
 
 const rfc1123 =
-    /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d\d):(\d\d):(\d\d) GMT$/,
-  rfc850 =
-    /^(Monday|Tuesday|Wedsday|Thursday|Friday|Saturday|Sunday), (\d\d)-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d\d) (\d\d):(\d\d):(\d\d) GMT$/,
-  ascii =
-    /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( \d|\d\d) (\d\d):(\d\d):(\d\d) (\d{4})$/;
+  /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d\d):(\d\d):(\d\d) GMT$/;
+const rfc850 =
+  /^(Monday|Tuesday|Wedsday|Thursday|Friday|Saturday|Sunday), (\d\d)-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d\d) (\d\d):(\d\d):(\d\d) GMT$/;
+const ascii =
+  /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( \d|\d\d) (\d\d):(\d\d):(\d\d) (\d{4})$/;
 
 const extractRFC1123Or850 = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const [, weekdayStr, dayStr, monthStr, yearStr, hourStr, minuteStr, secondStr] = match,

@@ -79,7 +79,7 @@ export const fromCalendar = <TDate extends object>(
   const [ts, finalOffset, isHoleTime] = gregorianToTS(gregorian, time, offsetProvis, zoneToUse);
 
   // if it's a hole time, we'll adjust the calendar & time to the "real" one
-  const [gregorianFinal, timeFinal] = isHoleTime ? tsToGregorian(ts, finalOffset) : [gregorian, time];
+  const [gregorianFinal, timeFinal] = isHoleTime || time.hour === 24 ? tsToGregorian(ts, finalOffset) : [gregorian, time];
 
   const calMap = new Map<string, any>();
 

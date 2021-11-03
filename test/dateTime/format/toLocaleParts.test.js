@@ -17,7 +17,7 @@ const dtMaker = () =>
 
 const dt = dtMaker();
 
-test("toLocaleParts returns a en-US by default", () => {
+test("toLocaleParts() returns a en-US by default", () => {
   expect(toLocaleParts()(dt)).toEqual([
     { type: "month", value: "May" },
     { type: "literal", value: " " },
@@ -35,7 +35,7 @@ test("toLocaleParts returns a en-US by default", () => {
   ]);
 });
 
-test("DateTime#toLocaleParts accepts locale string from the dateTime", () => {
+test("toLocaleParts() accepts locale string from the dateTime", () => {
   expect(toLocaleParts("be")(dt)).toEqual([
     { type: "day", value: "25" },
     { type: "literal", value: "." },
@@ -51,7 +51,7 @@ test("DateTime#toLocaleParts accepts locale string from the dateTime", () => {
   ]);
 });
 
-test("DateTime#toLocaleParts accepts intl settings", () => {
+test("toLocaleParts() accepts intl settings", () => {
   expect(toLocaleParts({ calendar: "islamic" })(dt)).toEqual([
     { type: "month", value: "8" },
     { type: "literal", value: "/" },
@@ -63,7 +63,7 @@ test("DateTime#toLocaleParts accepts intl settings", () => {
   ]);
 });
 
-test("DateTime#toLocaleParts accepts date formatting options", () => {
+test("toLocaleParts() accepts date formatting options", () => {
   expect(toLocaleParts({ timeStyle: "short" })(dt)).toEqual([
     { type: "hour", value: "9" },
     { type: "literal", value: ":" },
@@ -73,7 +73,7 @@ test("DateTime#toLocaleParts accepts date formatting options", () => {
   ]);
 });
 
-test("DateTime#toLocaleParts accepts locale and date formatting options", () => {
+test("toLocaleParts() accepts locale and date formatting options", () => {
   expect(toLocaleParts("be", { timeStyle: "short" })(dt)).toEqual([
     { type: "hour", value: "09" }, // be likes 09 instead of just 9
     { type: "literal", value: ":" },

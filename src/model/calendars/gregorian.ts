@@ -97,7 +97,7 @@ export const tsToGregorian = (ts: number, offset: number): [GregorianDate, Time]
     return [gregorianDate, time];
 };
 
-export const adjustCalendarOverflow = (greg: GregorianDate): GregorianDate => {
+export const adjustCalendarOverflow = (greg: GregorianDate & Time): GregorianDate & Time => {
     const {year, month, day} = greg;
     return {...greg, day: Math.min(day, daysInMonth(year, month))};
 };

@@ -1,21 +1,16 @@
 import Zone, { Zoneish } from "./model/zone";
-import { MixedDateTimeUnitBundle } from "./model/units";
+import { parseISODateTime } from "./parsing/isoParser";
+import { DateTime, fromCalendar, normalizeZone } from "./model/dateTime";
+import { gregorianInstance } from "./model/calendars/gregorian";
+import { setZone } from "./dateTime/zone";
+import { ExtractedResult } from "./parsing/regexParser";
 
-export const fromISO = (iso: string, zone?: Zoneish): string | null => {
-
-
+const fromRegexParse = (extracted: ExtractedResult, zone?: Zoneish): DateTime => {
+  const calendar = extracted.calendar || gregorianInstance;
+  const conversionZone = zone ? normalizeZone(zone) : null;
+  const interpretationZone: Zone = extracted.zone || conversionZone || normalizeZone(zone);
+  const provisional = fromCalendar(calendar, {...extracted.calendarUnits, ...extracted.timeUnits}, interpretationZone);
+  return interpretationZone == conversionZone ? provisional : setZone(conversionZone)(provisional);
 }
 
-function parseDataToDateTime(parsed: MixedDateTimeUnitBundle, parsedZone: Zone | null, zone: Zoneish, format, text) {
-  const { setZone, zone } = opts;
-  if (parsed && Object.keys(parsed).length !== 0) {
-    const interpretationZone = parsedZone || zone,
-      inst = DateTime.fromObject(parsed, {
-        ...opts,
-        zone: interpretationZone,
-      });
-    return setZone ? inst : inst.setZone(zone);
-  } else {
-    return null;
-  }
-}
+export const fromISO = (iso: string, zone?: Zoneish): DateTime => fromRegexParse(parseISODateTime(iso), zone)
