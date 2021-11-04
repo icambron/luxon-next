@@ -1,5 +1,5 @@
 import { fromGregorian } from "../../../src/dateTime/core";
-import { formatMeridiem, formatMonth } from "../../../src/dateTime/format";
+import { formatMonth } from "../../../src/dateTime/format";
 
 const dtMaker = () =>
   fromGregorian(
@@ -29,12 +29,4 @@ test("formatMonth accepts options", () => {
 
 test("formatMonth accepts locale and options", () => {
   expect(formatMonth("be", { width: "short" })(dtMaker())).toEqual("жні");
-});
-
-test("formatMeridiem defaults to English", () => {
-  expect(formatMeridiem()(dtMaker())).toEqual("AM");
-});
-
-test("formatMeridiem accepts a locale", () => {
-  expect(formatMeridiem("en-GB")(dtMaker())).toEqual("am");
 });
