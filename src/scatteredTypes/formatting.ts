@@ -24,3 +24,9 @@ export type MeridiemFormatOpts = {
 export type EraFormatOpts = {
   width?: EraFormatWidth;
 } | undefined
+
+export interface FormattingToken {
+  name: string;
+  literal?: boolean;
+}
+

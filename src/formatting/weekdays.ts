@@ -1,7 +1,8 @@
 import { FormatFirstArg, WeekdayFormatOpts } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys, memo } from "./formatUtils";
+import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
 import Zone from "../model/zone";
+import { memo } from "../caching";
 
 export const formatWeekday = (firstArg?: FormatFirstArg, secondArg?: WeekdayFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, weekdayFormatOpts] = getFormattingArgs<WeekdayFormatOpts>(
@@ -47,19 +48,17 @@ const formatWeekdayMemo =
     };
 
 
-const listWeekdaysMemo = memo(
-  ([locale, fmt, weekdayFormatOpts]: [
-      string | undefined,
-      Intl.DateTimeFormatOptions | undefined,
-    WeekdayFormatOpts
-  ]): string[] => {
-    const dtf = weekdayDtf(locale, utcInstance, fmt, weekdayFormatOpts);
+const listWeekdaysMemo = memo("weekdayList", ([locale, fmt, weekdayFormatOpts]: [
+    string | undefined,
+    Intl.DateTimeFormatOptions | undefined,
+  WeekdayFormatOpts
+]): string[] => {
+  const dtf = weekdayDtf(locale, utcInstance, fmt, weekdayFormatOpts);
 
-    const d = new Date(Date.UTC(2016, 10, 14, 12));
-    return Array.from({ length: 7 }, (_, i) => {
-      d.setUTCDate(14 + i);
-      return extract(d, dtf, "weekday");
-    });
-  }
-);
+  const d = new Date(Date.UTC(2016, 10, 14, 12));
+  return Array.from({ length: 7 }, (_, i) => {
+    d.setUTCDate(14 + i);
+    return extract(d, dtf, "weekday");
+  });
+});
 

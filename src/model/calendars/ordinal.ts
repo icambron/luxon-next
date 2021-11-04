@@ -11,7 +11,7 @@ export interface OrdinalDate  {
 
 const ordinalNormalizer = buildNormalizer<OrdinalUnit>(ordinalUnits, simplePlural);
 
-export class OrdinalCalendar implements  Calendar<OrdinalDate> {
+export class OrdinalCalendar implements Calendar<OrdinalDate> {
     defaultValues = { year: 1, ordinal: 1 };
     name = "ordinal"
 

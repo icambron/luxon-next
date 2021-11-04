@@ -2,29 +2,10 @@ import Zone from "../model/zone";
 import { isValidZone } from "../model/zones/IANAZone";
 import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
 import { UnknownError } from "../model/errors";
-import { FormatFirstArg, FormatSecondArg } from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, FormattingToken } from "../scatteredTypes/formatting";
+import { allCaches, memo } from "../caching";
 
-export const caches: Array<Map<any, any>> = [];
-
-const clearCaches = () => {
-  for (const cache of caches) {
-    cache.clear();
-  }
-};
-
-export const memo = <TKey, TValue>(builder: (key: TKey) => TValue): ((key: TKey) => TValue) => {
-  const cache = new Map<TKey, TValue>();
-  caches.push(cache);
-  return (key: TKey): TValue => {
-    const cached = cache.get(key);
-    if (cached) return cached;
-    const fresh = builder(key);
-    cache.set(key, fresh);
-    return fresh;
-  };
-};
-
-export const getDtf = memo(([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
+export const getDtf = memo(allCaches, ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
 
 const zoneOptionForZone = (zone: Zone | undefined): string | null => {
   if (!zone) {
@@ -119,4 +100,36 @@ export const hasKeys =
     (o: any): o is T =>
       typeof o === "object" && keys.some((k) => o[k]);
 
+export const parseFormat = (fmt: string): FormattingToken[] => {
+  let current = null;
+  let currentFull = "";
+  let bracketed = false;
+  const splits = [];
+  for (let i = 0; i < fmt.length; i++) {
+    const c = fmt.charAt(i);
+    if (c === "'") {
+      if (currentFull.length > 0) {
+        splits.push({ literal: bracketed, name: currentFull });
+      }
+      current = null;
+      currentFull = "";
+      bracketed = !bracketed;
+    } else if (bracketed) {
+      currentFull += c;
+    } else if (c === current) {
+      currentFull += c;
+    } else {
+      if (currentFull.length > 0) {
+        splits.push({ literal: false, name: currentFull });
+      }
+      currentFull = c;
+      current = c;
+    }
+  }
 
+  if (currentFull.length > 0) {
+    splits.push({ literal: bracketed, name: currentFull });
+  }
+
+  return splits;
+}

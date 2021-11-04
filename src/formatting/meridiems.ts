@@ -1,7 +1,8 @@
 import Zone from "../model/zone";
-import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys, memo } from "./formatUtils";
+import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
 import { FormatFirstArg, MeridiemFormatOpts} from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
+import { memo } from "../caching";
 
 export const formatMeridiem = (firstArg?: FormatFirstArg, secondArg?: MeridiemFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, meridiemFormatOpts] = getFormattingArgs<MeridiemFormatOpts>(
@@ -31,27 +32,25 @@ export const formatMeridiemsMemo = (locale: string | undefined,
     return extract(d, dtf, "dayperiod");
   };
 
-const listMeridiemsMemo = memo(
-  ([locale, fmt, meridiemsFormatOpts]: [
-      string | undefined,
-      Intl.DateTimeFormatOptions | undefined,
-    MeridiemFormatOpts
-  ]): string[] => {
-    const dtf = meridiemDtf(locale, utcInstance, fmt, meridiemsFormatOpts);
+const listMeridiemsMemo = memo("meridiemList", ([locale, fmt, meridiemsFormatOpts]: [
+    string | undefined,
+    Intl.DateTimeFormatOptions | undefined,
+  MeridiemFormatOpts
+]): string[] => {
+  const dtf = meridiemDtf(locale, utcInstance, fmt, meridiemsFormatOpts);
 
-    // @ts-ignore
-    const d = new Date(Date.UTC(2016, 6, 15));
+  // @ts-ignore
+  const d = new Date(Date.UTC(2016, 6, 15));
 
-    const iterable = (! meridiemsFormatOpts ||  meridiemsFormatOpts.width) == "simple" ? [9, 13] : { length: 24 };
+  const iterable = (!meridiemsFormatOpts || meridiemsFormatOpts.width) == "simple" ? [9, 13] : { length: 24 };
 
-    const found = Array.from(iterable, (_, h) => {
-      d.setUTCHours(h);
-      return extract(d, dtf, "dayperiod");
-    });
+  const found = Array.from(iterable, (_, h) => {
+    d.setUTCHours(h);
+    return extract(d, dtf, "dayperiod");
+  });
 
-    return [...new Set(found)];
-  }
-);
+  return [...new Set(found)];
+});
 
 const meridiemDtf = (
   locale: string | undefined,

@@ -1,7 +1,8 @@
 import Zone from "../model/zone";
 import { EraFormatOpts, FormatFirstArg } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys, memo } from "./formatUtils";
+import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
+import { memo } from "../caching";
 
 export const formatEra = (firstArg?: FormatFirstArg, secondArg?: EraFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, eraFormatOpts] = getFormattingArgs<EraFormatOpts>(
@@ -34,22 +35,20 @@ const formatEraMemo =
       return extract(d, dtf, "era");
     };
 
-const listErasMemo = memo(
-  ([locale, fmt, eraFormatOpts]: [
-      string | undefined,
-      Intl.DateTimeFormatOptions | undefined,
-    EraFormatOpts
-  ]): string[] => {
-    const dtf = eraDtf(locale, utcInstance, fmt, eraFormatOpts);
+const listErasMemo = memo("eraList", ([locale, fmt, eraFormatOpts]: [
+    string | undefined,
+    Intl.DateTimeFormatOptions | undefined,
+  EraFormatOpts
+]): string[] => {
+  const dtf = eraDtf(locale, utcInstance, fmt, eraFormatOpts);
 
-    // @ts-ignore
-    const d = new Date([2016, 6, 15]);
-    return [-40, 2017].map(year => {
-      d.setFullYear(year);
-      return extract(d, dtf, "era");
-    });
-  }
-);
+  // @ts-ignore
+  const d = new Date([2016, 6, 15]);
+  return [-40, 2017].map(year => {
+    d.setFullYear(year);
+    return extract(d, dtf, "era");
+  });
+});
 
 const eraDtf = (
   locale: string | undefined,
