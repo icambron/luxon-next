@@ -1,4 +1,4 @@
-import { FormatFirstArg, FormatSecondArg, WeekdayFormatOpts } from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, WeekdayFormatOpts } from "../scatteredTypes/formattingAndParsing";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys} from "./formatUtils";
 import Zone from "../model/zone";

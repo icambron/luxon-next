@@ -6,8 +6,8 @@ import {
   SharedFormattingOpts,
   FormatFirstArg,
   FormatSecondArg,
-  FormattingToken
-} from "../scatteredTypes/formatting";
+  FormattingToken, GeneralFormattingOpts
+} from "../scatteredTypes/formattingAndParsing";
 import { memo } from "../caching";
 import { DateTime } from "../model/dateTime";
 import { second } from "../dateTime/core";

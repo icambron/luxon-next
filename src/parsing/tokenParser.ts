@@ -7,7 +7,7 @@ import { listWeekdays } from "../formatting/weekdays";
 import { GregorianDate } from "../model/calendars/gregorian";
 import { ISOWeekDate } from "../model/calendars/isoWeek";
 import { listMeridiems } from "../formatting/meridiems";
-import { FormattingToken, TokenParsingOpts } from "../scatteredTypes/formatting";
+import { FormattingToken, TokenParsingOpts } from "../scatteredTypes/formattingAndParsing";
 import { ConflictingSpecificationError } from "../model/errors";
 import { dateTimeFormatter, parseFormat } from "../formatting/formatUtils";
 import { Time } from "../model/time";

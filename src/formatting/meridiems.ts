@@ -1,6 +1,6 @@
 import Zone from "../model/zone";
 import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys} from "./formatUtils";
-import { FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../scatteredTypes/formattingAndParsing";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { memo } from "../caching";
 

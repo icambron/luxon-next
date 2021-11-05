@@ -2,9 +2,10 @@
 /* eslint no-global-assign: "off" */
 
 import {
+  getDefaultFormat,
   getDefaultLocale,
   getDefaultNowFn,
-  getDefaultZone,
+  getDefaultZone, setDefaultFormat,
   setDefaultLocale,
   setDefaultNowFn,
   setDefaultZone
@@ -43,5 +44,15 @@ export const withDefaultLocale = (local, f) => {
     f();
   } finally {
     setDefaultLocale(oldLocale);
+  }
+};
+
+export const withDefaultFormat = (fmt, f) => {
+  const oldFmt = getDefaultFormat();
+  try {
+    setDefaultFormat(fmt);
+    f();
+  } finally {
+    setDefaultFormat(oldFmt);
   }
 };

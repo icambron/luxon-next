@@ -6,7 +6,7 @@ import {
   MeridiemFormatOpts,
   MonthFormatOpts,
   WeekdayFormatOpts
-} from "../scatteredTypes/formatting";
+} from "../scatteredTypes/formattingAndParsing";
 import Zone from "../model/zone";
 import { getDefaultFormat } from "../settings";
 import { dateTimeFormatter, getFormattingOpts } from "../formatting/formatUtils";
@@ -58,9 +58,9 @@ export const listMeridiems = listMeridiemsInternal;
 // note this doesn't support Japanese eras
 export const listEras = listErasInternal;
 
-const combineWithDefaultDtfOpts = (formatOpts: GeneralFormattingOpts): Intl.DateTimeFormatOptions => {
-  const { locale, ...rest } = formatOpts;
-  return Object.keys(rest).length === 0 ? getDefaultFormat() : rest;
+const combineWithDefaultFormat = (formatOpts: GeneralFormattingOpts): GeneralFormattingOpts => {
+  const { locale, calendar, numberingSystem, ...rest } = formatOpts;
+  return Object.keys(rest).length === 0 ? {...formatOpts, ...getDefaultFormat()} : formatOpts;
 }
 
 const withFormatting = <T>(
@@ -69,9 +69,9 @@ const withFormatting = <T>(
   f: Formatter<T>
 ): ((dt: DateTime) => T) =>
   toJs<T>((d, zone) => {
-    const formatOpts = getFormattingOpts(firstArg, secondArg);
-    const dtfOpts = combineWithDefaultDtfOpts(formatOpts);
-    return f(formatOpts.locale, dtfOpts)(d, zone);
+    let formatOpts = getFormattingOpts(firstArg, secondArg);
+    formatOpts = combineWithDefaultFormat(formatOpts);
+    return f(formatOpts.locale, formatOpts)(d, zone);
   });
 
 type Formatter<T> = (
@@ -86,9 +86,9 @@ const toJs =
 
 const withDtf = <T>(firstArg: FormatFirstArg<GeneralFormattingOpts>, secondArg: FormatSecondArg<GeneralFormattingOpts>, f: DtFer<T>): ((dt: DateTime) => T) =>
   toJs<T>((d, zone) => {
-    const formatOpts = getFormattingOpts(firstArg, secondArg);
-    const dtfOpts = combineWithDefaultDtfOpts(formatOpts);
-    const dtf = dateTimeFormatter(formatOpts.locale, zone, dtfOpts);
+    let formatOpts = getFormattingOpts(firstArg, secondArg);
+    formatOpts = combineWithDefaultFormat(formatOpts);
+    const dtf = dateTimeFormatter(formatOpts.locale, zone, formatOpts);
     return f(dtf)(d, zone);
   });
 

@@ -14,7 +14,7 @@ import { ordinalInstance } from "./model/calendars/ordinal";
 import { isoWeekCalendarInstance } from "./model/calendars/isoWeek";
 import { NoMatchingParserPattern } from "./model/errors";
 import { getFormattingOpts, hasKeys } from "./formatting/formatUtils";
-import { FormatFirstArg, FormatSecondArg, GeneralParsingOpts, TokenParsingOpts } from "./scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, GeneralParsingOpts, TokenParsingOpts } from "./scatteredTypes/formattingAndParsing";
 
 export type TokenParsingFirstOpt = string | Intl.DateTimeFormatOptions | ParsingOptions | undefined;
 export type TokenParsingSecondOpt = Intl.DateTimeFormatOptions | ParsingOptions | undefined;

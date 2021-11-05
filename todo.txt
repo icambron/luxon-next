@@ -1,20 +1,23 @@
-* figure out what to do with all the random types floating around
-* figure out how to export the core types better?
-* tests for defaultLocale
-
-Currently:
- - I have most of the parser working
- - Remaining issue is parsing digits in other numbering system
- - Mostly works, but one locale uses numbers for their months. Which should be fine, but we don't pass the numbering system through to the lister
- it provides 1-12 to the lister, instead of [weird char]-[weird-char]. So the regex doesn't match
- - See the commented-out Handidec test in fromFormatExplain.test.js
- - The real problem is that we don't have a good way to pass the numbering system to the formatter (??). Which is a huge oversight.
- - Fixing this requires reworking all that crazy convenience parameter logic built into the formatting system (yuck)
-
-Next big challenge is diff()
-Or could do more token parsing
+Big stuff:
+ * Next big challenge is diff()
+ * Or could do more token parsing
     - redo quoting to be like [] instead of '', which is _lame_
-Also need to figure out how to make { setZone } work
+
+Others:
+ * Also need arbitrary formatting, but that seems pretty easy?
+ * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
+ * Relative time
+
+Organization stuff:
+ * figure out what to do with all the random types floating around
+ * figure out how to export the core types better?
+ * parsing and formatting are not organized the same way
+ * check dependency tree
+
+Odds and ends:
+ * redo format presets in light of `timeStyle` and `dateStyle`
+ * tests for defaultLocale
+ * tests for toLocaleString() and friends (currently just testing toLocaleParts())
 
 Did a deep drive into the future of the pipeline operator:
 
