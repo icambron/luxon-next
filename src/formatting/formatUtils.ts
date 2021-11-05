@@ -64,7 +64,7 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
-// allow (), ("de"), ("de" { calendar: "" }), ({ calendar: "" }) with the right defaults
+// allow (), ("de"), ("de", { calendar: "" }), ({ calendar: "" }) with the right defaults
 export const getFormattingArgs = <T>(
   firstArg: FormatFirstArg | T,
   secondArg: FormatSecondArg | T,
@@ -89,7 +89,7 @@ export const getFormattingArgs = <T>(
     intlOpts = secondArg;
   }
 
-  if (!t && !intlOpts && f && f(thirdArg)) {
+  if (!t && f && f(thirdArg)) {
     t = thirdArg;
   }
 

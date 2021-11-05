@@ -67,3 +67,20 @@ test("listMonths lists accepts a locale and options", () => {
     "déc.",
   ]);
 });
+
+test("listMonths lists accepts a dtf options", () => {
+  expect(listMonths("zh", { numberingSystem: "hanidec" }, { width: "long" })).toEqual([
+    "一月",
+    "二月",
+    "三月",
+    "四月",
+    "五月",
+    "六月",
+    "七月",
+    "八月",
+    "九月",
+    "十月",
+    "十一月",
+    "十二月"
+  ]);
+});

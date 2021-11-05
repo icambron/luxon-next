@@ -59,26 +59,24 @@ test("fromFormatExplain() parses localized string with numberingSystem correctly
   });
 });
 
-// test("fromFormatExplain() parses localized string with numberingSystem correctly: hanidec", () => {
-//   const ex2 = fromFormatExplain(
-//     "〇三-四-二〇一九 一二:三四:四九 下午 Asia/Shanghai",
-//     "dd-MMMM-yyyy hh:mm:ss a z",
-//     { locale: "zh", numberingSystem: "hanidec" }
-//   );
-//
-//   console.log(ex2);
-//
-//   expect(ex2.fields).toEqual({
-//     M: 4,
-//     a: 1,
-//     d: 3,
-//     h: 12,
-//     m: 34,
-//     s: 49,
-//     y: 2019,
-//     z: "Asia/Shanghai",
-//   });
-// });
+test("fromFormatExplain() parses localized string with numberingSystem correctly: hanidec", () => {
+  const ex2 = fromFormatExplain(
+    "〇三-四-二〇一九 一二:三四:四九 下午 Asia/Shanghai",
+    "dd-MMMM-yyyy hh:mm:ss a z",
+    { locale: "zh", numberingSystem: "hanidec" }
+  );
+
+  expect(ex2.fields).toEqual({
+    M: 4,
+    a: 1,
+    d: 3,
+    h: 12,
+    m: 34,
+    s: 49,
+    y: 2019,
+    z: "Asia/Shanghai",
+  });
+});
 
 test("fromFormatExplain() parses localized string with numberingSystem correctly: arab", () => {
   const ex3 = fromFormatExplain("٠٣-أبريل-٢٠١٩ ٠٣:٤٦:٠١ م", "dd-MMMM-yyyy hh:mm:ss a", {

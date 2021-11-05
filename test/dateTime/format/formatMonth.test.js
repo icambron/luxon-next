@@ -23,10 +23,17 @@ test("formatMonth accepts locales", () => {
   expect(formatMonth("be")(dtMaker())).toEqual("жнівень");
 });
 
-test("formatMonth accepts options", () => {
+test("formatMonth accepts format options", () => {
   expect(formatMonth({ width: "2-digit" })(dtMaker())).toEqual("08");
 });
 
 test("formatMonth accepts locale and options", () => {
   expect(formatMonth("be", { width: "short" })(dtMaker())).toEqual("жні");
 });
+
+test("formatMonth accepts dtf options in the 'middle' position", () => {
+  expect(formatMonth({ calendar: "coptic"})(dtMaker())).toEqual("Epep");
+  expect(formatMonth("fr", { numberingSystem: "mong"}, { width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
+  expect(formatMonth({ numberingSystem: "mong"}, { width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
+});
+

@@ -1,24 +1,24 @@
 import Zone from "../model/zone";
 import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
-import { FormatFirstArg, MeridiemFormatOpts} from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { memo } from "../caching";
 
-export const formatMeridiem = (firstArg?: FormatFirstArg, secondArg?: MeridiemFormatOpts): ((date: Date, zone: Zone) => string) => {
+export const formatMeridiem = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | MeridiemFormatOpts, thirdArg?: MeridiemFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, meridiemFormatOpts] = getFormattingArgs<MeridiemFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return (date, zone) => formatMeridiemsMemo(locale, opts, meridiemFormatOpts)(date, zone);
 };
 
-export const listMeridiems = (firstArg?: FormatFirstArg, secondArg?: MeridiemFormatOpts): string[] => {
+export const listMeridiems = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | MeridiemFormatOpts, thirdArg?: MeridiemFormatOpts): string[] => {
   const [locale, opts, meridiemsFormatOpts] = getFormattingArgs<MeridiemFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return listMeridiemsMemo([locale, opts, meridiemsFormatOpts]);

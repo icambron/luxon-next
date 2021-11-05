@@ -1,24 +1,24 @@
-import { FormatFirstArg, WeekdayFormatOpts } from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, WeekdayFormatOpts } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
 import Zone from "../model/zone";
 import { memo } from "../caching";
 
-export const formatWeekday = (firstArg?: FormatFirstArg, secondArg?: WeekdayFormatOpts): ((date: Date, zone: Zone) => string) => {
+export const formatWeekday = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | WeekdayFormatOpts, thirdArg?: WeekdayFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, weekdayFormatOpts] = getFormattingArgs<WeekdayFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return (date, zone) => formatWeekdayMemo(locale, opts, weekdayFormatOpts)(date, zone);
 };
 
-export const listWeekdays = (firstArg?: FormatFirstArg, secondArg?: WeekdayFormatOpts): string[] => {
+export const listWeekdays = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | WeekdayFormatOpts, thirdArg?: WeekdayFormatOpts): string[] => {
   const [locale, opts, monthFormatOpts] = getFormattingArgs<WeekdayFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return listWeekdaysMemo([locale, opts, monthFormatOpts]);

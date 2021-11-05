@@ -1,24 +1,24 @@
 import Zone from "../model/zone";
-import { FormatFirstArg, MonthFormatOpts } from "../scatteredTypes/formatting";
+import { FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
 import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
 import { memo } from "../caching";
 
-export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): ((date: Date, zone: Zone) => string) => {
+export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | MonthFormatOpts, thirdArg?: MonthFormatOpts): ((date: Date, zone: Zone) => string) => {
   const [locale, opts, monthFormatOpts] = getFormattingArgs<MonthFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return (date, zone) => formatMonthMemo(locale, opts, monthFormatOpts)(date, zone);
 };
 
-export const listMonths = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): string[] => {
+export const listMonths = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | MonthFormatOpts, thirdArg?: MonthFormatOpts): string[] => {
   const [locale, opts, monthFormatOpts] = getFormattingArgs<MonthFormatOpts>(
     firstArg,
-    undefined,
     secondArg,
+    thirdArg,
     hasKeys("mode", "width")
   );
   return listMonthsMemo([locale, opts, monthFormatOpts]);
@@ -59,5 +59,6 @@ const monthDtf = (
   const mode = monthFormatOpts?.mode || "standalone";
   const width = monthFormatOpts?.width || "long";
   const options: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
-  return getDtf(getDtfArgs(locale, zone, { ...options, ...fmt }));
+  const dtfArgs = getDtfArgs(locale, zone, { ...options, ...fmt });
+  return getDtf(dtfArgs);
 };

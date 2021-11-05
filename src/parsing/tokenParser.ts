@@ -93,8 +93,7 @@ const literal = (t: FormattingToken): TokenParsingUnit => ({ regex: RegExp(escap
 
 const simple = (regex: RegExp): TokenParsingUnit => ({ regex, deser: ([s]) => s });
 
-// todo - memo
-const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: FormattingToken) => TokenParsingUnit => {
+const getUnitMap = (locale: string, numberingSystem: string | undefined): (token: FormattingToken) => TokenParsingUnit => {
   const one = digitRegex(numberingSystem);
   const two = digitRegex(numberingSystem, "{2}");
   const three = digitRegex(numberingSystem, "{3}");
@@ -113,9 +112,9 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
     switch (t.name) {
       // era
       case "G":
-        return oneOf(listEras(loc, {width: "short"}), 0);
+        return oneOf(listEras(locale, { numberingSystem }, {width: "short"}), 0);
       case "GG":
-        return oneOf(listEras(loc, {width: "long"}), 0);
+        return oneOf(listEras(locale, { numberingSystem }, {width: "long"}), 0);
       // years
       case "y":
         return intUnit(oneToSix);
@@ -133,17 +132,17 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
       case "MM":
         return intUnit(two);
       case "MMM":
-        return oneOf(listMonths(loc, { width: "short", mode: "format" }), 1);
+        return oneOf(listMonths(locale, {numberingSystem}, { width: "short", mode: "format" }), 1);
       case "MMMM":
-        return oneOf(listMonths(loc, {width: "long", mode: "format"}), 1);
+        return oneOf(listMonths(locale, {numberingSystem}, {width: "long", mode: "format"}), 1);
       case "L":
         return intUnit(oneOrTwo);
       case "LL":
         return intUnit(two);
       case "LLL":
-        return oneOf(listMonths(loc, { width: "short", mode: "standalone" }), 1);
+        return oneOf(listMonths(locale, {numberingSystem}, { width: "short", mode: "standalone" }), 1);
       case "LLLL":
-        return oneOf(listMonths(loc, { width: "long", mode: "standalone" }), 1);
+        return oneOf(listMonths(locale, {numberingSystem}, { width: "long", mode: "standalone" }), 1);
       // dates
       case "d":
         return intUnit(oneOrTwo);
@@ -187,7 +186,7 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
         return intUnit(one);
       // meridiem
       case "a":
-        return oneOf(listMeridiems(loc), 0);
+        return oneOf(listMeridiems(locale, { numberingSystem} ), 0);
       // weekYear (k)
       case "kkkk":
         return intUnit(four);
@@ -203,13 +202,13 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
       case "c":
         return intUnit(one);
       case "EEE":
-        return oneOf(listWeekdays(loc, { width: "short", mode: "standalone"  }), 1);
+        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "short", mode: "standalone" }), 1);
       case "EEEE":
-        return oneOf(listWeekdays(loc, { width: "long", mode: "standalone"  }), 1);
+        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "long", mode: "standalone" }), 1);
       case "ccc":
-        return oneOf(listWeekdays(loc, { width: "short", mode: "format"  }), 1);
+        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "short", mode: "format" }), 1);
       case "cccc":
-        return oneOf(listWeekdays(loc, { width: "long", mode: "format"  }), 1);
+        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "long", mode: "format" }), 1);
       // offset/zone
       case "Z":
       case "ZZ":

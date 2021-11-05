@@ -1,5 +1,12 @@
 import { DateTime } from "../model/dateTime";
-import { FormatFirstArg, FormatSecondArg, MonthFormatOpts, WeekdayFormatOpts } from "../scatteredTypes/formatting";
+import {
+  EraFormatOpts,
+  FormatFirstArg,
+  FormatSecondArg,
+  MeridiemFormatOpts,
+  MonthFormatOpts,
+  WeekdayFormatOpts
+} from "../scatteredTypes/formatting";
 import Zone from "../model/zone";
 import { getDefaultFormat } from "../settings";
 import { dateTimeFormatter, getFormattingArgs } from "../formatting/formatUtils";
@@ -32,21 +39,23 @@ export const toLocaleTimeString = (
 ): ((dt: DateTime) => string) =>
   withFormatting<string>(firstArg, secondArg, (loc, fmt) => (jsDate) => jsDate.toLocaleTimeString(loc, fmt));
 
-export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: MonthFormatOpts): ((dt: DateTime) => string) => (dt) =>
-  formatMonthInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
+export const formatMonth = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | MonthFormatOpts, thirdArg?: MonthFormatOpts): ((dt: DateTime) => string) => (dt) =>
+  formatMonthInternal(firstArg, secondArg, thirdArg)(new Date(+dt), dt.zone);
 
-export const formatWeekday = (firstArg?: FormatFirstArg, secondArg?: WeekdayFormatOpts): ((dt: DateTime) => string) => (dt) =>
-  formatWeekdayInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
+export const formatWeekday = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | WeekdayFormatOpts, thirdArg?: WeekdayFormatOpts): ((dt: DateTime) => string) => (dt) =>
+  formatWeekdayInternal(firstArg, secondArg, thirdArg)(new Date(+dt), dt.zone);
 
-export const formatMeridiem = (firstArg?: FormatFirstArg, secondArg?: WeekdayFormatOpts): ((dt: DateTime) => string) => (dt) =>
-    formatMeridiemInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
+export const formatMeridiem = (firstArg?: FormatFirstArg, secondArg?: MeridiemFormatOpts | WeekdayFormatOpts, thirdArg?: WeekdayFormatOpts): ((dt: DateTime) => string) => (dt) =>
+    formatMeridiemInternal(firstArg, secondArg, thirdArg)(new Date(+dt), dt.zone);
 
-export const formatEras = (locale?: string): ((dt: DateTime) => string) => (dt) =>
-  formatErasInternal(locale)(new Date(+dt), dt.zone);
+export const formatEra = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | EraFormatOpts, thirdArg?: EraFormatOpts): ((dt: DateTime) => string) => (dt) =>
+  formatErasInternal(firstArg, secondArg, thirdArg)(new Date(+dt), dt.zone);
 
 export const listMonths = listMonthsInternal;
 export const listWeekdays = listWeekdaysInternal;
 export const listMeridiems = listMeridiemsInternal;
+
+// note this doesn't support Japanese eras
 export const listEras = listErasInternal;
 
 const withFormatting = <T>(
