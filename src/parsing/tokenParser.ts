@@ -7,7 +7,7 @@ import { listWeekdays } from "../formatting/weekdays";
 import { GregorianDate } from "../model/calendars/gregorian";
 import { ISOWeekDate } from "../model/calendars/isoWeek";
 import { listMeridiems } from "../formatting/meridiems";
-import { FormattingToken } from "../scatteredTypes/formatting";
+import { FormattingToken, TokenParsingOpts } from "../scatteredTypes/formatting";
 import { ConflictingSpecificationError } from "../model/errors";
 import { dateTimeFormatter, parseFormat } from "../formatting/formatUtils";
 import { Time } from "../model/time";
@@ -93,18 +93,19 @@ const literal = (t: FormattingToken): TokenParsingUnit => ({ regex: RegExp(escap
 
 const simple = (regex: RegExp): TokenParsingUnit => ({ regex, deser: ([s]) => s });
 
-const getUnitMap = (locale: string, numberingSystem: string | undefined): (token: FormattingToken) => TokenParsingUnit => {
-  const one = digitRegex(numberingSystem);
-  const two = digitRegex(numberingSystem, "{2}");
-  const three = digitRegex(numberingSystem, "{3}");
-  const four = digitRegex(numberingSystem, "{4}");
-  const six = digitRegex(numberingSystem, "{6}");
-  const oneOrTwo = digitRegex(numberingSystem, "{1,2}");
-  const oneToThree = digitRegex(numberingSystem, "{1,3}");
-  const oneToSix = digitRegex(numberingSystem, "{1,6}");
-  const oneToNine = digitRegex(numberingSystem, "{1,9}");
-  const twoToFour = digitRegex(numberingSystem, "{2,4}");
-  const fourToSix = digitRegex(numberingSystem, "{4,6}");
+const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => TokenParsingUnit => {
+  const one = digitRegex(parsingOpts.numberingSystem);
+  const two = digitRegex(parsingOpts.numberingSystem, "{2}");
+  const three = digitRegex(parsingOpts.numberingSystem, "{3}");
+  const four = digitRegex(parsingOpts.numberingSystem, "{4}");
+  const six = digitRegex(parsingOpts.numberingSystem, "{6}");
+  const oneOrTwo = digitRegex(parsingOpts.numberingSystem, "{1,2}");
+  const oneToThree = digitRegex(parsingOpts.numberingSystem, "{1,3}");
+  const oneToSix = digitRegex(parsingOpts.numberingSystem, "{1,6}");
+  const oneToNine = digitRegex(parsingOpts.numberingSystem, "{1,9}");
+  const twoToFour = digitRegex(parsingOpts.numberingSystem, "{2,4}");
+  const fourToSix = digitRegex(parsingOpts.numberingSystem, "{4,6}");
+
   const unitate = (t: FormattingToken): TokenParsingUnit => {
     if (t.literal) {
       return literal(t);
@@ -112,9 +113,9 @@ const getUnitMap = (locale: string, numberingSystem: string | undefined): (token
     switch (t.name) {
       // era
       case "G":
-        return oneOf(listEras(locale, { numberingSystem }, {width: "short"}), 0);
+        return oneOf(listEras({...parsingOpts, width: "short"}), 0);
       case "GG":
-        return oneOf(listEras(locale, { numberingSystem }, {width: "long"}), 0);
+        return oneOf(listEras({...parsingOpts, width: "long"}), 0);
       // years
       case "y":
         return intUnit(oneToSix);
@@ -132,17 +133,17 @@ const getUnitMap = (locale: string, numberingSystem: string | undefined): (token
       case "MM":
         return intUnit(two);
       case "MMM":
-        return oneOf(listMonths(locale, {numberingSystem}, { width: "short", mode: "format" }), 1);
+        return oneOf(listMonths({...parsingOpts,  width: "short", mode: "format" }), 1);
       case "MMMM":
-        return oneOf(listMonths(locale, {numberingSystem}, {width: "long", mode: "format"}), 1);
+        return oneOf(listMonths({...parsingOpts, width: "long", mode: "format"}), 1);
       case "L":
         return intUnit(oneOrTwo);
       case "LL":
         return intUnit(two);
       case "LLL":
-        return oneOf(listMonths(locale, {numberingSystem}, { width: "short", mode: "standalone" }), 1);
+        return oneOf(listMonths({...parsingOpts, width: "short", mode: "standalone" }), 1);
       case "LLLL":
-        return oneOf(listMonths(locale, {numberingSystem}, { width: "long", mode: "standalone" }), 1);
+        return oneOf(listMonths({...parsingOpts, width: "long", mode: "standalone" }), 1);
       // dates
       case "d":
         return intUnit(oneOrTwo);
@@ -186,7 +187,7 @@ const getUnitMap = (locale: string, numberingSystem: string | undefined): (token
         return intUnit(one);
       // meridiem
       case "a":
-        return oneOf(listMeridiems(locale, { numberingSystem} ), 0);
+        return oneOf(listMeridiems(parsingOpts), 0);
       // weekYear (k)
       case "kkkk":
         return intUnit(four);
@@ -202,13 +203,13 @@ const getUnitMap = (locale: string, numberingSystem: string | undefined): (token
       case "c":
         return intUnit(one);
       case "EEE":
-        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "short", mode: "standalone" }), 1);
+        return oneOf(listWeekdays({...parsingOpts, width: "short", mode: "standalone" }), 1);
       case "EEEE":
-        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "long", mode: "standalone" }), 1);
+        return oneOf(listWeekdays({...parsingOpts, width: "long", mode: "standalone" }), 1);
       case "ccc":
-        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "short", mode: "format" }), 1);
+        return oneOf(listWeekdays({...parsingOpts, width: "short", mode: "format" }), 1);
       case "cccc":
-        return oneOf(listWeekdays(locale, {numberingSystem}, { width: "long", mode: "format" }), 1);
+        return oneOf(listWeekdays({...parsingOpts, width: "long", mode: "format" }), 1);
       // offset/zone
       case "Z":
       case "ZZ":
@@ -385,7 +386,7 @@ const getDummyDateTime = (): Date => {
   return dummyDateTimeCache;
 };
 
-const maybeExpandMacroToken = (token: FormattingToken, locale: string) => {
+const maybeExpandMacroToken = (token: FormattingToken, parsingOpts: TokenParsingOpts) => {
   if (token.literal) {
     return token;
   }
@@ -396,7 +397,7 @@ const maybeExpandMacroToken = (token: FormattingToken, locale: string) => {
     return token;
   }
 
-  const formatter = dateTimeFormatter(locale, undefined, formatOpts);
+  const formatter = dateTimeFormatter(parsingOpts.locale, undefined, formatOpts);
 
   const parts = formatter.formatToParts(getDummyDateTime());
 
@@ -409,26 +410,26 @@ const maybeExpandMacroToken = (token: FormattingToken, locale: string) => {
   return tokens;
 };
 
-const expandMacroTokens = (tokens: FormattingToken[], locale: string) : FormattingToken[] =>
-  Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, locale)));
+const expandMacroTokens = (tokens: FormattingToken[], parsingOpts: TokenParsingOpts) : FormattingToken[] =>
+  Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, parsingOpts)));
 
 /**
  * @private
  */
-export const parseFromFormat = (locale: string, numberingSystem: string | undefined, input: string, format: string): TokenParsingSummary => {
+export const parseFromFormat = (input: string, format: string, parsingOpts: TokenParsingOpts): TokenParsingSummary => {
 
   // prelude: we memoize the whole parser
-  const buildParser = memo("tokenParser", ([locale, numberingSystem, format]: [string, string | undefined, string]): [TokenParsingUnit[], RegExp, FormattingToken[]] => {
+  const buildParser = memo("tokenParser", ([parsingOpts, format]: [TokenParsingOpts, string]): [TokenParsingUnit[], RegExp, FormattingToken[]] => {
     // step 1 - parse the format to string to generate a FormatToken[]
     const rawTokens = parseFormat(format);
 
     // step 2 - expand macro tokens
-    const expandedTokens = expandMacroTokens(rawTokens, locale);
+    const expandedTokens = expandMacroTokens(rawTokens, parsingOpts);
 
     // step 3 - map the tokens to parsing units (essentially regex + how to extract the value from the match) pairs
     // this has two sub-steps:
     // a) get a map appropriate to the locale. This is a function FormatToken -> TokenParsingUnit
-    const tokenMap = getUnitMap(locale, numberingSystem);
+    const tokenMap = getUnitMap(parsingOpts);
 
     // b) map all the tokens we actually have to units using that mapping. This is a TokenParsingUnit[]
     const units = expandedTokens.map(tokenMap);
@@ -440,7 +441,7 @@ export const parseFromFormat = (locale: string, numberingSystem: string | undefi
   })
 
   // intermezzo: get the possibly-already-memoized parser
-  const [units, regex, rawTokens] = buildParser([locale, numberingSystem, format]);
+  const [units, regex, rawTokens] = buildParser([parsingOpts, format]);
 
   // step 5 - run the regex on the input
   const matches = input.match(regex);

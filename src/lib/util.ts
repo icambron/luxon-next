@@ -8,6 +8,9 @@ import { InvalidArgumentError } from "../model/errors";
  */
 
 // TYPES
+export function isObject(o: unknown): o is object {
+  return typeof o === "object";
+}
 
 export function isUndefined(o: unknown): o is undefined {
   return typeof o === "undefined";

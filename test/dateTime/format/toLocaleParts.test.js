@@ -35,7 +35,7 @@ test("toLocaleParts() returns a en-US by default", () => {
   ]);
 });
 
-test("toLocaleParts() accepts locale string from the dateTime", () => {
+test("toLocaleParts() accepts a locale string", () => {
   expect(toLocaleParts("be")(dt)).toEqual([
     { type: "day", value: "25" },
     { type: "literal", value: "." },

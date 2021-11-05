@@ -8,21 +8,22 @@ import { parseRFC2822 } from "./parsing/rfc2822Parser";
 import { parseHTTPDate } from "./parsing/httpParser";
 import { getDefaultLocale, getDefaultNumberingSystem, getDefaultZone } from "./settings";
 import { parseFromFormat, TokenParsedValue, TokenParsingSummary } from "./parsing/tokenParser";
-import { isUndefined } from "./lib/util";
+import { isObject, isUndefined } from "./lib/util";
 import { Calendar } from "./model/calendar";
 import { ordinalInstance } from "./model/calendars/ordinal";
 import { isoWeekCalendarInstance } from "./model/calendars/isoWeek";
 import { NoMatchingParserPattern } from "./model/errors";
+import { getFormattingOpts, hasKeys } from "./formatting/formatUtils";
+import { FormatFirstArg, FormatSecondArg, GeneralParsingOpts, TokenParsingOpts } from "./scatteredTypes/formatting";
+
+export type TokenParsingFirstOpt = string | Intl.DateTimeFormatOptions | ParsingOptions | undefined;
+export type TokenParsingSecondOpt = Intl.DateTimeFormatOptions | ParsingOptions | undefined;
+export type TokenParsingThirdOpt = ParsingOptions | undefined;
 
 interface ParsingOptions {
   interpretationZone?: Zoneish;
   targetZone?: Zoneish;
   useTargetZoneFromInput?: boolean
-}
-
-interface TokenParsingOptions extends ParsingOptions {
-  locale?: string,
-  numberingSystem?: string
 }
 
 export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingOptions =>
@@ -73,27 +74,25 @@ const choose = (parsed: TokenParsedValue, opts: ParsingOptions): DateTime => {
   return setZone(targetZone)(dt);
 }
 
-export const fromISO = (input: string, opts: ParsingOptions = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);
+export const fromISO = (input: string, opts: GeneralParsingOpts = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);
 export const tryFromISO = wrapError(fromISO);
 
-export const fromRFC2822 = (input: string, opts: ParsingOptions = {}): DateTime => fromRegexParse(parseRFC2822(input), opts);
+export const fromRFC2822 = (input: string, opts: GeneralParsingOpts = {}): DateTime => fromRegexParse(parseRFC2822(input), opts);
 export const tryFromRFC2822 = wrapError(fromRFC2822);
 
-export const fromHTTP = (input: string, opts: ParsingOptions = {}): DateTime => fromRegexParse(parseHTTPDate(input), opts);
+export const fromHTTP = (input: string, opts: GeneralParsingOpts = {}): DateTime => fromRegexParse(parseHTTPDate(input), opts);
 export const tryFromHTTP = wrapError(fromHTTP);
 
-export const fromFormatExplain = (input: string, format: string, opts: TokenParsingOptions = {}): TokenParsingSummary => {
-  const locale = opts.locale || getDefaultLocale();
-  // todo - is this right? Can't the locale choose the numbering system?
-  const numberingSystem = opts.numberingSystem || getDefaultNumberingSystem();
-
-  return parseFromFormat(locale, numberingSystem, input, format);
+export const fromFormatExplain = (input: string, format: string, firstArg?: FormatFirstArg<TokenParsingOpts>, secondArg?: FormatSecondArg<TokenParsingOpts>): TokenParsingSummary => {
+  const parsingOpts = getFormattingOpts(firstArg, secondArg);
+  return parseFromFormat(input, format, parsingOpts);
 }
 
-export const fromFormat = (input: string, format: string, opts: TokenParsingOptions = {}): DateTime => {
-  const summary = fromFormatExplain(input, format, opts);
+export const fromFormat = (input: string, format: string, firstArg?: FormatFirstArg<TokenParsingOpts>, secondArg?: FormatSecondArg<TokenParsingOpts>): DateTime => {
+  const parsingOpts = getFormattingOpts(firstArg, secondArg);
+  const summary = fromFormatExplain(input, format, parsingOpts);
   if (summary.parsed) {
-    return choose(summary.parsed, opts);
+    return choose(summary.parsed, parsingOpts);
   } else {
     throw new NoMatchingParserPattern(input);
   }

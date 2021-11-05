@@ -28,5 +28,5 @@ test("formatMeridiem accepts a width option", () => {
 });
 
 test("formatMeridiem accepts both a locale and a width", () => {
-  expect(formatMeridiem("fr", { width: "long" })(dtMaker())).toEqual("du matin");
+  expect(formatMeridiem({ locale: "fr", width: "long" })(dtMaker())).toEqual("du matin");
 });

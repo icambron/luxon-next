@@ -20,7 +20,7 @@ test("listMeridiems() accepts widths", () => {
 });
 
 test("listMeridiems() accepts locales and widths", () => {
-  expect(listMeridiems("fr", { width: "long" })).toEqual([
+  expect(listMeridiems({ locale: "fr", width: "long" })).toEqual([
     "du matin",
     "midi",
     "de l’après-midi",

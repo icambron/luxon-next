@@ -2,9 +2,15 @@ import Zone from "../model/zone";
 import { isValidZone } from "../model/zones/IANAZone";
 import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
 import { UnknownError } from "../model/errors";
-import { FormatFirstArg, FormatSecondArg, FormattingToken } from "../scatteredTypes/formatting";
+import {
+  SharedFormattingOpts,
+  FormatFirstArg,
+  FormatSecondArg,
+  FormattingToken
+} from "../scatteredTypes/formatting";
 import { memo } from "../caching";
 import { DateTime } from "../model/dateTime";
+import { second } from "../dateTime/core";
 
 export const getDtf = memo("dateTimeFormat", ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
 
@@ -64,37 +70,27 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
-// allow (), ("de"), ("de", { calendar: "" }), ({ calendar: "" }) with the right defaults
-export const getFormattingArgs = <T>(
-  firstArg: FormatFirstArg | T,
-  secondArg: FormatSecondArg | T,
-  thirdArg?: T,
-  f?: (a: any) => a is T
-): [string | undefined, Intl.DateTimeFormatOptions | undefined, T | undefined] => {
+export const getFormattingOpts = <T extends SharedFormattingOpts>(firstArg: FormatFirstArg<T>, secondArg: FormatSecondArg<T>): Partial<T> => {
   let locale: string | undefined = undefined;
-  let intlOpts: Intl.DateTimeFormatOptions | undefined = undefined;
-  let t: T | undefined = undefined;
-
-  if (typeof firstArg == "string") {
+  let t: Partial<T> | undefined = undefined;
+  if (typeof firstArg === "string") {
     locale = firstArg;
-  } else if (f && f(firstArg)) {
-    t = firstArg;
-  } else {
-    intlOpts = firstArg;
+  } else if (typeof firstArg === "object") {
+    t = firstArg as Partial<T>; // we hope!
   }
 
-  if (!t && f && f(secondArg)) {
-    t = secondArg;
-  } else if (!t && !intlOpts) {
-    intlOpts = secondArg;
+  if (!t && typeof secondArg === "object") {
+    t = secondArg as Partial<T>;
   }
 
-  if (!t && f && f(thirdArg)) {
-    t = thirdArg;
+  if (t && !t.locale) {
+    t.locale = locale
+  } else if (!t) {
+    t = (locale ? { locale } : {}) as Partial<T>;
   }
 
-  return [locale, intlOpts, t];
-};
+  return t;
+}
 
 export const hasKeys =
   <T>(...keys: string[]): ((o: any) => o is T) =>

@@ -1,46 +1,27 @@
 import Zone from "../model/zone";
 import { EraFormatOpts, FormatFirstArg, FormatSecondArg } from "../scatteredTypes/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingArgs, hasKeys} from "./formatUtils";
+import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys} from "./formatUtils";
 import { memo } from "../caching";
 
-export const formatEra = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | EraFormatOpts, thirdArg?: EraFormatOpts): ((date: Date, zone: Zone) => string) => {
-  const [locale, opts, eraFormatOpts] = getFormattingArgs<EraFormatOpts>(
-    firstArg,
-    secondArg,
-    thirdArg,
-    hasKeys("mode", "width")
-  );
-  return (date, zone) => formatEraMemo(locale, opts, eraFormatOpts)(date, zone);
+export const formatEra = (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): ((date: Date, zone: Zone) => string) => {
+  const formatOpts = getFormattingOpts<EraFormatOpts>(firstArg, secondArg);
+  return (date, zone) => formatEraMemo(formatOpts)(date, zone);
 };
 
-export const listEras = (firstArg?: FormatFirstArg, secondArg?: FormatSecondArg | EraFormatOpts, thirdArg?: EraFormatOpts): string[] => {
-  const [locale, opts, eraFormatOpts] = getFormattingArgs<EraFormatOpts>(
-    firstArg,
-    secondArg,
-    thirdArg,
-    hasKeys("mode", "width")
-  );
-  return listErasMemo([locale, opts, eraFormatOpts]);
+export const listEras = (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string[] => {
+  const formatOpts = getFormattingOpts<EraFormatOpts>(firstArg, secondArg);
+  return listErasMemo(formatOpts);
 };
 
-const formatEraMemo =
-  (
-    locale: string | undefined,
-    fmt: Intl.DateTimeFormatOptions | undefined,
-    eraFormatOpts: EraFormatOpts
-  ): ((jsDate: Date, zone: Zone) => string) =>
+const formatEraMemo = (formatOpts: EraFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
     (d, zone) => {
-      const dtf = eraDtf(locale, zone, fmt, eraFormatOpts);
+      const dtf = eraDtf(formatOpts, zone);
       return extract(d, dtf, "era");
     };
 
-const listErasMemo = memo("eraList", ([locale, fmt, eraFormatOpts]: [
-    string | undefined,
-    Intl.DateTimeFormatOptions | undefined,
-  EraFormatOpts
-]): string[] => {
-  const dtf = eraDtf(locale, utcInstance, fmt, eraFormatOpts);
+const listErasMemo = memo("eraList", (formatOpts: EraFormatOpts) => {
+  const dtf = eraDtf(formatOpts, utcInstance);
 
   // @ts-ignore
   const d = new Date([2016, 6, 15]);
@@ -51,13 +32,8 @@ const listErasMemo = memo("eraList", ([locale, fmt, eraFormatOpts]: [
   return [...new Set(foundEras)];
 });
 
-const eraDtf = (
-  locale: string | undefined,
-  zone: Zone,
-  fmt: Intl.DateTimeFormatOptions | undefined,
-  eraFormatOpts: EraFormatOpts
-): Intl.DateTimeFormat => {
-  const width = eraFormatOpts?.width || "short";
+const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
+  const width = formatOpts.width || "short";
   const options: Intl.DateTimeFormatOptions = { year: "numeric", era: width }
-  return getDtf(getDtfArgs(locale, zone, { ...options, ...fmt }));
+  return getDtf(getDtfArgs(formatOpts.locale, zone, { ...options, ...formatOpts }));
 };
