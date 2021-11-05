@@ -96,7 +96,7 @@ export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
         obj1.weekday === obj2.weekday;
 }
 
-export const isoCalendarInstance = new IsoWeekCalendar();
+export const isoWeekCalendarInstance = new IsoWeekCalendar();
 
 export function weeksInWeekYear(weekYear: number): number {
     const p1 =

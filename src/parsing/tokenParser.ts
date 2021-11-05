@@ -9,10 +9,12 @@ import { ISOWeekDate } from "../model/calendars/isoWeek";
 import { listMeridiems } from "../formatting/meridiems";
 import { FormattingToken } from "../scatteredTypes/formatting";
 import { ConflictingSpecificationError } from "../model/errors";
-import { parseFormat } from "../formatting/formatUtils";
+import { dateTimeFormatter, parseFormat } from "../formatting/formatUtils";
 import { Time } from "../model/time";
 import Zone from "../model/zone";
 import { memo } from "../caching";
+import { MacroToken, macroTokens } from "../formatPresets";
+import { digitRegex, parseDigits } from "../lib/digits";
 
 // TYPES
 interface TokenParsingUnit {
@@ -41,7 +43,9 @@ export type TokenParsedFields = Partial<TokenParsedFieldsFull>;
 
 export interface TokenParsingSummary {
   input: string,
+  format: string,
   tokens: FormattingToken[],
+  units: TokenParsingUnit[],
   regex: RegExp,
   matches: RegExpMatchArray | null,
   fields: TokenParsedFields | null,
@@ -53,13 +57,6 @@ export interface TokenParsingSummary {
 const NBSP = String.fromCharCode(160);
 const spaceOrNBSP = `( |${NBSP})`;
 const spaceOrNBSPRegExp = new RegExp(spaceOrNBSP, "g");
-
-//placeholders - this needs to use the parseDigits logic from luxon
-const parseDigits = (str: string) => parseInt(str, 10);
-const digitRegex = (numberingSystem: string | undefined, append = ""): RegExp => {
-const latnRegex = "\\d"
-return new RegExp(`${latnRegex}${append}`);
-}
 
 // UTILITIES
 
@@ -116,9 +113,9 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
     switch (t.name) {
       // era
       case "G":
-        return oneOf(listEras(loc, {width: "short"}), 1);
+        return oneOf(listEras(loc, {width: "short"}), 0);
       case "GG":
-        return oneOf(listEras(loc, {width: "long"}), 1);
+        return oneOf(listEras(loc, {width: "long"}), 0);
       // years
       case "y":
         return intUnit(oneToSix);
@@ -190,7 +187,7 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
         return intUnit(one);
       // meridiem
       case "a":
-        return oneOf(listMeridiems(), 0);
+        return oneOf(listMeridiems(loc), 0);
       // weekYear (k)
       case "kkkk":
         return intUnit(four);
@@ -235,7 +232,11 @@ const getUnitMap = (loc: string, numberingSystem: string | undefined): (token: F
   }
 }
 
-const partTypeStyleToTokenVal = {
+type Style = "2-digit" | "numeric" | "short" | "long" | "narrow" | "*";
+type StyleToToken = Partial<Record<Style, string>>;
+type PartToStyle = Partial<Record<Intl.DateTimeFormatPartTypes, StyleToToken>>;
+
+const partTypeStyleToTokenVal: PartToStyle = {
   year: {
     "2-digit": "yy",
     numeric: "yyyyy",
@@ -254,8 +255,9 @@ const partTypeStyleToTokenVal = {
     short: "EEE",
     long: "EEEE",
   },
-  dayperiod: "a",
-  dayPeriod: "a",
+  dayPeriod: {
+    "*": "a"
+  },
   hour: {
     numeric: "h",
     "2-digit": "hh",
@@ -270,32 +272,24 @@ const partTypeStyleToTokenVal = {
   },
 };
 
-// function tokenForPart(part, locale, formatOpts) {
-//   const { type, value } = part;
-//
-//   if (type === "literal") {
-//     return {
-//       literal: true,
-//       val: value,
-//     };
-//   }
-//
-//   const style = formatOpts[type];
-//
-//   let val = partTypeStyleToTokenVal[type];
-//   if (typeof val === "object") {
-//     val = val[style];
-//   }
-//
-//   if (val) {
-//     return {
-//       literal: false,
-//       val,
-//     };
-//   }
-//
-//   return undefined;
-// }
+function tokenForPart(part: Intl.DateTimeFormatPart, formatOps: Intl.DateTimeFormatOptions) {
+  const { type, value } = part;
+
+  if (type === "literal") return { literal: true, val: value };
+
+  let val = partTypeStyleToTokenVal[type];
+  if (!isUndefined(val)) {
+
+    const style: Style = formatOps[type] || "*";
+    const specific = val[style] || val["*"];
+
+    if (specific) {
+      return { literal: false, val };
+    }
+  }
+
+  return undefined;
+}
 
 function buildRegex(units: TokenParsingUnit[]): RegExp {
   const re = units.map((u) => u.regex).reduce((f, r) => `${f}(${r.source})`, "");
@@ -384,42 +378,40 @@ const valsForFields = (fields: TokenParsedFields): TokenParsedValue => {
   return parsed;
 }
 
-// let dummyDateTimeCache = null;
-//
-// function getDummyDateTime() {
-//   if (!dummyDateTimeCache) {
-//     dummyDateTimeCache = DateTime.fromMillis(1555555555555);
-//   }
-//
-//   return dummyDateTimeCache;
-// }
+let dummyDateTimeCache: Date | null = null;
+const getDummyDateTime = (): Date => {
+  if (!dummyDateTimeCache) {
+    dummyDateTimeCache = new Date( 1555555555555);
+  }
+  return dummyDateTimeCache;
+};
 
-// function maybeExpandMacroToken(token, locale) {
-//   if (token.literal) {
-//     return token;
-//   }
-//
-//   const formatOpts = Formatter.macroTokenToFormatOpts(token.val);
-//
-//   if (!formatOpts) {
-//     return token;
-//   }
-//
-//   const formatter = Formatter.create(locale, formatOpts);
-//   const parts = formatter.formatDateTimeParts(getDummyDateTime());
-//
-//   const tokens = parts.map((p) => tokenForPart(p, locale, formatOpts));
-//
-//   if (tokens.includes(undefined)) {
-//     return token;
-//   }
-//
-//   return tokens;
-// }
+const maybeExpandMacroToken = (token: FormattingToken, locale: string) => {
+  if (token.literal) {
+    return token;
+  }
 
-// function expandMacroTokens(tokens, locale) {
-//   return Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, locale)));
-// }
+  const formatOpts = macroTokens[token.name as MacroToken];
+  if (!formatOpts) {
+    // not actually a macro token
+    return token;
+  }
+
+  const formatter = dateTimeFormatter(locale, undefined, formatOpts);
+
+  const parts = formatter.formatToParts(getDummyDateTime());
+
+  const tokens = parts.map((p) => tokenForPart(p, formatOpts));
+
+  if (tokens.includes(undefined)) {
+    return token;
+  }
+
+  return tokens;
+};
+
+const expandMacroTokens = (tokens: FormattingToken[], locale: string) : FormattingToken[] =>
+  Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, locale)));
 
 /**
  * @private
@@ -432,7 +424,7 @@ export const parseFromFormat = (locale: string, numberingSystem: string | undefi
     const rawTokens = parseFormat(format);
 
     // step 2 - expand macro tokens
-    // const tokens = expandMacroTokens(parseFormat(format), locale);
+    const expandedTokens = expandMacroTokens(rawTokens, locale);
 
     // step 3 - map the tokens to parsing units (essentially regex + how to extract the value from the match) pairs
     // this has two sub-steps:
@@ -440,7 +432,7 @@ export const parseFromFormat = (locale: string, numberingSystem: string | undefi
     const tokenMap = getUnitMap(locale, numberingSystem);
 
     // b) map all the tokens we actually have to units using that mapping. This is a TokenParsingUnit[]
-    const units = rawTokens.map(tokenMap);
+    const units = expandedTokens.map(tokenMap);
 
     // step 4 - combine the regexes into one big regex
     const regex = buildRegex(units);
@@ -468,5 +460,5 @@ export const parseFromFormat = (locale: string, numberingSystem: string | undefi
   }
 
   // step 8 - just return all the stuff we've accumulated, which helps with debugging
-  return { input, tokens: rawTokens, regex, matches, fields, parsed};
+  return { input, format, tokens: rawTokens, regex, matches, fields, parsed, units};
 };

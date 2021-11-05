@@ -11,9 +11,10 @@ export const computeOrdinal = (year: number, month: number, day: number) =>
 
 export const uncomputeOrdinal = (year: number, ordinal: number) => {
   const table = isLeapYear(year) ? leapLadder : nonLeapLadder;
-  const month0 = table.findIndex((i) => i > ordinal) - 1;
-  const day = ordinal - table[month0];
-  return { month: month0 + 1, day };
+  let month = table.findIndex((i) => i >= ordinal);
+  if (month < 0) month = 12;
+  const day = ordinal - table[month - 1];
+  return { month, day };
 };
 
 export const nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];

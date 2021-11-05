@@ -68,6 +68,7 @@ export const fromCalendar = <TDate extends object>(
   const calendarNow = calendar.fromGregorian(gregorNow);
 
   let [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, calendar.fromObject(o));
+
   const [time, _] = fillInDefaults<Time>(defaultTimeObject, timeNow, fromObject(o), found);
 
   const error = calendar.isInvalid(date) || hasInvalidTimeData(time);
@@ -76,6 +77,7 @@ export const fromCalendar = <TDate extends object>(
   }
 
   const gregorian = calendar.toGregorian(date);
+
   const [ts, finalOffset, isHoleTime] = gregorianToTS(gregorian, time, offsetProvis, zoneToUse);
 
   // if it's a hole time, we'll adjust the calendar & time to the "real" one

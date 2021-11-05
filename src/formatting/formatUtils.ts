@@ -1,11 +1,12 @@
 import Zone from "../model/zone";
 import { isValidZone } from "../model/zones/IANAZone";
-import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
+import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
 import { UnknownError } from "../model/errors";
 import { FormatFirstArg, FormatSecondArg, FormattingToken } from "../scatteredTypes/formatting";
-import { allCaches, memo } from "../caching";
+import { memo } from "../caching";
+import { DateTime } from "../model/dateTime";
 
-export const getDtf = memo(allCaches, ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
+export const getDtf = memo("dateTimeFormat", ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
 
 const zoneOptionForZone = (zone: Zone | undefined): string | null => {
   if (!zone) {

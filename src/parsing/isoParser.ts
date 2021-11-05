@@ -2,7 +2,7 @@ import { gregorianInstance } from "../model/calendars/gregorian";
 import { parseMillis, signedOffset } from "../lib/util";
 import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
 import { ExtractedResult, combineRegexes, combineExtractors, parse, int, simpleParse } from "./regexParser";
-import { isoCalendarInstance } from "../model/calendars/isoWeek";
+import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
 import { ordinalInstance } from "../model/calendars/ordinal";
 
 // REGEX
@@ -66,7 +66,7 @@ const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult
   };
 };
 
-const extractISOWeekData = simpleParse(isoCalendarInstance, "weekYear", "weekNumber", "weekday");
+const extractISOWeekData = simpleParse(isoWeekCalendarInstance, "weekYear", "weekNumber", "weekday");
 const extractISOOrdinalData = simpleParse(ordinalInstance, "year", "ordinal");
 
 const extractISOTimeAndOffset = combineExtractors(extractISOTime, extractISOOffset);

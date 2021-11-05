@@ -11,7 +11,7 @@ import { parseFromFormat, TokenParsedValue, TokenParsingSummary } from "./parsin
 import { isUndefined } from "./lib/util";
 import { Calendar } from "./model/calendar";
 import { ordinalInstance } from "./model/calendars/ordinal";
-import { isoCalendarInstance } from "./model/calendars/isoWeek";
+import { isoWeekCalendarInstance } from "./model/calendars/isoWeek";
 import { NoMatchingParserPattern } from "./model/errors";
 
 interface ParsingOptions {
@@ -61,15 +61,15 @@ const choose = (parsed: TokenParsedValue, opts: ParsingOptions): DateTime => {
     const year = parsed.gregorian.year;
     calendar = ordinalInstance;
     obj = { year, ordinal: parsed.ordinal  };
-  } else if (!isUndefined(parsed.week.weekYear || !isUndefined(parsed.week.weekNumber) || !isUndefined(parsed.week.weekYear))) {
-    calendar = isoCalendarInstance;
+  } else if (!isUndefined(parsed.week.weekYear) || !isUndefined(parsed.week.weekNumber) || !isUndefined(parsed.week.weekday)) {
+    calendar = isoWeekCalendarInstance;
     obj = parsed.week;
   } else {
     calendar = gregorianInstance;
     obj = parsed.gregorian;
   }
 
-  const dt = fromCalendar(calendar, obj, interpretationZone);
+  const dt = fromCalendar(calendar, {...obj, ...parsed.time}, interpretationZone);
   return setZone(targetZone)(dt);
 }
 

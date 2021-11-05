@@ -1,7 +1,7 @@
 import { DateTime, alter, set } from "../model/dateTime";
 import { bestBy, intAndFraction, roundTo } from "../lib/util";
 import { month } from "./core";
-import { isoCalendarInstance } from "../model/calendars/isoWeek";
+import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
 import { daysInMonth, gregorianInstance, gregorianToTS } from "../model/calendars/gregorian";
 import {
   Duration,
@@ -96,7 +96,7 @@ export const startOf = (unit: StartEndUnit): ((dt: DateTime) => DateTime) => {
       o.month = (q - 1) * 3 + 1;
     }
 
-    return set(dt, o.weekday ? isoCalendarInstance : gregorianInstance, o);
+    return set(dt, o.weekday ? isoWeekCalendarInstance : gregorianInstance, o);
   };
 };
 
