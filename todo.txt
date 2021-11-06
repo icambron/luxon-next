@@ -1,7 +1,3 @@
-Big stuff:
- * Or could do more token parsing
-    - redo quoting to be like [] instead of '', which is _lame_
-
 Others:
  * Also need arbitrary formatting, but that seems pretty easy?
  * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
