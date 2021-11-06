@@ -294,18 +294,18 @@ test("fromFormat() parses format month names", () => {
 });
 
 test("fromFormat() parses quarters", () => {
-  const i = fromFormat("1982Q2", "yyyy'Q'q");
+  const i = fromFormat("1982Q2", "yyyy[Q]q");
   expect(i |> year).toBe(1982);
   expect(i |> month).toBe(4);
   expect(i |> quarter).toBe(2);
-  expect(fromFormat("2019Q1", "yyyy'Q'q") |> month).toBe(1);
-  expect(fromFormat("2019Q2", "yyyy'Q'q") |> month).toBe(4);
-  expect(fromFormat("2019Q3", "yyyy'Q'q") |> month).toBe(7);
-  expect(fromFormat("2019Q4", "yyyy'Q'q") |> month).toBe(10);
-  expect(fromFormat("2019Q01", "yyyy'Q'qq") |> month).toBe(1);
-  expect(fromFormat("2019Q02", "yyyy'Q'qq") |> month).toBe(4);
-  expect(fromFormat("2019Q03", "yyyy'Q'qq") |> month).toBe(7);
-  expect(fromFormat("2019Q04", "yyyy'Q'qq") |> month).toBe(10);
+  expect(fromFormat("2019Q1", "yyyy[Q]q") |> month).toBe(1);
+  expect(fromFormat("2019Q2", "yyyy[Q]q") |> month).toBe(4);
+  expect(fromFormat("2019Q3", "yyyy[Q]q") |> month).toBe(7);
+  expect(fromFormat("2019Q4", "yyyy[Q]q") |> month).toBe(10);
+  expect(fromFormat("2019Q01", "yyyy[Q]qq") |> month).toBe(1);
+  expect(fromFormat("2019Q02", "yyyy[Q]qq") |> month).toBe(4);
+  expect(fromFormat("2019Q03", "yyyy[Q]qq") |> month).toBe(7);
+  expect(fromFormat("2019Q04", "yyyy[Q]qq") |> month).toBe(10);
 });
 
 test("fromFormat() makes trailing periods in month names optional", () => {
@@ -415,7 +415,7 @@ test("fromFormat() allows regex content", () => {
 });
 
 test("fromFormat() allows literals", () => {
-  const dt = fromFormat("1982/05/25 hello 09:10:11.445", "yyyy/MM/dd 'hello' HH:mm:ss.SSS");
+  const dt = fromFormat("1982/05/25 hello 09:10:11.445", "yyyy/MM/dd [hello] HH:mm:ss.SSS");
   expect(dt |> year).toBe(1982);
   expect(dt |> month).toBe(5);
   expect(dt |> day).toBe(25);
@@ -430,11 +430,11 @@ test("fromFormat() throws when it can't parse", () => {
 });
 
 test("fromFormat() throws when quarter value is not valid", () => {
-  expect(() => fromFormat("2019Qaa", "yyyy'Q'qq")).toThrow();
-  expect(() => fromFormat("2019Q00", "yyyy'Q'qq")).toThrow();
-  expect(() => fromFormat("2019Q0", "yyyy'Q'q")).toThrow();
-  expect(() => fromFormat("2019Q1", "yyyy'Q'q")).not.toThrow();
-  expect(() => fromFormat("2019Q5", "yyyy'Q'q")).toThrow();
+  expect(() => fromFormat("2019Qaa", "yyyy[Q]qq")).toThrow();
+  expect(() => fromFormat("2019Q00", "yyyy[Q]qq")).toThrow();
+  expect(() => fromFormat("2019Q0", "yyyy[Q]q")).toThrow();
+  expect(() => fromFormat("2019Q1", "yyyy[Q]q")).not.toThrow();
+  expect(() => fromFormat("2019Q5", "yyyy[Q]q")).toThrow();
 });
 
 test.each([
@@ -528,11 +528,11 @@ test("fromFormat validates weekdays", () => {
 });
 
 test("fromFormat containing special regex token", () => {
-  const ianaFormat = "yyyy-MM-dd'T'HH-mm[z]";
+  const ianaFormat = "yyyy-MM-dd[T]HH-mm\\[z\\]";
   const dt = fromFormat("2019-01-14T11-30[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
   expect(dt |> zoneName).toBe("Indian/Maldives");
 
-  expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd'T'HH-mm[[z]]")).not.toThrow();
-  expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd'T'HH-mm't'z't'")).not.toThrow();
-  expect(() => fromFormat("2019-01-14T11-30\tIndian/Maldives\t", "yyyy-MM-dd'T'HH-mm't'z't'")).toThrow();
+  expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
+  expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd[T]HH-mm[t]z[t]")).not.toThrow();
+  expect(() => fromFormat("2019-01-14T11-30\tIndian/Maldives\t", "yyyy-MM-dd[T]HH-mm[t]z[t]")).toThrow();
 });

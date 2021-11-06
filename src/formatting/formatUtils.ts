@@ -1,16 +1,14 @@
 import Zone from "../model/zone";
 import { isValidZone } from "../model/zones/IANAZone";
-import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
-import { UnknownError } from "../model/errors";
+import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
+import { FormatStringError, UnknownError } from "../model/errors";
 import {
   SharedFormattingOpts,
   FormatFirstArg,
   FormatSecondArg,
-  FormattingToken, GeneralFormattingOpts
+  FormattingToken
 } from "../scatteredTypes/formattingAndParsing";
 import { memo } from "../caching";
-import { DateTime } from "../model/dateTime";
-import { second } from "../dateTime/core";
 
 export const getDtf = memo("dateTimeFormat", ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
 
@@ -98,35 +96,67 @@ export const hasKeys =
       typeof o === "object" && keys.some((k) => o[k]);
 
 export const parseFormat = (fmt: string): FormattingToken[] => {
-  let current = null;
-  let currentFull = "";
+  let currentChar: string | null = null;
+  let currentToken: string | null = null;
   let bracketed = false;
-  const splits = [];
+  let escaped = false;
+  const tokens: FormattingToken[] = [];
+
+  const addToken = (literal: boolean, name: string | null) => {
+    if (name) {
+      tokens.push({ literal, name });
+    }
+    currentChar = null;
+    currentToken = null;
+  }
+
   for (let i = 0; i < fmt.length; i++) {
     const c = fmt.charAt(i);
-    if (c === "'") {
-      if (currentFull.length > 0) {
-        splits.push({ literal: bracketed, name: currentFull });
+
+    // we aren't escaped and we see an escape character. We ignore the char but are now in escape mode
+    if (c === "\\" && !escaped) {
+      escaped = true;
+    }
+
+    // we found an unescaped [, so start a bracketed section
+    else if (c === "[" && !escaped) {
+      if (bracketed) {
+        throw new FormatStringError(fmt, "can't nest [");
       }
-      current = null;
-      currentFull = "";
-      bracketed = !bracketed;
-    } else if (bracketed) {
-      currentFull += c;
-    } else if (c === current) {
-      currentFull += c;
-    } else {
-      if (currentFull.length > 0) {
-        splits.push({ literal: false, name: currentFull });
+      bracketed = true;
+      addToken(false, currentToken);
+    }
+
+    // we found an unescaped ] so end a bracketed section
+    else if (c === "]" && !escaped) {
+      if (!bracketed) {
+        throw new FormatStringError(fmt, "] can't appear before its matching [");
       }
-      currentFull = c;
-      current = c;
+      addToken(true, currentToken);
+      bracketed = false;
+    }
+
+    // if we're in a bracket or the current char is the same as the last, append to the current token
+    // note this could be an escaped bracket inside the bracketed section, or even a second bracket in a row
+    else if (bracketed || c === currentChar) {
+      escaped = false
+      if (!currentToken) currentToken = "";
+      currentToken += c
+    }
+
+    // we aren't bracketed and we have a token that's different than the previous. Create a new token
+    // note this could be an escaped bracket
+    else {
+      escaped = false;
+      // this token is over and we have a new one, so push the old one and create a new one
+      addToken(false, currentToken);
+      currentToken = c;
+      currentChar = c;
     }
   }
 
-  if (currentFull.length > 0) {
-    splits.push({ literal: bracketed, name: currentFull });
-  }
+  // anything still going is its own token
+  addToken(bracketed, currentToken);
 
-  return splits;
+  return tokens;
 }

@@ -110,3 +110,12 @@ export class NoMatchingParserPattern extends LuxonError {
     this.input = input;
   }
 }
+
+export class FormatStringError extends LuxonError {
+  formatString: string;
+
+  constructor(formatString: string, reason: string) {
+    super(`Error parsing format string '${formatString}': ${reason}`);
+    this.formatString = formatString;
+  }
+}
