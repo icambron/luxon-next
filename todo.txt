@@ -13,6 +13,7 @@ Organization stuff:
  * figure out how to export the core types better?
  * parsing and formatting are not organized the same way
  * check dependency tree
+ * lots of naming ambiguities if you import DT and Dur functions. Need some way to differentiate those
 
 Odds and ends:
  * redo format presets in light of `timeStyle` and `dateStyle`
