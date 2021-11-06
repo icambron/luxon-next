@@ -8,6 +8,15 @@ import { Duration, DurationValues } from "../model/duration";
 import { month, quarter, year } from "../dateTime/core";
 import { isString, isUndefined } from "../lib/util";
 
+type Differ = (a: DateTime, b: DateTime) => number;
+
+type HighOrderDiff = {
+  results: Partial<DurationValues>,
+  cursor: DateTime,
+  highWater?: DateTime,
+  lowestOrder?: DurationUnit
+}
+
 const dayDiff = (earlier: DateTime, later: DateTime): number => {
   const utcDayStart = (dt: DateTime) => {
     const shifted = toUTC(0, {keepLocalTime: true})(dt);
@@ -17,15 +26,6 @@ const dayDiff = (earlier: DateTime, later: DateTime): number => {
   const ms = utcDayStart(later) - utcDayStart(earlier);
   return Math.floor(as("days")(fromMillis(ms)));
 };
-
-type Differ = (a: DateTime, b: DateTime) => number;
-
-type HighOrderDiff = {
-  results: Partial<DurationValues>,
-  cursor: DateTime,
-  highWater?: DateTime,
-  lowestOrder?: DurationUnit
-}
 
 const differs: [DurationUnit, Differ][] = [
   ["years", (a, b) => year(b) - year(a)],

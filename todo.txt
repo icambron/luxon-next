@@ -1,5 +1,4 @@
 Big stuff:
- * Next big challenge is diff()
  * Or could do more token parsing
     - redo quoting to be like [] instead of '', which is _lame_
 
