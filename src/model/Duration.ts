@@ -59,6 +59,7 @@ export const toIso = (dur: Duration): string => {
 
 export const pickMatrix = (accuracy: ConversionAccuracy): ConversionMatrix =>
   accuracy === "casual" ? casualMatrix : accurateMatrix;
+
 const lowOrderMatrix: ConversionMatrix = {
   weeks: {
     days: 7,

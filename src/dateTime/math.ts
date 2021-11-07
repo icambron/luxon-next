@@ -14,7 +14,7 @@ import { intAndFraction, roundTo } from "../utils/numeric";
 import { bestBy } from "../utils/array";
 import { alter, set } from "../impl/dateTime";
 import { convert, defaultEmpties, isDuration } from "../impl/duration";
-import { daysInGregorianMonth } from "../utils/dateMath";
+import { daysInMonth } from "../utils/dateMath";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -193,7 +193,7 @@ const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): ((dt
 
     const year = greg.year + years;
     const month = greg.month + months + quarters * 3;
-    const day = Math.min(greg.day, daysInGregorianMonth(year, month)) + days + weeks * 7;
+    const day = Math.min(greg.day, daysInMonth(year, month)) + days + weeks * 7;
 
     let [ts, offset] = gregorianToTS({ year, month, day }, dt.time, dt.offset, dt.zone);
 

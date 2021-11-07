@@ -12,7 +12,7 @@ const assertValidTs = (ts: number) => {
   }
 };
 
-export class DateTime {
+export class DateTime  {
   readonly zone: Zone;
   readonly ts: number;
   readonly offset: number;
