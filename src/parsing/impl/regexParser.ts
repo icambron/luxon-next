@@ -10,6 +10,7 @@ import { parseInteger } from "../../utils/numeric";
 import { untruncateYear } from "../../utils/dateMath";
 import { isNumber, isUndefined } from "../../utils/typeCheck";
 
+// internal-only types
 export type Cursor = number;
 
 export interface ExtractedResult {

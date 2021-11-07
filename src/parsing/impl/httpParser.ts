@@ -17,11 +17,9 @@ const extractASCII = (match: RegExpMatchArray, cursor: number): ExtractedResult 
   return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cursor + 7);
 };
 
-export function parseHTTPDate(s: string) {
-  return parse(
-    s,
-    { regex: rfc1123Regex, extractor: extractRFC1123Or850 },
-    { regex: rfc850Regex, extractor: extractRFC1123Or850 },
-    { regex: asciiRegex, extractor: extractASCII }
-  );
-}
+export const parseHTTPDate = (s: string) => parse(
+  s,
+  { regex: rfc1123Regex, extractor: extractRFC1123Or850 },
+  { regex: rfc850Regex, extractor: extractRFC1123Or850 },
+  { regex: asciiRegex, extractor: extractASCII }
+);

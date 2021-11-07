@@ -1,20 +1,20 @@
-import { parseISODateTime } from "./impl/isoParser";
-import { DateTime, fromCalendar, normalizeZone } from "../model/dateTime";
-import { gregorianInstance } from "../model/calendars/gregorian";
 import { setZone } from "../dateTime/zone";
 import { ExtractedResult } from "./impl/regexParser";
-import { parseRFC2822 } from "./impl/rfc2822Parser";
-import { parseHTTPDate } from "./impl/httpParser";
-import { getDefaultZone } from "../settings";
+import { parseISODateTime } from "./impl/isoParser";
 import { parseFromFormat } from "./impl/tokenParser";
-import { Calendar } from "../types/calendar";
+import { DateTime, fromCalendar, normalizeZone } from "../model/dateTime";
 import { ordinalInstance } from "../model/calendars/ordinal";
 import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
-import { NoMatchingParserPattern } from "../errors";
+import { gregorianInstance } from "../model/calendars/gregorian";
+import { parseRFC2822 } from "./impl/rfc2822Parser";
+import { parseHTTPDate } from "./impl/httpParser";
 import { getFormattingOpts } from "../utils/format";
+import { isUndefined } from "../utils/typeCheck";
+import { getDefaultZone } from "../settings";
+import { NoMatchingParserPattern } from "../errors";
+import { Calendar } from "../types/calendar";
 import { FormatFirstArg, FormatSecondArg } from "../types/formatting";
 import Zone, { Zoneish } from "../types/zone";
-import { isUndefined } from "../utils/typeCheck";
 import {
   GeneralParsingOpts,
   ParsingOptions,
@@ -56,7 +56,7 @@ const wrapError =
     }
   };
 
-const choose = (parsed: TokenParsedValue, opts: ParsingOptions): DateTime => {
+const dateTimeFromParsedValues = (parsed: TokenParsedValue, opts: ParsingOptions): DateTime => {
   let calendar: Calendar<any>;
   let obj: object;
 
@@ -114,7 +114,7 @@ export const fromFormat = (
   const parsingOpts = getFormattingOpts(firstArg, secondArg);
   const summary = fromFormatExplain(input, format, parsingOpts);
   if (summary.parsed) {
-    return choose(summary.parsed, parsingOpts);
+    return dateTimeFromParsedValues(summary.parsed, parsingOpts);
   } else {
     throw new NoMatchingParserPattern(input);
   }

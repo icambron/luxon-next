@@ -6,7 +6,6 @@ import { ordinalInstance } from "../../model/calendars/ordinal";
 import { parseMillis } from "../../utils/numeric";
 import { signedOffset } from "../../utils/zone";
 
-// REGEX
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;
 const isoTimeBaseRegex = /(\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d{1,30}))?)?)?/;
 const isoTimeAndOffsetRegex = RegExp(`${isoTimeBaseRegex.source}${offsetRegex.source}?`);
@@ -21,7 +20,6 @@ const isoOrdinalWithTimeExtensionRegex = combineRegexes(isoOrdinalRegex, isoTime
 const isoYmdWithTimeExtensionRegex = combineRegexes(isoYmdRegex, isoTimeExtensionRegex);
 const isoWeekWithTimeExtensionRegex = combineRegexes(isoWeekRegex, isoTimeExtensionRegex);
 
-// EXTRACT
 const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const item = {
     hour: int(match, cursor, 0),
