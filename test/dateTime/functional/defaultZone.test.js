@@ -2,7 +2,7 @@ import { withDefaultZone } from "../../helpers";
 import { fromGregorian, now, zone, zoneName } from "../../../src/dateTime/core";
 import { getDefaultZone, setDefaultZone } from "../../../src/settings";
 import { createIANAZone } from "../../../src/model/zones/IANAZone";
-import { systemZone } from "../../../src/model/zones/systemZone";
+import { systemZone } from "../../../src/model/zones/SystemZone";
 
 test("Setting the default zone results in a different creation zone", () => {
   withDefaultZone(createIANAZone("Asia/Tokyo"), () => {

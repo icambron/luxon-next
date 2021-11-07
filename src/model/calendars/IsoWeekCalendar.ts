@@ -1,5 +1,5 @@
 import { Calendar } from "../../types/calendar";
-import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../../utils/dateMath";
+import { computeOrdinal, daysInYear, uncomputeOrdinal, weeksInWeekYear } from "../../utils/dateMath";
 import { buildNormalizer, isoWeekUnits, normalizeUnitBundle, simplePlural } from "../../utils/units";
 import { GregorianDate } from "../../types/gregorian";
 import { ISOWeekDate, IsoWeekUnit } from "../../types/isoWeek";
@@ -85,14 +85,3 @@ export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
 
 export const isoWeekCalendarInstance = new IsoWeekCalendar();
 
-export function weeksInWeekYear(weekYear: number): number {
-    const p1 =
-        (weekYear +
-            Math.floor(weekYear / 4) -
-            Math.floor(weekYear / 100) +
-            Math.floor(weekYear / 400)) %
-        7,
-        last = weekYear - 1,
-        p2 = (last + Math.floor(last / 4) - Math.floor(last / 100) + Math.floor(last / 400)) % 7;
-    return p1 === 4 || p2 === 3 ? 53 : 52;
-}

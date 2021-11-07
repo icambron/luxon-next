@@ -1,8 +1,8 @@
-import { gregorianInstance } from "../../model/calendars/gregorian";
-import { fixedOffsetZone } from "../../model/zones/fixedOffsetZone";
+import { gregorianInstance } from "../../model/calendars/GregorianCalendar";
+import { fixedOffsetZone } from "../../model/zones/FixedOffsetZone";
 import { ExtractedResult, combineRegexes, combineExtractors, parse, int, simpleParse } from "./regexParser";
-import { isoWeekCalendarInstance } from "../../model/calendars/isoWeek";
-import { ordinalInstance } from "../../model/calendars/ordinal";
+import { isoWeekCalendarInstance } from "../../model/calendars/IsoWeekCalendar";
+import { ordinalInstance } from "../../model/calendars/OrdinalCalendar";
 import { parseMillis } from "../../utils/numeric";
 import { signedOffset } from "../../utils/zone";
 

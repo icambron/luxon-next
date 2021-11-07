@@ -2,10 +2,10 @@ import { setZone } from "./zone";
 import { ExtractedResult } from "../impl/parsing/regexParser";
 import { parseISODateTime } from "../impl/parsing/isoParser";
 import { parseFromFormat } from "../impl/parsing/tokenParser";
-import { DateTime, fromCalendar, normalizeZone } from "../model/dateTime";
-import { ordinalInstance } from "../model/calendars/ordinal";
-import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
-import { gregorianInstance } from "../model/calendars/gregorian";
+import { DateTime} from "../model/DateTime";
+import { ordinalInstance } from "../model/calendars/OrdinalCalendar";
+import { isoWeekCalendarInstance } from "../model/calendars/IsoWeekCalendar";
+import { gregorianInstance } from "../model/calendars/GregorianCalendar";
 import { parseRFC2822 } from "../impl/parsing/rfc2822Parser";
 import { parseHTTPDate } from "../impl/parsing/httpParser";
 import { getFormattingOpts } from "../utils/format";
@@ -22,6 +22,8 @@ import {
   TokenParsingOpts,
   TokenParsingSummary,
 } from "../types/parsing";
+import { fromCalendar} from "../impl/dateTime";
+import { normalizeZone } from "../impl/zone";
 
 export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingOptions => ({
   interpretationZone: zone,

@@ -1,12 +1,11 @@
-
 import { InvalidZoneError } from "../../errors";
-import { gregorianToLocalTS } from "../calendars/gregorian";
+import { gregorianToLocalTS } from "../calendars/GregorianCalendar";
 import Zone from "../../types/zone";
-import { ianaRegex, isValidIANAZone } from "../../utils/zone";
+import { isValidIANAZone } from "../../utils/zone";
 import { isUndefined } from "../../utils/typeCheck";
+import { memo } from "../../utils/caching";
 
-const matchingRegex = RegExp(`^${ianaRegex.source}$`);
-
+// todo - move to central cache
 let dtfCache: Record<string, Intl.DateTimeFormat> = {};
 
 function makeDTF(zone: string): Intl.DateTimeFormat {
@@ -38,7 +37,7 @@ const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   second: 5
 };
 
-function partsOffset(dtf: Intl.DateTimeFormat, date: Date) {
+const partsOffset = (dtf: Intl.DateTimeFormat, date: Date) => {
   const formatted = dtf.formatToParts(date);
   const filled = new Array<number>();
   for (let i = 0; i < formatted.length; i++) {
@@ -50,7 +49,7 @@ function partsOffset(dtf: Intl.DateTimeFormat, date: Date) {
     }
   }
   return filled;
-}
+};
 
 let ianaZoneCache: Record<string, IANAZone> = {};
 /**
@@ -104,43 +103,5 @@ export default class IANAZone implements Zone {
  * @param {string} name - Zone name
  * @return {IANAZone}
  */
-export const createIANAZone = (name: string): IANAZone => {
-  if (!ianaZoneCache[name]) {
-    ianaZoneCache[name] = new IANAZone(name);
-  }
-  return ianaZoneCache[name];
-}
+export const createIANAZone: (zoneName: string) => IANAZone = memo("ianaZone",  (name: string) => new IANAZone(name));
 
-/**
- * Reset local caches. Should only be necessary in testing scenarios.
- * @return {void}
- */
-export const resetCache = () => {
-  ianaZoneCache = {};
-  dtfCache = {};
-}
-
-/**
- * Returns whether the provided string is a valid specifier. This only checks the string's format, not that the specifier identifies a known zone; see isValidZone for that.
- * @param {string} s - The string to check validity on
- * @example IANAZone.isValidSpecifier("America/New_York") //=> true
- * @example IANAZone.isValidSpecifier("Fantasia/Castle") //=> true
- * @example IANAZone.isValidSpecifier("Sport~~blorp") //=> false
- * @return {boolean}
- */
-export const isValidIANASpecifier = (s: string): boolean => {
-  return !!(s && matchingRegex.exec(s) !== null);
-}
-
-// Etc/GMT+8 -> -480
-/** @ignore */
-export const parseGMTOffset = (specifier: string): number | null => {
-  if (specifier) {
-    const regexp = /^Etc\/GMT([+-]\d{1,2})$/i;
-    const match = regexp.exec(specifier);
-    if (match !== null) {
-      return -60 * parseInt(match[1]);
-    }
-  }
-  return null;
-}

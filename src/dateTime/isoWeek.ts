@@ -1,8 +1,10 @@
-import { DateTime, fromCalendar, getCalendarValue } from "../model/dateTime";
-import { isoWeekCalendarInstance, weeksInWeekYear } from "../model/calendars/isoWeek";
+import { DateTime} from "../model/DateTime";
+import { isoWeekCalendarInstance} from "../model/calendars/IsoWeekCalendar";
 import Zone from "../types/zone";
 import { ISOWeekDate } from "../types/isoWeek";
 import { Time } from "../types/time";
+import { fromCalendar, getCalendarValue } from "../impl/dateTime";
+import { weeksInWeekYear } from "../utils/dateMath";
 
 export const fromISOWeek = (obj: Partial<ISOWeekDate & Time>, zone?: Zone): DateTime =>
   fromCalendar(isoWeekCalendarInstance, obj, zone);

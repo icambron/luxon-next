@@ -1,9 +1,11 @@
-import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
-import { systemZone } from "../model/zones/systemZone";
-import { DateTime, alter, normalizeZone } from "../model/dateTime";
+import { fixedOffsetZone } from "../model/zones/FixedOffsetZone";
+import { systemZone } from "../model/zones/SystemZone";
+import { DateTime} from "../model/DateTime";
 import { getDefaultZone } from "../settings";
-import { gregorianToTS } from "../model/calendars/gregorian";
+import { gregorianToTS } from "../model/calendars/GregorianCalendar";
 import { Zoneish } from "../types/zone";
+import { alter} from "../impl/dateTime";
+import { normalizeZone } from "../impl/zone";
 
 /**
  * "Set" the DateTime's zone to specified zone. Returns a newly-constructed DateTime.

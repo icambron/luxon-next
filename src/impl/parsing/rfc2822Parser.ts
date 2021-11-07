@@ -1,5 +1,5 @@
 // RFC 2822/5322
-import { fixedOffsetZone } from "../../model/zones/fixedOffsetZone";
+import { fixedOffsetZone } from "../../model/zones/FixedOffsetZone";
 import { ExtractedResult, fromStrings, parse } from "./regexParser";
 import { signedOffset } from "../../utils/zone";
 

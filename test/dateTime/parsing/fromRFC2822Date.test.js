@@ -1,8 +1,8 @@
 import { fromRFC2822, simpleParsingOptions } from "../../../src/dateTime/parse";
 import { day, millisecond, offset, toGregorian, zone } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
-import SystemZone from "../../../src/model/zones/systemZone";
-import FixedOffsetZone from "../../../src/model/zones/fixedOffsetZone";
+import SystemZone from "../../../src/model/zones/SystemZone";
+import FixedOffsetZone from "../../../src/model/zones/FixedOffsetZone";
 
 test("fromRFC2822() accepts full format", () => {
   const dt = fromRFC2822("Tue, 01 Nov 2016 13:23:12 +0630");

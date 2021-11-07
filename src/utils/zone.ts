@@ -20,6 +20,21 @@ export const isValidIANAZone = (zone: string): boolean => {
     return false;
   }
 }; // signedOffset('-5', '30') -> -330
+
+export const ianaRegex = /[A-Za-z_+-]{1,256}(:?\/[A-Za-z0-9_+-]{1,256}(\/[A-Za-z0-9_+-]{1,256})?)?/;
+const matchingRegex = RegExp(`^${ianaRegex.source}$`);
+/**
+ * Returns whether the provided string is a valid specifier. This only checks the string's format, not that the specifier identifies a known zone; see isValidZone for that.
+ * @param {string} s - The string to check validity on
+ * @example isValidSpecifier("America/New_York") //=> true
+ * @example isValidSpecifier("Fantasia/Castle") //=> true
+ * @example isValidSpecifier("Sport~~blorp") //=> false
+ * @return {boolean}
+ */
+export const isValidIANASpecifier = (s: string): boolean => {
+  return !!(s && matchingRegex.exec(s) !== null);
+};
+
 export function parseZoneInfo(ts: number, offsetFormat?: "long" | "short", locale?: string, timeZone?: string) {
   const date = new Date(ts);
   const intlOptions: Intl.DateTimeFormatOptions = {
@@ -69,5 +84,3 @@ export function formatOffset(offset: number, format: "narrow" | "short" | "techi
       throw new InvalidArgumentError(`Format ${format} isn't supported`);
   }
 }
-
-export const ianaRegex = /[A-Za-z_+-]{1,256}(:?\/[A-Za-z_+-]{1,256}(\/[A-Za-z_+-]{1,256})?)?/;

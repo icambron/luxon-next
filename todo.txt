@@ -6,15 +6,18 @@ Big stuff:
 Others:
  * Also need arbitrary formatting, but that seems pretty easy?
  * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
- * Duration parsing and formatting
  * Relative time
 
 Organization stuff:
+ * how to export model types usefully?
 
 Odds and ends:
  * redo format presets in light of `timeStyle` and `dateStyle`
  * tests for defaultLocale
  * tests for toLocaleString() and friends (currently just testing toLocaleParts())
+
+Notes
+-----
 
 Did a deep drive into the future of the pipeline operator:
 

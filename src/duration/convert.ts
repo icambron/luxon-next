@@ -1,6 +1,6 @@
-import { Duration, normalizeDurationUnit, pickMatrix, Trie } from "../model/duration";
+import { Duration, normalizeDurationUnit, pickMatrix } from "../model/Duration";
 import { getDefaultConversionAccuracy } from "../settings";
-import { ConversionAccuracy, DurationUnit } from "../types/duration";
+import { ConversionAccuracy, ConversionMatrix, DurationUnit } from "../types/duration";
 import { antiTrunc } from "../utils/numeric";
 import { isNumber, isUndefined } from "../utils/typeCheck";
 
@@ -21,7 +21,7 @@ const reverseUnits: DurationUnit[] = orderedUnits.slice(0).reverse();
 
 // NB: mutates parameters
 const convertInternal = (
-  matrix: Trie,
+  matrix: ConversionMatrix,
   fromMap: Map<DurationUnit, number>,
   fromUnit: DurationUnit,
   toMap: Map<DurationUnit, number>,
@@ -49,7 +49,7 @@ const durToMap = (dur: Duration): Map<DurationUnit, number> => {
 };
 
 // NB: mutates parameters
-const normalizeValues = (matrix: Trie, vals: Map<DurationUnit, number>) => {
+const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, number>) => {
   reverseUnits.reduce((previous: DurationUnit | null, current) => {
     if (!isUndefined(vals.get(current))) {
       if (previous) {

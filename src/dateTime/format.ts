@@ -1,4 +1,4 @@
-import { DateTime } from "../model/dateTime";
+import { DateTime } from "../model/DateTime";
 import {
   EraFormatOpts,
   FormatFirstArg,

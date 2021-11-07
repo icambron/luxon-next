@@ -3,7 +3,7 @@ import { day, fromGregorian, hour, minute, month, quarter, year, ymd } from "../
 import { plus } from "../../../src/dateTime/math";
 import { duration, durToMillis } from "../../../src/duration/core";
 import { InvalidArgumentError } from "../../../src/errors";
-import Duration from "../../../src/model/duration";
+import Duration from "../../../src/model/Duration";
 
 const dt = () =>
   fromGregorian({

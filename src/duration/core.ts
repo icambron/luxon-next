@@ -1,14 +1,13 @@
 import {
   Duration,
-  alter as alterInternal,
   toIso as toIsoInternal,
-  isDuration as isDurationInternal,
   normalizeDurationUnit,
   durationUnits,
-} from "../model/duration";
+} from "../model/Duration";
 import { InvalidUnitError } from "../errors";
 import { DurationUnit, DurationValues } from "../types/duration";
 import { asNumber } from "../utils/numeric";
+import { alter as alterInternal, isDuration as isDurationInternal } from "../impl/duration";
 
 export const duration = (values: Partial<DurationValues>) => new Duration(values);
 export const durFromMillis = (milliseconds: number) => duration({ milliseconds });

@@ -90,7 +90,6 @@ test("setZone does not accept dumb things", () => {
 });
 
 test("setZone accepts IANA zone names", () => {
-  // this will only work in Chrome/V8 for now
   const zoned = dt() |> setZone("Europe/Paris");
   expect(zoned |> zoneName).toBe("Europe/Paris");
   // not convinced this is universal. Could also be 'CEDT'
@@ -137,18 +136,4 @@ test("setZone rejects jibberish", () => {
 test("setZone works for dates before 1970 with milliseconds", () => {
   const o = fromJSDate(new Date("1967-01-01T00:00:00.001Z")) |> setZone("America/New_York") |> offset;
   expect(o).toBe(-300);
-});
-
-//------
-// Etc/GMT zones
-//------
-test("Etc/GMT zones work even though V8 does not support them", () => {
-  let zoned = now() |> setZone("Etc/GMT+8");
-  expect(zoned |> zoneName).toBe("UTC-8");
-
-  zoned = now() |> setZone("Etc/GMT-5");
-  expect(zoned |> zoneName).toBe("UTC+5");
-
-  zoned = now() |> setZone("Etc/GMT-0");
-  expect(zoned |> zoneName).toBe("UTC");
 });

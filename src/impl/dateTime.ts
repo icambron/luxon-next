@@ -1,24 +1,13 @@
 import { Calendar } from "../types/calendar";
-import { gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
-import { fromObject, hasInvalidTimeData } from "./time";
-import { getDefaultNowFn, getDefaultZone } from "../settings";
-import { InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError } from "../errors";
-import { systemZone } from "./zones/systemZone";
-import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./zones/fixedOffsetZone";
-import { createIANAZone, isValidIANASpecifier, parseGMTOffset } from "./zones/IANAZone";
-import Zone, { Zoneish } from "../types/zone";
-import { isZone } from "../utils/zone";
-import { GregorianDate } from "../types/gregorian";
 import { Time } from "../types/time";
-import { isNumber, isString, isUndefined } from "../utils/typeCheck";
-
-export const MAX_DATE = 8.64e15;
-
-const assertValidTs = (ts: number) => {
-  if (isNaN(ts) || ts > MAX_DATE || ts < -MAX_DATE) {
-    throw new InvalidArgumentError("Timestamp out of range");
-  }
-};
+import Zone from "../types/zone";
+import { getDefaultNowFn, getDefaultZone } from "../settings";
+import { fromObject, hasInvalidTimeData } from "./time";
+import { InvalidArgumentError, UnitOutOfRangeError } from "../errors";
+import { gregorianInstance, gregorianToTS, tsToGregorian } from "../model/calendars/GregorianCalendar";
+import { isNumber } from "../utils/typeCheck";
+import { GregorianDate } from "../types/gregorian";
+import { DateTime } from "../model/DateTime";
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
 
@@ -147,96 +136,3 @@ export const set = <TDate extends object>(
   return alter(dt, ts, dt.zone, o);
 };
 
-export class DateTime {
-  readonly zone: Zone;
-  readonly ts: number;
-  readonly offset: number;
-  private readonly _gregorian: GregorianDate;
-  private readonly _time: Time;
-  private readonly _calendarDates: Map<string, any>;
-  isLuxonDateTime: boolean = true;
-
-  get gregorian(): GregorianDate {
-    return { ...this._gregorian };
-  }
-
-  get time(): Time {
-    return { ...this._time };
-  }
-
-  get calendarDates(): Map<string, any> {
-    return new Map<string, any>(this._calendarDates);
-  }
-
-  // these are here so that automagic layers work as expected
-  toJSON(): string {
-    return this.toString();
-  }
-  toString(): string {
-    return new Date(this.ts).toISOString();
-  }
-  toBSON(): Date {
-    return new Date(this.ts);
-  }
-  valueOf(): number {
-    return this.ts;
-  }
-
-  equals(other: any): boolean {
-    return (
-      !!other &&
-      other.isLuxonDateTime !== undefined &&
-      this.valueOf() === other.valueOf() &&
-      this.zone.equals(other.zone)
-    );
-  }
-
-  constructor(
-    ts: number,
-    zone: Zone,
-    gregorian: GregorianDate,
-    time: Time,
-    offset: number,
-    otherCalendarDates: Map<string, any> = new Map<string, any>()
-  ) {
-    assertValidTs(ts);
-
-    this.zone = zone;
-    this.ts = ts;
-    this._gregorian = gregorian;
-    this._time = time;
-    this.offset = offset;
-    this._calendarDates = otherCalendarDates;
-    this._calendarDates.set(gregorianInstance.name, gregorian);
-  }
-}
-
-export const normalizeZone = (zoneish: Zoneish): Zone => {
-  if (isUndefined(zoneish) || zoneish === null) return getDefaultZone();
-  if (isZone(zoneish)) return zoneish;
-  if (isString(zoneish)) {
-    const lowered = zoneish.toLowerCase();
-    if (lowered === "default") return getDefaultZone();
-    if (lowered === "system") return systemZone;
-    if (lowered === "utc") return utcInstance;
-
-    // todo - update this logic from upstream
-    const gmtOffset = parseGMTOffset(lowered);
-    if (gmtOffset != null) {
-      // handle Etc/GMT-4, which V8 chokes on
-      return fixedOffsetZone(gmtOffset);
-    }
-
-    if (isValidIANASpecifier(lowered)) return createIANAZone(zoneish);
-
-    const parsed = parseFixedOffset(lowered);
-
-    if (!parsed) {
-      throw new InvalidZoneError(zoneish);
-    }
-
-    return parsed;
-  }
-  if (isNumber(zoneish)) return fixedOffsetZone(zoneish);
-  throw new InvalidZoneError(zoneish);
-};

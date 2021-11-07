@@ -1,4 +1,4 @@
-import FixedOffsetZone from "../../model/zones/fixedOffsetZone";
+import FixedOffsetZone from "../../model/zones/FixedOffsetZone";
 import IANAZone from "../../model/zones/IANAZone";
 import { listMonths } from "../formatting/months";
 import { listEras } from "../formatting/eras";

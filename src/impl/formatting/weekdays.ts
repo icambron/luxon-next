@@ -1,5 +1,5 @@
 import { FormatFirstArg, FormatSecondArg, WeekdayFormatOpts } from "../../types/formatting";
-import { utcInstance } from "../../model/zones/fixedOffsetZone";
+import { utcInstance } from "../../model/zones/FixedOffsetZone";
 import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../../utils/format";
 import { memo } from "../../utils/caching";
 import Zone from "../../types/zone";

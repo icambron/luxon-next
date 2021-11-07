@@ -1,14 +1,16 @@
 // rule: only depends on model and lib
-import { adjustCalendarOverflow, daysInMonth, gregorianInstance } from "../model/calendars/gregorian";
-import { DateTime, fromCalendar, fromMillis as fromMillisInternal, normalizeZone, set } from "../model/dateTime";
-import { daysInYear, isLeapYear } from "../utils/dateMath";
+import { adjustCalendarOverflow, gregorianInstance } from "../model/calendars/GregorianCalendar";
+import { DateTime} from "../model/DateTime";
+import { daysInGregorianMonth, daysInYear, isLeapYear } from "../utils/dateMath";
 import { getDefaultNowFn } from "../settings";
-import { utcInstance } from "../model/zones/fixedOffsetZone";
+import { utcInstance } from "../model/zones/FixedOffsetZone";
 import { InvalidArgumentError } from "../errors";
 import Zone, { Zoneish } from "../types/zone";
 import { GregorianDate } from "../types/gregorian";
 import { Time } from "../types/time";
 import { isDate } from "../utils/typeCheck";
+import { fromCalendar, fromMillis as fromMillisInternal, set } from "../impl/dateTime";
+import { normalizeZone } from "../impl/zone";
 
 // BASICS
 // these are strictly unneeded but they make the interface more consistent
@@ -80,6 +82,6 @@ export const quarter = (dt: DateTime): number => Math.ceil(month(dt) / 3);
 
 // MISC INFO
 export const isInLeapYear = (dt: DateTime): boolean => isLeapYear(year(dt));
-export const daysInCurrentMonth = (dt: DateTime): number => daysInMonth(year(dt), month(dt));
+export const daysInCurrentMonth = (dt: DateTime): number => daysInGregorianMonth(year(dt), month(dt));
 export const daysInCurrentYear = (dt: DateTime): number => daysInYear(year(dt));
 export const isOffsetFixed = (dt: DateTime): boolean => zone(dt).isUniversal;

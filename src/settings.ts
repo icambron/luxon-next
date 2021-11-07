@@ -1,4 +1,4 @@
-import { systemZone } from "./model/zones/systemZone";
+import { systemZone } from "./model/zones/SystemZone";
 import { InvalidArgumentError } from "./errors";
 import {clearCaches as clearCachesInternal} from "./utils/caching";
 import Zone from "./types/zone";

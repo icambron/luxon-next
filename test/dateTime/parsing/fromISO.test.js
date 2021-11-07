@@ -3,7 +3,7 @@ import { now, offset, toGregorian, zoneName } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 import { UnitOutOfRangeError } from "../../../src/errors";
 import { withDefaultZone } from "../../helpers";
-import { fixedOffsetZone } from "../../../src/model/zones/fixedOffsetZone";
+import { fixedOffsetZone } from "../../../src/model/zones/FixedOffsetZone";
 
 test("fromISO() parses as local by default", () => {
   const dt = fromISO("2016-05-25T09:08:34.123");

@@ -1,10 +1,10 @@
 import { Calendar } from "../../types/calendar";
-import { isLeapYear } from "../../utils/dateMath";
+import { daysInGregorianMonth } from "../../utils/dateMath";
 import { buildNormalizer, gregorianUnits, normalizeUnitBundle, simplePlural } from "../../utils/units";
 import Zone from "../../types/zone";
 import { GregorianDate, GregorianUnit } from "../../types/gregorian";
 import { Time } from "../../types/time";
-import { floorMod, integerBetween } from "../../utils/numeric";
+import { integerBetween } from "../../utils/numeric";
 import { isInteger } from "../../utils/typeCheck";
 
 /*
@@ -28,7 +28,7 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
             return ["year", year];
         } else if (!integerBetween(month, 1, 12)) {
             return ["month", month];
-        } else if (!integerBetween(day, 1, daysInMonth(year, month))) {
+        } else if (!integerBetween(day, 1, daysInGregorianMonth(year, month))) {
             return ["day", day];
         } else return null;
     };
@@ -40,12 +40,6 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
 }
 
 export const gregorianInstance: GregorianCalendar = new GregorianCalendar();
-
-export function daysInMonth(year: number, month: number) {
-    const modMonth = floorMod(month - 1, 12) + 1;
-    const modYear = year + (month - modMonth) / 12;
-    return [31, isLeapYear(modYear) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][modMonth - 1];
-}
 
 // convert a calendar object to a local timestamp (epoch, but with the offset baked in)
 export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => {
@@ -96,7 +90,7 @@ export const tsToGregorian = (ts: number, offset: number): [GregorianDate, Time]
 
 export const adjustCalendarOverflow = (greg: GregorianDate & Time): GregorianDate & Time => {
     const {year, month, day} = greg;
-    return {...greg, day: Math.min(day, daysInMonth(year, month))};
+    return {...greg, day: Math.min(day, daysInGregorianMonth(year, month))};
 };
 
 // find the right offset at a given local time. The o input is our guess, which determines which

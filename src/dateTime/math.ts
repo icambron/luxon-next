@@ -1,8 +1,8 @@
-import { DateTime, alter, set } from "../model/dateTime";
+import { DateTime} from "../model/DateTime";
 import { month } from "./core";
-import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
-import { daysInMonth, gregorianInstance, gregorianToTS } from "../model/calendars/gregorian";
-import { Duration, toMillis, defaultEmpties, isDuration, convert, durationUnits } from "../model/duration";
+import { isoWeekCalendarInstance } from "../model/calendars/IsoWeekCalendar";
+import { gregorianInstance, gregorianToTS } from "../model/calendars/GregorianCalendar";
+import { Duration, toMillis, durationUnits } from "../model/Duration";
 import { durNegate } from "../duration/core";
 import { InvalidUnitError } from "../errors";
 import { getDefaultConversionAccuracy } from "../settings";
@@ -12,6 +12,9 @@ import { GregorianUnit } from "../types/gregorian";
 import { TimeUnit } from "../types/time";
 import { intAndFraction, roundTo } from "../utils/numeric";
 import { bestBy } from "../utils/array";
+import { alter, set } from "../impl/dateTime";
+import { convert, defaultEmpties, isDuration } from "../impl/duration";
+import { daysInGregorianMonth } from "../utils/dateMath";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -190,7 +193,7 @@ const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): ((dt
 
     const year = greg.year + years;
     const month = greg.month + months + quarters * 3;
-    const day = Math.min(greg.day, daysInMonth(year, month)) + days + weeks * 7;
+    const day = Math.min(greg.day, daysInGregorianMonth(year, month)) + days + weeks * 7;
 
     let [ts, offset] = gregorianToTS({ year, month, day }, dt.time, dt.offset, dt.zone);
 

@@ -1,9 +1,9 @@
-import { DateTime } from "../model/dateTime";
+import { DateTime } from "../model/DateTime";
 import { durFromMillis, durFromValues, durPlus as durationPlus } from "./core";
 import { as, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
-import { Duration } from "../model/duration";
+import { Duration } from "../model/Duration";
 import { month, quarter, year } from "../dateTime/core";
 import { DurationUnit, DurationValues } from "../types/duration";
 import { isString, isUndefined } from "../utils/typeCheck";

@@ -1,5 +1,5 @@
 import { tryFromHTTP, tryFromISO, tryFromRFC2822 } from "../../../src/dateTime/parse";
-import { DateTime } from "../../../src/model/dateTime";
+import { DateTime } from "../../../src/model/DateTime";
 import { offset } from "../../../src/dateTime/core";
 
 test("tryFromISO returns a DateTime for valid values", () => {
