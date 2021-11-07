@@ -1,7 +1,8 @@
 import { DateTime, fromCalendar, getCalendarValue } from "../model/dateTime";
-import Zone from "../model/zone";
-import { OrdinalCalendar, OrdinalDate } from "../model/calendars/ordinal";
-import { Time } from "../model/time";
+import { OrdinalCalendar } from "../model/calendars/ordinal";
+import Zone from "../types/zone";
+import { OrdinalDate } from "../types/ordinal";
+import { Time } from "../types/time";
 
 const ordinalCalendar = new OrdinalCalendar();
 

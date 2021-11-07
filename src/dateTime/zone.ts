@@ -3,7 +3,7 @@ import { systemZone } from "../model/zones/systemZone";
 import { DateTime, alter, normalizeZone } from "../model/dateTime";
 import { getDefaultZone } from "../settings";
 import { gregorianToTS } from "../model/calendars/gregorian";
-import { Zoneish } from "../model/zone";
+import { Zoneish } from "../types/zone";
 
 /**
  * "Set" the DateTime's zone to specified zone. Returns a newly-constructed DateTime.

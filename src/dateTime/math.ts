@@ -1,31 +1,17 @@
 import { DateTime, alter, set } from "../model/dateTime";
-import { bestBy, intAndFraction, roundTo } from "../lib/util";
 import { month } from "./core";
 import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
 import { daysInMonth, gregorianInstance, gregorianToTS } from "../model/calendars/gregorian";
-import {
-  Duration,
-  toMillis,
-  defaultEmpties,
-  DurationValues,
-  isDuration,
-  convert,
-  durationUnits,
-  ConversionAccuracy,
-} from "../model/duration";
-import { negate } from "../duration/core";
-import { InvalidUnitError } from "../model/errors";
-import {
-  gregorianUnits,
-  GregorianUnit,
-  miscDurationUnits,
-  MiscDurationUnit,
-  TimeUnit,
-  timeUnits,
-  buildNormalizer,
-  simplePlural,
-} from "../model/units";
+import { Duration, toMillis, defaultEmpties, isDuration, convert, durationUnits } from "../model/duration";
+import { durNegate } from "../duration/core";
+import { InvalidUnitError } from "../errors";
 import { getDefaultConversionAccuracy } from "../settings";
+import { buildNormalizer, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../utils/units";
+import { ConversionAccuracy, DurationValues, MiscDurationUnit } from "../types/duration";
+import { GregorianUnit } from "../types/gregorian";
+import { TimeUnit } from "../types/time";
+import { intAndFraction, roundTo } from "../utils/numeric";
+import { bestBy } from "../utils/array";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -152,7 +138,7 @@ export const minus = (
   conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
 ): ((dt: DateTime) => DateTime) => {
   const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
-  const negated = negate()(dur);
+  const negated = durNegate()(dur);
   const adjustment = adjustTime(negated, conversionAccuracy);
   return (dt) => {
     const [ts, offset] = adjustment(dt);

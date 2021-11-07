@@ -1,4 +1,4 @@
-import Zone from "../zone";
+import Zone from "../../types/zone";
 
 /**
  * Represents the system's local zone for this Javascript environment.

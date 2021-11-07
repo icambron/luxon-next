@@ -1,9 +1,10 @@
-import { gregorianInstance } from "../model/calendars/gregorian";
-import { parseMillis, signedOffset } from "../lib/util";
-import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
+import { gregorianInstance } from "../../model/calendars/gregorian";
+import { fixedOffsetZone } from "../../model/zones/fixedOffsetZone";
 import { ExtractedResult, combineRegexes, combineExtractors, parse, int, simpleParse } from "./regexParser";
-import { isoWeekCalendarInstance } from "../model/calendars/isoWeek";
-import { ordinalInstance } from "../model/calendars/ordinal";
+import { isoWeekCalendarInstance } from "../../model/calendars/isoWeek";
+import { ordinalInstance } from "../../model/calendars/ordinal";
+import { parseMillis } from "../../utils/numeric";
+import { signedOffset } from "../../utils/zone";
 
 // REGEX
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;

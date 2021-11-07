@@ -1,8 +1,8 @@
 /* global test expect */
 import { day, fromGregorian, hour, minute, month, quarter, year, ymd } from "../../../src/dateTime/core";
 import { plus } from "../../../src/dateTime/math";
-import { duration, toMillis } from "../../../src/duration/core";
-import { InvalidArgumentError } from "../../../src/model/errors";
+import { duration, durToMillis } from "../../../src/duration/core";
+import { InvalidArgumentError } from "../../../src/errors";
 import Duration from "../../../src/model/duration";
 
 const dt = () =>
@@ -118,7 +118,7 @@ test("plus handles fractional large convert", () => {
   const d = ymd(2016, 1, 31, 10);
   for (const unit of units) {
     const first = d |> plus({ [unit]: 8.7 });
-    const second = d |> plus({ [unit]: 8, milliseconds: duration({ [unit]: 0.7 }) |> toMillis() });
+    const second = d |> plus({ [unit]: 8, milliseconds: duration({ [unit]: 0.7 }) |> durToMillis() });
     expect(first).toEqual(second);
   }
 });

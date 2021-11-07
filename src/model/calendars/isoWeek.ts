@@ -1,17 +1,10 @@
-import {Calendar} from "../calendar";
-import {
-    integerBetween,
-    isInteger,
-} from "../../lib/util";
-import {GregorianDate} from "./gregorian";
-import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../lib/dateMath";
-import {
-    buildNormalizer,
-    IsoWeekUnit,
-    isoWeekUnits,
-    normalizeUnitBundle,
-    simplePlural
-} from "../units";
+import { Calendar } from "../../types/calendar";
+import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../../utils/dateMath";
+import { buildNormalizer, isoWeekUnits, normalizeUnitBundle, simplePlural } from "../../utils/units";
+import { GregorianDate } from "../../types/gregorian";
+import { ISOWeekDate, IsoWeekUnit } from "../../types/isoWeek";
+import { integerBetween } from "../../utils/numeric";
+import { isInteger } from "../../utils/typeCheck";
 
 const isoWeekNormalizer = buildNormalizer<IsoWeekUnit>(isoWeekUnits, simplePlural);
 
@@ -19,12 +12,6 @@ const dayOfWeek = (year: number, month: number, day: number) => {
     const js = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
     return js === 0 ? 7 : js;
 };
-
-export interface ISOWeekDate {
-    weekYear: number;
-    weekNumber: number;
-    weekday: number;
-}
 
 export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
     defaultValues = { weekYear: 1, weekNumber: 1, weekday: 1};
@@ -53,7 +40,7 @@ export class IsoWeekCalendar implements Calendar<ISOWeekDate> {
         return { weekYear, weekNumber, weekday };
     }
 
-    isInvalid(obj: ISOWeekDate): [string, number] | null {
+    isDateInvalid(obj: ISOWeekDate): [string, number] | null {
         if (!isInteger(obj.weekYear)) {
             return ["weekYear", obj.weekYear];
         }

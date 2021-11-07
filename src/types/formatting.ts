@@ -1,5 +1,3 @@
-import { Zoneish } from "../model/zone";
-
 export type MonthFormatWidth = "narrow" | "short" | "long" | "numeric" | "2-digit";
 export type WeekdayFormatWidth = "narrow" | "short" | "long";
 export type EraFormatWidth = "narrow" | "short" | "long";
@@ -11,15 +9,7 @@ export interface SharedFormattingOpts {
   numberingSystem?: string;
 }
 
-export interface GeneralFormattingOpts extends SharedFormattingOpts, Intl.DateTimeFormatOptions { }
-
-export interface GeneralParsingOpts{
-  interpretationZone?: Zoneish;
-  targetZone?: Zoneish;
-  useTargetZoneFromInput?: boolean
-}
-
-export interface TokenParsingOpts extends GeneralParsingOpts, SharedFormattingOpts { }
+export interface GeneralFormattingOpts extends SharedFormattingOpts, Intl.DateTimeFormatOptions {}
 
 export interface MonthFormatOpts extends GeneralFormattingOpts {
   mode?: FormatMode;

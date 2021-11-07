@@ -1,19 +1,17 @@
-import {Calendar} from "../calendar";
-import { Time} from "../time";
-import Zone from "../zone";
-import {floorMod, integerBetween, isInteger} from "../../lib/util";
-import {isLeapYear} from "../../lib/dateMath";
-import {buildNormalizer, gregorianUnits, GregorianUnit, normalizeUnitBundle, simplePlural} from "../units";
+import { Calendar } from "../../types/calendar";
+import { isLeapYear } from "../../utils/dateMath";
+import { buildNormalizer, gregorianUnits, normalizeUnitBundle, simplePlural } from "../../utils/units";
+import Zone from "../../types/zone";
+import { GregorianDate, GregorianUnit } from "../../types/gregorian";
+import { Time } from "../../types/time";
+import { floorMod, integerBetween } from "../../utils/numeric";
+import { isInteger } from "../../utils/typeCheck";
 
 /*
 The Gregorian calendar (i.e. the dates we use in everyday life) is the lingua franca of Luxon. It's thus a sort of
 privileged calendar, primarily because we know how to convert it to and from a timestamp. We can do that with other
 calendars too, but only by converting them to or from Gregorian first.
  */
-
-export type GregorianDate = {
-    [key in GregorianUnit]: number;
-}
 
 const gregorianNormalizer = buildNormalizer<GregorianUnit>(gregorianUnits, simplePlural);
 
@@ -25,7 +23,7 @@ export class GregorianCalendar implements Calendar<GregorianDate> {
     fromGregorian = (obj: GregorianDate): GregorianDate => obj;
     toGregorian = (obj: GregorianDate): GregorianDate => obj;
 
-    isInvalid = ({year, month, day}: any): [string, number] | null => {
+    isDateInvalid = ({year, month, day}: any): [string, number] | null => {
         if (!isInteger(year)) {
             return ["year", year];
         } else if (!integerBetween(month, 1, 12)) {

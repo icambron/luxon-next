@@ -1,18 +1,18 @@
-import { normalize } from "../../../src/duration/convert";
-import { fromValues, values } from "../../../src/duration/core";
+import { durNormalize } from "../../../src/duration/convert";
+import { durFromValues, durValues } from "../../../src/duration/core";
 
 test("normalize() rebalances negative convert", () => {
-  const dur = fromValues({ years: 2, days: -2 }) |> normalize() |> values;
+  const dur = durFromValues({ years: 2, days: -2 }) |> durNormalize() |> durValues;
   expect(dur).toEqual({ years: 1, days: 363 });
 });
 
 test("normalize() de-overflows", () => {
-  const dur = fromValues({ years: 2, days: 5000 }) |> normalize() |> values;
+  const dur = durFromValues({ years: 2, days: 5000 }) |> durNormalize() |> durValues;
   expect(dur).toEqual({ years: 15, days: 255 });
 });
 
 test("normalize() handles fully negative durations", () => {
-  const dur = fromValues({ years: -2, days: -5000 }) |> normalize() |> values;
+  const dur = durFromValues({ years: -2, days: -5000 }) |> durNormalize() |> durValues;
   expect(dur).toEqual({ years: -15, days: -255 });
 });
 
@@ -66,7 +66,7 @@ test.each([
     { months: 0, days: -28 },
   ],
 ])("normalize() handles %p", (input, expected) => {
-  expect(fromValues(input) |> normalize() |> values).toEqual(expected);
+  expect(durFromValues(input) |> durNormalize() |> durValues).toEqual(expected);
 });
 
 test("normalize can convert all unit pairs", () => {
@@ -74,12 +74,12 @@ test("normalize can convert all unit pairs", () => {
 
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
-      const duration = fromValues({ [units[i]]: 1, [units[j]]: 2 });
-      const normalizedDuration = duration |> normalize() |> values;
+      const duration = durFromValues({ [units[i]]: 1, [units[j]]: 2 });
+      const normalizedDuration = duration |> durNormalize() |> durValues;
       expect(normalizedDuration[units[i]]).not.toBe(NaN);
       expect(normalizedDuration[units[j]]).not.toBe(NaN);
 
-      const normalizedAccurateDuration = duration |> normalize("longterm") |> values;
+      const normalizedAccurateDuration = duration |> durNormalize("longterm") |> durValues;
       expect(normalizedAccurateDuration[units[i]]).not.toBe(NaN);
       expect(normalizedAccurateDuration[units[j]]).not.toBe(NaN);
     }

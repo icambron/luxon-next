@@ -13,7 +13,7 @@ import {
   year,
   zone,
 } from "../../../src/dateTime/core";
-import { InvalidZoneError, UnitOutOfRangeError } from "../../../src/model/errors";
+import { InvalidZoneError, UnitOutOfRangeError } from "../../../src/errors";
 
 const baseObject = {
   year: 1982,

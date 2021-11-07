@@ -15,15 +15,10 @@ test("listMeridiems() accepts widths", () => {
     "in the morning",
     "noon",
     "in the afternoon",
-    "in the evening"
+    "in the evening",
   ]);
 });
 
 test("listMeridiems() accepts locales and widths", () => {
-  expect(listMeridiems({ locale: "fr", width: "long" })).toEqual([
-    "du matin",
-    "midi",
-    "de l’après-midi",
-    "du soir",
-  ]);
+  expect(listMeridiems({ locale: "fr", width: "long" })).toEqual(["du matin", "midi", "de l’après-midi", "du soir"]);
 });

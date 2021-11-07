@@ -81,6 +81,6 @@ test("listMonths lists accepts a dtf options", () => {
     "九月",
     "十月",
     "十一月",
-    "十二月"
+    "十二月",
   ]);
 });

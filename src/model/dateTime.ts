@@ -1,13 +1,16 @@
-import Zone, { isZone, Zoneish } from "./zone";
-import { Calendar } from "./calendar";
-import { GregorianDate, gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
-import { Time, fromObject, hasInvalidTimeData } from "./time";
-import { isNumber, isString, isUndefined } from "../lib/util";
+import { Calendar } from "../types/calendar";
+import { gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
+import { fromObject, hasInvalidTimeData } from "./time";
 import { getDefaultNowFn, getDefaultZone } from "../settings";
-import { InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError } from "./errors";
+import { InvalidArgumentError, InvalidZoneError, UnitOutOfRangeError } from "../errors";
 import { systemZone } from "./zones/systemZone";
 import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./zones/fixedOffsetZone";
 import { createIANAZone, isValidIANASpecifier, parseGMTOffset } from "./zones/IANAZone";
+import Zone, { Zoneish } from "../types/zone";
+import { isZone } from "../utils/zone";
+import { GregorianDate } from "../types/gregorian";
+import { Time } from "../types/time";
+import { isNumber, isString, isUndefined } from "../utils/typeCheck";
 
 export const MAX_DATE = 8.64e15;
 
@@ -71,7 +74,7 @@ export const fromCalendar = <TDate extends object>(
 
   const [time, _] = fillInDefaults<Time>(defaultTimeObject, timeNow, fromObject(o), found);
 
-  const error = calendar.isInvalid(date) || hasInvalidTimeData(time);
+  const error = calendar.isDateInvalid(date) || hasInvalidTimeData(time);
   if (error != null) {
     throw new UnitOutOfRangeError(error[0], error[1]);
   }

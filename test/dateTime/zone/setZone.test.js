@@ -18,7 +18,7 @@ import {
 } from "../../../src/dateTime/core";
 import { setZone, toUTC } from "../../../src/dateTime/zone";
 import { withDefaultZone } from "../../helpers";
-import { InvalidZoneError } from "../../../src/model/errors";
+import { InvalidZoneError } from "../../../src/errors";
 import { createIANAZone } from "../../../src/model/zones/IANAZone";
 
 const millis = 391147200000,

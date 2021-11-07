@@ -1,30 +1,31 @@
 import { DateTime } from "../model/dateTime";
-import { fromMillis, fromValues, plus as durationPlus } from "./core";
-import { as, shiftTo } from "./convert";
+import { durFromMillis, durFromValues, durPlus as durationPlus } from "./core";
+import { as, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
-import { DurationUnit } from "../model/units";
-import { Duration, DurationValues } from "../model/duration";
+import { Duration } from "../model/duration";
 import { month, quarter, year } from "../dateTime/core";
-import { isString, isUndefined } from "../lib/util";
+import { DurationUnit, DurationValues } from "../types/duration";
+import { isString, isUndefined } from "../utils/typeCheck";
+import { maybeArray } from "../utils/array";
 
 type Differ = (a: DateTime, b: DateTime) => number;
 
 type HighOrderDiff = {
-  results: Partial<DurationValues>,
-  cursor: DateTime,
-  highWater?: DateTime,
-  lowestOrder?: DurationUnit
-}
+  results: Partial<DurationValues>;
+  cursor: DateTime;
+  highWater?: DateTime;
+  lowestOrder?: DurationUnit;
+};
 
 const dayDiff = (earlier: DateTime, later: DateTime): number => {
   const utcDayStart = (dt: DateTime) => {
-    const shifted = toUTC(0, {keepLocalTime: true})(dt);
+    const shifted = toUTC(0, { keepLocalTime: true })(dt);
     const start = startOf("day")(shifted);
     return +start;
-  }
+  };
   const ms = utcDayStart(later) - utcDayStart(earlier);
-  return Math.floor(as("days")(fromMillis(ms)));
+  return Math.floor(as("days")(durFromMillis(ms)));
 };
 
 const differs: [DurationUnit, Differ][] = [
@@ -64,24 +65,19 @@ const highOrderDiffs = (cursor: DateTime, later: DateTime, units: DurationUnit[]
     }
   }
 
-  return {cursor, results, highWater, lowestOrder};
+  return { cursor, results, highWater, lowestOrder };
 };
 
 export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] | DurationUnit): Duration => {
-
   if (isUndefined(units)) {
     units = ["milliseconds"];
-  } else if (isString(units)) {
-    units = [units];
-  }
+  } else units = maybeArray(units);
 
-  let {cursor, results, highWater, lowestOrder} = highOrderDiffs(earlier, later, units);
+  let { cursor, results, highWater, lowestOrder } = highOrderDiffs(earlier, later, units);
 
   const remainingMillis = +later - +cursor;
 
-  const lowerOrderUnits = units.filter(
-    (u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0
-  );
+  const lowerOrderUnits = units.filter((u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0);
 
   if (lowerOrderUnits.length === 0 && highWater && lowestOrder) {
     if (+highWater < +later) {
@@ -93,11 +89,11 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
     }
   }
 
-  const duration = fromValues(results);
+  const duration = durFromValues(results);
 
   if (lowerOrderUnits.length > 0) {
-    const simple = fromMillis(remainingMillis);
-    const shiftedToUnits = shiftTo(lowerOrderUnits)(simple);
+    const simple = durFromMillis(remainingMillis);
+    const shiftedToUnits = durShiftTo(lowerOrderUnits)(simple);
     return durationPlus(duration, shiftedToUnits);
   } else {
     return duration;

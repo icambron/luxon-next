@@ -1,7 +1,8 @@
-import { DurationUnit } from "../model/units";
-import { ConversionAccuracy, Duration, normalizeDurationUnit, pickMatrix, Trie } from "../model/duration";
+import { Duration, normalizeDurationUnit, pickMatrix, Trie } from "../model/duration";
 import { getDefaultConversionAccuracy } from "../settings";
-import { antiTrunc, isNumber, isUndefined} from "../lib/util";
+import { ConversionAccuracy, DurationUnit } from "../types/duration";
+import { antiTrunc } from "../utils/numeric";
+import { isNumber, isUndefined } from "../utils/typeCheck";
 
 // convert ordered by size
 const orderedUnits: DurationUnit[] = [
@@ -64,7 +65,7 @@ const normalizeValues = (matrix: Trie, vals: Map<DurationUnit, number>) => {
 export const as =
   (unit: DurationUnit): ((dur: Duration) => number) =>
   (dur) => {
-    const shifted = shiftTo([unit])(dur);
+    const shifted = durShiftTo([unit])(dur);
     return shifted.values[unit] || 0;
   };
 
@@ -74,7 +75,7 @@ export const as =
  * @example fromValues({ hours: 12, minutes: -45 }) |> normalize() |> values //=> { hours: 11, minutes: 15 }
  * @return {Duration}
  */
-export const normalize =
+export const durNormalize =
   (conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): ((dur: Duration) => Duration) =>
   (dur) => {
     const map = durToMap(dur);
@@ -82,7 +83,7 @@ export const normalize =
     return new Duration(Object.fromEntries(map));
   };
 
-export const shiftTo =
+export const durShiftTo =
   (
     units: DurationUnit[],
     conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()

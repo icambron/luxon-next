@@ -1,9 +1,9 @@
-import Zone, { isZone } from "./model/zone";
 import { systemZone } from "./model/zones/systemZone";
-import { InvalidArgumentError } from "./model/errors";
-
-// todo - move this type
-import { ConversionAccuracy } from "./model/duration";
+import { InvalidArgumentError } from "./errors";
+import {clearCaches as clearCachesInternal} from "./utils/caching";
+import Zone from "./types/zone";
+import { ConversionAccuracy } from "./types/duration";
+import { isZone } from "./utils/zone";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -43,3 +43,5 @@ export const setDefaultNumberingSystem = (numberingSystem: string)  => _defaultN
 
 export const getDefaultOutputCalendar = (): string  | undefined => _defaultOutputCalendar;
 export const setDefaultOutputCalendar = (outputCalendar: string)  => _defaultOutputCalendar = outputCalendar;
+
+export const clearCaches = () => clearCachesInternal();

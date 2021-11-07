@@ -1,12 +1,5 @@
-// these aren't really private, but nor are they really useful to document
-
-import { Zoneish } from "./zone";
-
 export class LuxonError extends Error {}
 
-/**
- * @private
- */
 export class UnitOutOfRangeError extends LuxonError {
   unit: string;
   value: any;
@@ -22,9 +15,6 @@ export class UnitOutOfRangeError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
 export class InvalidUnitError extends LuxonError {
   constructor(unit: string) {
     super(`Invalid unit ${unit}`);
@@ -32,19 +22,13 @@ export class InvalidUnitError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
 export class InvalidZoneError extends LuxonError {
-  constructor(zoneName: Zoneish) {
+  constructor(zoneName: any) {
     super(`${zoneName} is an invalid or unknown zone specifier`);
     Object.setPrototypeOf(this, InvalidZoneError.prototype);
   }
 }
 
-/**
- * @private
- */
 export class MissingPlatformFeatureError extends LuxonError {
   constructor(feature: string) {
     super(`missing ${feature} support`);
@@ -52,9 +36,6 @@ export class MissingPlatformFeatureError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
 export class MismatchedWeekdayError extends LuxonError {
   constructor(weekday: number, date: string) {
     super(`you can't specify both a weekday of ${weekday} and a date of ${date}`);
@@ -62,19 +43,6 @@ export class MismatchedWeekdayError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
-export class UnparsableStringError extends LuxonError {
-  constructor(format: string, text: string) {
-    super(`can't parse ${text} into format ${format}`);
-    Object.setPrototypeOf(this, UnparsableStringError.prototype);
-  }
-}
-
-/**
- * @private
- */
 export class ConflictingSpecificationError extends LuxonError {
   constructor(message: string) {
     super(message);
@@ -82,9 +50,6 @@ export class ConflictingSpecificationError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
 export class InvalidArgumentError extends LuxonError {
   constructor(message: string) {
     super(message);
@@ -92,9 +57,6 @@ export class InvalidArgumentError extends LuxonError {
   }
 }
 
-/**
- * @private
- */
 export class UnknownError extends LuxonError {
   constructor(message: string) {
     super(message);

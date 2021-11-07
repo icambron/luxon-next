@@ -1,4 +1,4 @@
-import { fromFormat, fromFormatExplain, simpleParsingOptions } from "../../../src/parse";
+import { fromFormat, fromFormatExplain, simpleParsingOptions } from "../../../src/parsing/parse";
 import {
   year,
   month,
@@ -9,9 +9,11 @@ import {
   millisecond,
   quarter,
   now,
-  zoneName, offset, fromMillis
+  zoneName,
+  offset,
+  fromMillis,
 } from "../../../src/dateTime/core";
-import { ConflictingSpecificationError } from "../../../src/model/errors";
+import { ConflictingSpecificationError } from "../../../src/errors";
 import { weekday, weekNumber, weekYear } from "../../../src/dateTime/isoWeek";
 import { ordinal } from "../../../src/dateTime/ordinal";
 import { toUTC } from "../../../src/dateTime/zone";
@@ -157,7 +159,7 @@ test.each([
   ["12", "S", 12],
   ["123", "S", 123],
   ["123", "SSS", 123],
-  ["023", "SSS", 23]
+  ["023", "SSS", 23],
 ])("fromFormat() parses milliseconds: %p with %p", (ms, token, expected) => {
   expect(fromFormat(ms, token) |> millisecond).toBe(expected);
 });
@@ -166,11 +168,10 @@ test.each([
   ["1234", "S"],
   ["1", "SSS"],
   ["12", "SSS"],
-  ["1234", "SSS"]
+  ["1234", "SSS"],
 ])("fromFormat() can't parse invalid %p with %p", (ms, token) => {
   expect(() => fromFormat(ms, token)).toThrow();
 });
-
 
 test("fromFormat() parses fractional seconds", () => {
   expect(fromFormat("1", "u") |> millisecond).toBe(100);
@@ -318,7 +319,7 @@ test("fromFormat() makes trailing periods in month names optional", () => {
 });
 
 test("fromFormat() does not match arbitrary stuff with those periods", () => {
-  expect(() => fromFormat("janvQ 25 1982", "LLL dd yyyy", { locale: "fr", })).toThrow();
+  expect(() => fromFormat("janvQ 25 1982", "LLL dd yyyy", { locale: "fr" })).toThrow();
 });
 
 test("fromFormat() uses case-insensitive matching", () => {
@@ -442,10 +443,10 @@ test.each([
   ["Tuesday, 05/25/1982", "EEEE, MM/dd/yyyy", { locale: "fr" }],
   ["Giberish, 05/25/1982", "EEEE, MM/dd/yyyy"],
   ["14/25/1982", "MM/dd/yyyy"],
-  ["05/46/1982", "MM/dd/yyyy"]
+  ["05/46/1982", "MM/dd/yyyy"],
 ])("fromFormat() throws for out-of-range values like %p", ([s, fmt, opts]) => {
   expect(() => fromFormat(s, fmt, opts)).toThrow();
-})
+});
 
 test("fromFormat() accepts a zone arguments", () => {
   const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", simpleParsingOptions("Asia/Tokyo"));
@@ -461,10 +462,7 @@ test("fromFormat() accepts a zone arguments", () => {
 });
 
 test("fromFormat() parses IANA zones", () => {
-  let d = fromFormat(
-    "1982/05/25 09:10:11.445 Asia/Tokyo",
-    "yyyy/MM/dd HH:mm:ss.SSS z"
-  ) |> toUTC();
+  let d = fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z") |> toUTC();
   expect(d |> offset).toBe(0);
   expect(d |> hour).toBe(0);
   expect(d |> minute).toBe(10);
@@ -477,7 +475,7 @@ test("fromFormat() parses IANA zones", () => {
 
 test("fromFormat() with setZone parses IANA zones and sets it", () => {
   const d = fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z", {
-    useTargetZoneFromInput: true
+    useTargetZoneFromInput: true,
   });
   expect(d |> zoneName).toBe("Asia/Tokyo");
   expect(d |> offset).toBe(9 * 60);
@@ -488,12 +486,9 @@ test("fromFormat() with setZone parses IANA zones and sets it", () => {
 test.each([
   ["Z", "-4"],
   ["ZZ", "-4:00"],
-  ["ZZZ", "-0400"]
+  ["ZZZ", "-0400"],
 ])("fromFormat() uses %p to parse fixed offsets like %p", (format, example) => {
-    const dt = fromFormat(
-      `1982/05/25 09:10:11.445 ${example}`,
-      `yyyy/MM/dd HH:mm:ss.SSS ${format}`
-    );
+  const dt = fromFormat(`1982/05/25 09:10:11.445 ${example}`, `yyyy/MM/dd HH:mm:ss.SSS ${format}`);
   expect(dt |> toUTC() |> hour).toBe(13);
   expect(dt |> toUTC() |> minute).toBe(10);
 });
@@ -503,11 +498,9 @@ test.each([
   ["ZZ", "-4:00"],
   ["ZZZ", "-0400"],
 ])("fromFormat() with setZone parses fixed offsets like %p and sets it", (format, example) => {
-  const dt = fromFormat(
-    `1982/05/25 09:10:11.445 ${example}`,
-    `yyyy/MM/dd HH:mm:ss.SSS ${format}`,
-    { useTargetZoneFromInput: true }
-  );
+  const dt = fromFormat(`1982/05/25 09:10:11.445 ${example}`, `yyyy/MM/dd HH:mm:ss.SSS ${format}`, {
+    useTargetZoneFromInput: true,
+  });
   expect(dt |> offset).toBe(-4 * 60);
   expect(dt |> toUTC() |> hour).toBe(13);
   expect(dt |> toUTC() |> minute).toBe(10);
@@ -523,8 +516,12 @@ test("fromFormat validates weekdays", () => {
   expect(() => fromFormat("Wed 2017-11-29 02:00", "EEE yyyy-MM-dd HH:mm")).not.toThrow();
   expect(() => fromFormat("Thu 2017-11-29 02:00", "EEE yyyy-MM-dd HH:mm")).not.toThrow();
   expect(() => fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ")).not.toThrow();
-  expect(() => fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true, })).not.toThrow();
-  expect(() => fromFormat("Tue 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true, })).not.toThrow();
+  expect(() =>
+    fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true })
+  ).not.toThrow();
+  expect(() =>
+    fromFormat("Tue 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true })
+  ).not.toThrow();
 });
 
 test("fromFormat containing special regex token", () => {

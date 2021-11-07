@@ -1,7 +1,9 @@
-import { isUndefined, ianaRegex } from "../../lib/util";
-import Zone from "../zone";
-import { InvalidZoneError } from "../errors";
-import {gregorianToLocalTS} from "../calendars/gregorian";
+
+import { InvalidZoneError } from "../../errors";
+import { gregorianToLocalTS } from "../calendars/gregorian";
+import Zone from "../../types/zone";
+import { ianaRegex, isValidIANAZone } from "../../utils/zone";
+import { isUndefined } from "../../utils/typeCheck";
 
 const matchingRegex = RegExp(`^${ianaRegex.source}$`);
 
@@ -59,7 +61,7 @@ export default class IANAZone implements Zone {
   private readonly _zoneName: string;
 
   constructor(name: string) {
-    if (!isValidZone(name)) {
+    if (!isValidIANAZone(name)) {
       throw new InvalidZoneError(name);
     }
     this._zoneName = name;
@@ -128,23 +130,6 @@ export const resetCache = () => {
  */
 export const isValidIANASpecifier = (s: string): boolean => {
   return !!(s && matchingRegex.exec(s) !== null);
-}
-
-/**
- * Returns whether the provided string identifies a real zone
- * @param {string} zone - The string to check
- * @example IANAZone.isValidZone("America/New_York") //=> true
- * @example IANAZone.isValidZone("Fantasia/Castle") //=> false
- * @example IANAZone.isValidZone("Sport~~blorp") //=> false
- * @return {boolean}
- */
-export const isValidZone = (zone: string): boolean => {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: zone }).format();
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
 
 // Etc/GMT+8 -> -480

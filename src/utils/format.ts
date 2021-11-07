@@ -1,16 +1,14 @@
-import Zone from "../model/zone";
-import { isValidZone } from "../model/zones/IANAZone";
 import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
-import { FormatStringError, UnknownError } from "../model/errors";
-import {
-  SharedFormattingOpts,
-  FormatFirstArg,
-  FormatSecondArg,
-  FormattingToken
-} from "../scatteredTypes/formattingAndParsing";
-import { memo } from "../caching";
+import { FormatStringError, UnknownError } from "../errors";
+import { SharedFormattingOpts, FormatFirstArg, FormatSecondArg, FormattingToken } from "../types/formatting";
+import { memo } from "./caching";
+import Zone from "../types/zone";
+import { isValidIANAZone } from "./zone";
 
-export const getDtf = memo("dateTimeFormat", ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts));
+export const getDtf = memo(
+  "dateTimeFormat",
+  ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts)
+);
 
 const zoneOptionForZone = (zone: Zone | undefined): string | null => {
   if (!zone) {
@@ -18,7 +16,7 @@ const zoneOptionForZone = (zone: Zone | undefined): string | null => {
   } else if (zone.isUniversal) {
     const gmtOffset = zone.offset(0);
     const offsetZ = gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
-    const isOffsetZoneSupported = isValidZone(offsetZ);
+    const isOffsetZoneSupported = isValidIANAZone(offsetZ);
     if (gmtOffset !== 0 && isOffsetZoneSupported) {
       return offsetZ;
     } else {
@@ -68,7 +66,10 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
-export const getFormattingOpts = <T extends SharedFormattingOpts>(firstArg: FormatFirstArg<T>, secondArg: FormatSecondArg<T>): Partial<T> => {
+export const getFormattingOpts = <T extends SharedFormattingOpts>(
+  firstArg: FormatFirstArg<T>,
+  secondArg: FormatSecondArg<T>
+): Partial<T> => {
   let locale: string | undefined = undefined;
   let t: Partial<T> | undefined = undefined;
   if (typeof firstArg === "string") {
@@ -82,18 +83,18 @@ export const getFormattingOpts = <T extends SharedFormattingOpts>(firstArg: Form
   }
 
   if (t && !t.locale) {
-    t.locale = locale
+    t.locale = locale;
   } else if (!t) {
     t = (locale ? { locale } : {}) as Partial<T>;
   }
 
   return t;
-}
+};
 
 export const hasKeys =
   <T>(...keys: string[]): ((o: any) => o is T) =>
-    (o: any): o is T =>
-      typeof o === "object" && keys.some((k) => o[k]);
+  (o: any): o is T =>
+    typeof o === "object" && keys.some((k) => o[k]);
 
 export const parseFormat = (fmt: string): FormattingToken[] => {
   let currentChar: string | null = null;
@@ -108,7 +109,7 @@ export const parseFormat = (fmt: string): FormattingToken[] => {
     }
     currentChar = null;
     currentToken = null;
-  }
+  };
 
   for (let i = 0; i < fmt.length; i++) {
     const c = fmt.charAt(i);
@@ -139,9 +140,9 @@ export const parseFormat = (fmt: string): FormattingToken[] => {
     // if we're in a bracket or the current char is the same as the last, append to the current token
     // note this could be an escaped bracket inside the bracketed section, or even a second bracket in a row
     else if (bracketed || c === currentChar) {
-      escaped = false
+      escaped = false;
       if (!currentToken) currentToken = "";
-      currentToken += c
+      currentToken += c;
     }
 
     // we aren't bracketed and we have a token that's different than the previous. Create a new token
@@ -159,4 +160,4 @@ export const parseFormat = (fmt: string): FormattingToken[] => {
   addToken(bracketed, currentToken);
 
   return tokens;
-}
+};

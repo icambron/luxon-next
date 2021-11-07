@@ -34,4 +34,3 @@ test("Setting the default zone to the system zone instance works", () => {
     expect(now() |> zone).toBe(sysZone);
   });
 });
-

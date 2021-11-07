@@ -1,24 +1,31 @@
-import Zone from "../model/zone";
-import { FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../scatteredTypes/formattingAndParsing";
+import { FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../types/formatting";
 import { utcInstance } from "../model/zones/fixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys} from "./formatUtils";
-import { memo } from "../caching";
+import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../utils/format";
+import { memo } from "../utils/caching";
+import Zone from "../types/zone";
 
-export const formatMonth = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>): ((date: Date, zone: Zone) => string) => {
+export const formatMonth = (
+  firstArg?: FormatFirstArg<MonthFormatOpts>,
+  secondArg?: FormatSecondArg<MonthFormatOpts>
+): ((date: Date, zone: Zone) => string) => {
   const formatOpts = getFormattingOpts<MonthFormatOpts>(firstArg, secondArg);
   return (date, zone) => formatMonthMemo(formatOpts)(date, zone);
 };
 
-export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>): string[] => {
+export const listMonths = (
+  firstArg?: FormatFirstArg<MonthFormatOpts>,
+  secondArg?: FormatSecondArg<MonthFormatOpts>
+): string[] => {
   const formatOpts = getFormattingOpts<MonthFormatOpts>(firstArg, secondArg);
   return listMonthsMemo(formatOpts);
 };
 
-const formatMonthMemo = (formatOpts: MonthFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
-    (d, zone) => {
-      const dtf = monthDtf(formatOpts, zone);
-      return extract(d, dtf, "month");
-    };
+const formatMonthMemo =
+  (formatOpts: MonthFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
+  (d, zone) => {
+    const dtf = monthDtf(formatOpts, zone);
+    return extract(d, dtf, "month");
+  };
 
 const listMonthsMemo = memo("monthList", (formatOpts: MonthFormatOpts) => {
   const dtf = monthDtf(formatOpts, utcInstance);
@@ -31,10 +38,7 @@ const listMonthsMemo = memo("monthList", (formatOpts: MonthFormatOpts) => {
   });
 });
 
-const monthDtf = (
-  formatOpts: MonthFormatOpts,
-  zone: Zone,
-): Intl.DateTimeFormat => {
+const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const mode = formatOpts.mode || "standalone";
   const width = formatOpts.width || "long";
   const options: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };

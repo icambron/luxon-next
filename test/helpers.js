@@ -5,10 +5,11 @@ import {
   getDefaultFormat,
   getDefaultLocale,
   getDefaultNowFn,
-  getDefaultZone, setDefaultFormat,
+  getDefaultZone,
+  setDefaultFormat,
   setDefaultLocale,
   setDefaultNowFn,
-  setDefaultZone
+  setDefaultZone,
 } from "../src/settings";
 import { resetCache as resetIANACache } from "../src/model/zones/IANAZone";
 

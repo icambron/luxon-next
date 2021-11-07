@@ -1,7 +1,7 @@
-import { fromISO, simpleParsingOptions } from "../../../src/parse";
+import { fromISO, simpleParsingOptions } from "../../../src/parsing/parse";
 import { now, offset, toGregorian, zoneName } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
-import { UnitOutOfRangeError } from "../../../src/model/errors";
+import { UnitOutOfRangeError } from "../../../src/errors";
 import { withDefaultZone } from "../../helpers";
 import { fixedOffsetZone } from "../../../src/model/zones/fixedOffsetZone";
 
@@ -126,7 +126,7 @@ test("fromISO() can optionally specify an interpretationZone for strings without
 });
 
 test("fromISO()'s interpretationZone option doesn't affect strings with built-in offsets", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123+06:00", {interpretationZone: "utc"});
+  const dt = fromISO("2016-05-25T09:08:34.123+06:00", { interpretationZone: "utc" });
   expect(dt |> toUTC() |> toGregorian()).toEqual({
     year: 2016,
     month: 5,
@@ -139,7 +139,7 @@ test("fromISO()'s interpretationZone option doesn't affect strings with built-in
 });
 
 test("fromISO()'s interpretationZone and targetZone can work in combination", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123", {interpretationZone: "utc", targetZone: "utc+6"});
+  const dt = fromISO("2016-05-25T09:08:34.123", { interpretationZone: "utc", targetZone: "utc+6" });
   expect(offset(dt)).toEqual(6 * 60);
   expect(dt |> toGregorian()).toEqual({
     year: 2016,
@@ -493,7 +493,7 @@ test("fromISO() accepts year-ordinalTtime", () => {
 test("fromISO() accepts year-ordinalTtime+offset", () => {
   const dt = fromISO("2016-200T09:24:15.123+0600", { useTargetZoneFromInput: true });
   expect(zoneName(dt)).toBe("UTC+6");
-  expect(dt|> toGregorian()).toEqual({
+  expect(dt |> toGregorian()).toEqual({
     year: 2016,
     month: 7,
     day: 18,
@@ -586,7 +586,7 @@ test("fromISO() doesn't accept 24:23", () => {
 });
 
 test("fromISO() accepts some technically incorrect stuff", () => {
-  // these are formats that aren't technically valid but we parsing anyway.
+  // these are formats that aren't technically valid but we utils anyway.
   // Testing them more to document them than anything else
   isSame("2016-05-25T0924:15.123", {
     year: 2016,

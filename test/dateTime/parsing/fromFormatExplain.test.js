@@ -1,6 +1,6 @@
-import { fromFormatExplain } from "../../../src/parse";
+import { fromFormatExplain } from "../../../src/parsing/parse";
 
-const keyCount = o => Object.keys(o).length;
+const keyCount = (o) => Object.keys(o).length;
 
 test("DateTime.fromFormatExplain() explains success", () => {
   const ex = fromFormatExplain("May 25, 1982 09:10:12.445", "MMMM dd, yyyy HH:mm:ss.SSS");
@@ -10,18 +10,15 @@ test("DateTime.fromFormatExplain() explains success", () => {
   expect(keyCount(ex.fields)).toBe(7);
 });
 
- test("DateTime.fromFormatExplain() explains a bad match", () => {
-   const ex = fromFormatExplain("May 25, 1982 09:10:12.445", "MMMM dd, yyyy mmmm");
-   expect(ex.tokens).toBeInstanceOf(Array);
-   expect(ex.matches).toBeNull();
-   expect(ex.fields).toBeNull()
- });
+test("DateTime.fromFormatExplain() explains a bad match", () => {
+  const ex = fromFormatExplain("May 25, 1982 09:10:12.445", "MMMM dd, yyyy mmmm");
+  expect(ex.tokens).toBeInstanceOf(Array);
+  expect(ex.matches).toBeNull();
+  expect(ex.fields).toBeNull();
+});
 
 test("DateTime.fromFormatExplain() parses zone correctly", () => {
-  const ex = fromFormatExplain(
-    "America/New_York 1-April-2019 04:10:48 PM Mon",
-    "z d-MMMM-yyyy hh:mm:ss a EEE"
-  );
+  const ex = fromFormatExplain("America/New_York 1-April-2019 04:10:48 PM Mon", "z d-MMMM-yyyy hh:mm:ss a EEE");
   expect(ex.fields).toEqual({
     E: 1,
     M: 4,
@@ -41,11 +38,10 @@ test("DateTime.fromFormatExplain() takes the same options as fromFormat", () => 
 });
 
 test("fromFormatExplain() parses localized string with numberingSystem correctly: knda", () => {
-  const ex1 = fromFormatExplain(
-    "೦೩-ಏಪ್ರಿಲ್-೨೦೧೯ ೧೨:೨೬:೦೭ ಅಪರಾಹ್ನ Asia/Calcutta",
-    "dd-MMMM-yyyy hh:mm:ss a z",
-    { locale: "kn", numberingSystem: "knda" }
-  );
+  const ex1 = fromFormatExplain("೦೩-ಏಪ್ರಿಲ್-೨೦೧೯ ೧೨:೨೬:೦೭ ಅಪರಾಹ್ನ Asia/Calcutta", "dd-MMMM-yyyy hh:mm:ss a z", {
+    locale: "kn",
+    numberingSystem: "knda",
+  });
 
   expect(ex1.fields).toEqual({
     M: 4,
@@ -60,11 +56,10 @@ test("fromFormatExplain() parses localized string with numberingSystem correctly
 });
 
 test("fromFormatExplain() parses localized string with numberingSystem correctly: hanidec", () => {
-  const ex2 = fromFormatExplain(
-    "〇三-四-二〇一九 一二:三四:四九 下午 Asia/Shanghai",
-    "dd-MMMM-yyyy hh:mm:ss a z",
-    { locale: "zh", numberingSystem: "hanidec" }
-  );
+  const ex2 = fromFormatExplain("〇三-四-二〇一九 一二:三四:四九 下午 Asia/Shanghai", "dd-MMMM-yyyy hh:mm:ss a z", {
+    locale: "zh",
+    numberingSystem: "hanidec",
+  });
 
   expect(ex2.fields).toEqual({
     M: 4,
@@ -119,14 +114,10 @@ test("fromFormatExplain() parses localized string with numberingSystem correctly
     y: 2019,
   });
 
-  const ex7 = fromFormatExplain(
-    "０３-April-２０１９ ０２:４７:０４ PM",
-    "dd-MMMM-yyyy hh:mm:ss a",
-    {
-      locale: "en-US",
-      numberingSystem: "fullwide",
-    }
-  );
+  const ex7 = fromFormatExplain("０３-April-２０１９ ０２:４７:０４ PM", "dd-MMMM-yyyy hh:mm:ss a", {
+    locale: "en-US",
+    numberingSystem: "fullwide",
+  });
   expect(ex7).not.toBeNull();
 
   const ex8 = fromFormatExplain("०३-April-२०१९ ०२:५३:१९ PM", "dd-MMMM-yyyy hh:mm:ss a", {
@@ -171,34 +162,22 @@ test("fromFormatExplain() parses localized string with numberingSystem correctly
   });
   expect(ex15).not.toBeNull();
 
-  const ex16 = fromFormatExplain(
-    "௦௩-ஏப்ரல்-௨௦௧௯ ௦௪:௦௦:௪௧ பிற்பகல்",
-    "dd-MMMM-yyyy hh:mm:ss a",
-    {
-      locale: "ta",
-      numberingSystem: "tamldec",
-    }
-  );
+  const ex16 = fromFormatExplain("௦௩-ஏப்ரல்-௨௦௧௯ ௦௪:௦௦:௪௧ பிற்பகல்", "dd-MMMM-yyyy hh:mm:ss a", {
+    locale: "ta",
+    numberingSystem: "tamldec",
+  });
   expect(ex16).not.toBeNull();
 
-  const ex17 = fromFormatExplain(
-    "౦౩-ఏప్రిల్-౨౦౧౯ ౦౪:౦౧:౩౩ PM",
-    "dd-MMMM-yyyy hh:mm:ss a",
-    {
-      locale: "te",
-      numberingSystem: "telu",
-    }
-  );
+  const ex17 = fromFormatExplain("౦౩-ఏప్రిల్-౨౦౧౯ ౦౪:౦౧:౩౩ PM", "dd-MMMM-yyyy hh:mm:ss a", {
+    locale: "te",
+    numberingSystem: "telu",
+  });
   expect(ex17).not.toBeNull();
 
-  const ex18 = fromFormatExplain(
-    "๐๓-เมษายน-๒๐๑๙ ๐๔:๐๒:๒๔ หลังเที่ยง",
-    "dd-MMMM-yyyy hh:mm:ss a",
-    {
-      locale: "th",
-      numberingSystem: "thai",
-    }
-  );
+  const ex18 = fromFormatExplain("๐๓-เมษายน-๒๐๑๙ ๐๔:๐๒:๒๔ หลังเที่ยง", "dd-MMMM-yyyy hh:mm:ss a", {
+    locale: "th",
+    numberingSystem: "thai",
+  });
   expect(ex18).not.toBeNull();
 
   const ex19 = fromFormatExplain("༠༣-April-༢༠༡༩ ༠༤:༠༣:༢༥ PM", "dd-MMMM-yyyy hh:mm:ss a", {

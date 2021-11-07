@@ -1,7 +1,5 @@
 export type Cache = Map<any, any>;
-const allCaches = new Map<string, Cache>()
-
-// todo - make clearCaches accessible publicly but move the memo to somewhere private
+const allCaches = new Map<string, Cache>();
 
 export const clearCaches = () => {
   for (const cache of allCaches.values()) {
@@ -9,7 +7,7 @@ export const clearCaches = () => {
   }
 };
 
-export const memo = <TKey, TValue>(cacheName: string, builder: (key: TKey) => TValue): (key: TKey) => TValue => {
+export const memo = <TKey, TValue>(cacheName: string, builder: (key: TKey) => TValue): ((key: TKey) => TValue) => {
   const cache = new Map<TKey, TValue>();
   allCaches.set(cacheName, cache);
   return (key: TKey): TValue => {

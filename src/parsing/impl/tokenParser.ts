@@ -1,20 +1,28 @@
-import { isUndefined, parseMillis, signedOffset, untruncateYear } from "../lib/util";
-import FixedOffsetZone from "../model/zones/fixedOffsetZone";
-import IANAZone from "../model/zones/IANAZone";
-import { listMonths } from "../formatting/months";
-import { listEras } from "../formatting/eras";
-import { listWeekdays } from "../formatting/weekdays";
-import { GregorianDate } from "../model/calendars/gregorian";
-import { ISOWeekDate } from "../model/calendars/isoWeek";
-import { listMeridiems } from "../formatting/meridiems";
-import { FormattingToken, TokenParsingOpts } from "../scatteredTypes/formattingAndParsing";
-import { ConflictingSpecificationError } from "../model/errors";
-import { dateTimeFormatter, parseFormat } from "../formatting/formatUtils";
-import { Time } from "../model/time";
-import Zone from "../model/zone";
-import { memo } from "../caching";
-import { MacroToken, macroTokens } from "../formatPresets";
-import { digitRegex, parseDigits } from "../lib/digits";
+import FixedOffsetZone from "../../model/zones/fixedOffsetZone";
+import IANAZone from "../../model/zones/IANAZone";
+import { listMonths } from "../../formatting/months";
+import { listEras } from "../../formatting/eras";
+import { listWeekdays } from "../../formatting/weekdays";
+import { listMeridiems } from "../../formatting/meridiems";
+import {
+  FormattingToken
+} from "../../types/formatting";
+import { ConflictingSpecificationError } from "../../errors";
+import { dateTimeFormatter, parseFormat } from "../../utils/format";
+import { memo } from "../../utils/caching";
+import { MacroToken, macroTokens } from "../../formatting/formatPresets";
+import { digitRegex, parseDigits } from "../../utils/digits";
+import Zone from "../../types/zone";
+import { parseMillis } from "../../utils/numeric";
+import { untruncateYear } from "../../utils/dateMath";
+import { isUndefined } from "../../utils/typeCheck";
+import { signedOffset } from "../../utils/zone";
+import {
+  TokenParsedField,
+  TokenParsedFields,
+  TokenParsedValue, TokenParsingOpts,
+  TokenParsingSummary
+} from "../../types/parsing";
 
 // TYPES
 interface TokenParsingUnit {
@@ -22,38 +30,10 @@ interface TokenParsingUnit {
   deser: (input: Array<string>) => any;
   groups?: number;
   literal?: boolean;
-  token?: Field;
-}
-
-export interface TokenParsedValue {
-  gregorian: Partial<GregorianDate>;
-  week: Partial<ISOWeekDate>;
-  time: Partial<Time>
-  ordinal?: number;
-  zone?: Zone;
-}
-
-export type Field = "G" | "y" | "M" | "L" | "d" | "o" | "H" | "h" | "m" | "q" | "s" | "S" | "u" | "a" | "k" | "W" | "E" | "c" | "Z" | "z";
-
-export type TokenParsedFieldsFull = {
-  [key in Field]: any
-}
-
-export type TokenParsedFields = Partial<TokenParsedFieldsFull>;
-
-export interface TokenParsingSummary {
-  input: string,
-  format: string,
-  tokens: FormattingToken[],
-  units: TokenParsingUnit[],
-  regex: RegExp,
-  matches: RegExpMatchArray | null,
-  fields: TokenParsedFields | null,
-  parsed: TokenParsedValue | null
+  token?: TokenParsedField;
 }
 
 // CONSTANTS
-
 const NBSP = String.fromCharCode(160);
 const spaceOrNBSP = `( |${NBSP})`;
 const spaceOrNBSPRegExp = new RegExp(spaceOrNBSP, "g");
@@ -70,6 +50,7 @@ const stripInsensitivities = (s: string): string => s
   .toLowerCase();
 
 const escapeToken = (value: string): string => value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+
 
 // PARSERS
 const intUnit = (regex: RegExp, post: ((i: number) => number) = (i: number) => i): TokenParsingUnit => ({
@@ -216,7 +197,7 @@ const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => 
         return offset(new RegExp(`([+-]${oneOrTwo.source})(?::(${two.source}))?`), 2);
       case "ZZZ":
         return offset(new RegExp(`([+-]${oneOrTwo.source})(${two.source})?`), 2);
-      // we don't support ZZZZ (PST) or ZZZZZ (Pacific Standard Time) in parsing
+      // we don't support ZZZZ (PST) or ZZZZZ (Pacific Standard Time) in utils
       // because we don't have any way to figure out what they are
       case "z":
         return simple(/[a-z_+-/]{1,256}?/i);
@@ -227,7 +208,7 @@ const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => 
 
   return (token) => {
     const unit = unitate(token);
-    unit.token = token.name.charAt(0) as Field;
+    unit.token = token.name.charAt(0) as TokenParsedField;
     return unit;
   }
 }
@@ -381,7 +362,7 @@ const valsForFields = (fields: TokenParsedFields): TokenParsedValue => {
 let dummyDateTimeCache: Date | null = null;
 const getDummyDateTime = (): Date => {
   if (!dummyDateTimeCache) {
-    dummyDateTimeCache = new Date( 1555555555555);
+    dummyDateTimeCache = new Date(1555555555555);
   }
   return dummyDateTimeCache;
 };
@@ -426,7 +407,7 @@ export const parseFromFormat = (input: string, format: string, parsingOpts: Toke
     // step 2 - expand macro tokens
     const expandedTokens = expandMacroTokens(rawTokens, parsingOpts);
 
-    // step 3 - map the tokens to parsing units (essentially regex + how to extract the value from the match) pairs
+    // step 3 - map the tokens to utils units (essentially regex + how to extract the value from the match) pairs
     // this has two sub-steps:
     // a) get a map appropriate to the locale. This is a function FormatToken -> TokenParsingUnit
     const tokenMap = getUnitMap(parsingOpts);
@@ -460,5 +441,5 @@ export const parseFromFormat = (input: string, format: string, parsingOpts: Toke
   }
 
   // step 8 - just return all the stuff we've accumulated, which helps with debugging
-  return { input, format, tokens: rawTokens, regex, matches, fields, parsed, units};
+  return { input, format, tokens: rawTokens, regex, matches, fields, parsed};
 };

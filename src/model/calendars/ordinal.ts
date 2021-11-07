@@ -1,13 +1,10 @@
-import {GregorianDate} from "./gregorian";
-import {integerBetween, isInteger} from "../../lib/util";
-import {computeOrdinal, daysInYear, uncomputeOrdinal} from "../../lib/dateMath";
-import {Calendar} from "../calendar";
-import {buildNormalizer, normalizeUnitBundle, simplePlural, OrdinalUnit, ordinalUnits} from "../units";
-
-export interface OrdinalDate  {
-    year: number;
-    ordinal: number;
-}
+import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../../utils/dateMath";
+import { Calendar } from "../../types/calendar";
+import { buildNormalizer, normalizeUnitBundle, ordinalUnits, simplePlural } from "../../utils/units";
+import { GregorianDate } from "../../types/gregorian";
+import { OrdinalDate, OrdinalUnit } from "../../types/ordinal";
+import { integerBetween } from "../../utils/numeric";
+import { isInteger } from "../../utils/typeCheck";
 
 const ordinalNormalizer = buildNormalizer<OrdinalUnit>(ordinalUnits, simplePlural);
 
@@ -22,7 +19,7 @@ export class OrdinalCalendar implements Calendar<OrdinalDate> {
         return { year, ordinal: computeOrdinal(year, month, day) };
     };
 
-    isInvalid = (obj: OrdinalDate): [string, number] | null => {
+    isDateInvalid = (obj: OrdinalDate): [string, number] | null => {
         if (!isInteger(obj.year)) {
             return ["year", obj.year];
         }

@@ -1,18 +1,15 @@
-import { isUndefined, roundTo } from "../lib/util";
+import { getDefaultConversionAccuracy } from "../settings";
 import {
   buildNormalizer,
-  DurationUnit,
-  simpleSingular,
   gregorianUnitsPlural,
-  timeUnitsPlural,
   miscDurationUnitsPlural,
   normalizeUnitBundle,
-} from "./units";
-import { getDefaultConversionAccuracy } from "../settings";
-
-export type DurationValues = {
-  [unit in DurationUnit]: number;
-};
+  simpleSingular,
+  timeUnitsPlural,
+} from "../utils/units";
+import { ConversionAccuracy, DurationUnit, DurationValues } from "../types/duration";
+import { roundTo } from "../utils/numeric";
+import { isUndefined } from "../utils/typeCheck";
 
 const durationZeroes: DurationValues = {
   years: 0,
@@ -34,7 +31,6 @@ export const durationUnits: Array<DurationUnit> = [
 
 export const normalizeDurationUnit = buildNormalizer<DurationUnit>(durationUnits, simpleSingular);
 
-export type ConversionAccuracy = "casual" | "longterm";
 export type Trie = Record<string, Record<string, number>>;
 
 const lowOrderMatrix: Trie = {

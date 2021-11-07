@@ -1,7 +1,7 @@
 // RFC 2822/5322
-import { signedOffset } from "../lib/util";
-import { fixedOffsetZone } from "../model/zones/fixedOffsetZone";
+import { fixedOffsetZone } from "../../model/zones/fixedOffsetZone";
 import { ExtractedResult, fromStrings, parse } from "./regexParser";
+import { signedOffset } from "../../utils/zone";
 
 // These are a little braindead. EDT *should* tell us that we're in, say, America/New_York
 // and not just that we're in -240 *right now*. But since I don't think these are used that often

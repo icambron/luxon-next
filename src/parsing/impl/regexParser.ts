@@ -1,12 +1,14 @@
-import { Calendar } from "../model/calendar";
-import Zone from "../model/zone";
-import { isNumber, isUndefined, parseInteger, untruncateYear } from "../lib/util";
-import { createIANAZone } from "../model/zones/IANAZone";
-import { InvalidArgumentError, NoMatchingParserPattern } from "../model/errors";
-import { Time } from "../model/time";
-import { englishMonthsShort } from "../lib/english";
-import { gregorianInstance } from "../model/calendars/gregorian";
-import { utcInstance } from "../model/zones/fixedOffsetZone";
+import { Calendar } from "../../types/calendar";
+import { createIANAZone } from "../../model/zones/IANAZone";
+import { InvalidArgumentError, NoMatchingParserPattern } from "../../errors";
+import { englishMonthsShort } from "../../utils/english";
+import { gregorianInstance } from "../../model/calendars/gregorian";
+import { utcInstance } from "../../model/zones/fixedOffsetZone";
+import Zone from "../../types/zone";
+import { Time } from "../../types/time";
+import { parseInteger } from "../../utils/numeric";
+import { untruncateYear } from "../../utils/dateMath";
+import { isNumber, isUndefined } from "../../utils/typeCheck";
 
 export type Cursor = number;
 
@@ -54,7 +56,7 @@ export const combineExtractors = (...extractors: Extractor[]): Extractor => {
 };
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
-  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No parsing input provided");
+  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No utils input provided");
 
   for (const { regex, extractor } of patterns) {
     const m = regex.exec(s);

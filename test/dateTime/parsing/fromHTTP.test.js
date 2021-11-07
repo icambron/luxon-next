@@ -1,4 +1,4 @@
-import { fromHTTP, tryFromHTTP } from "../../../src/parse";
+import { fromHTTP, tryFromHTTP } from "../../../src/parsing/parse";
 import { toGregorian } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 
@@ -54,11 +54,12 @@ test("fromHTTP() can parse ASCII dates with two date digits", () => {
   });
 });
 
-test.each(["goats",
+test.each([
+  "goats",
   "Spork Nov 32 08:49:37 1994",
   "Wed Spork 32 08:49:37 1994",
   "Wed Nov 32 08:49:37 1994",
-  "Wed Nov 32 08:49:37 Spork"], )
-("fromHTTP throws for bad input %p", (input) => {
+  "Wed Nov 32 08:49:37 Spork",
+])("fromHTTP throws for bad input %p", (input) => {
   expect(() => fromHTTP(input)).toThrow();
 });
