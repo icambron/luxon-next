@@ -1,4 +1,4 @@
-import { tryFromHTTP, tryFromISO, tryFromRFC2822 } from "../../../src/parsing/parse";
+import { tryFromHTTP, tryFromISO, tryFromRFC2822 } from "../../../src/dateTime/parse";
 import { DateTime } from "../../../src/model/dateTime";
 import { offset } from "../../../src/dateTime/core";
 

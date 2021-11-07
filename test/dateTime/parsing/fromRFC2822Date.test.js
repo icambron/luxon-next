@@ -1,4 +1,4 @@
-import { fromRFC2822, simpleParsingOptions } from "../../../src/parsing/parse";
+import { fromRFC2822, simpleParsingOptions } from "../../../src/dateTime/parse";
 import { day, millisecond, offset, toGregorian, zone } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 import SystemZone from "../../../src/model/zones/systemZone";

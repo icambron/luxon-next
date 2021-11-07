@@ -1,6 +1,12 @@
+Big stuff:
+ * Build and export
+ * A new name!
+ * intervals
+
 Others:
  * Also need arbitrary formatting, but that seems pretty easy?
  * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
+ * Duration parsing and formatting
  * Relative time
 
 Organization stuff:

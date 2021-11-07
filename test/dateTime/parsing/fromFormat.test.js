@@ -1,4 +1,4 @@
-import { fromFormat, fromFormatExplain, simpleParsingOptions } from "../../../src/parsing/parse";
+import { fromFormat, fromFormatExplain, simpleParsingOptions } from "../../../src/dateTime/parse";
 import {
   year,
   month,

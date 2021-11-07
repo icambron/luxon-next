@@ -1,6 +1,3 @@
-/**
- * @private
- */
 const n = "numeric";
 const s = "short";
 const l = "long";

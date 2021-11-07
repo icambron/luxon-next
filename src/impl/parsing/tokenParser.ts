@@ -1,16 +1,16 @@
 import FixedOffsetZone from "../../model/zones/fixedOffsetZone";
 import IANAZone from "../../model/zones/IANAZone";
-import { listMonths } from "../../formatting/months";
-import { listEras } from "../../formatting/eras";
-import { listWeekdays } from "../../formatting/weekdays";
-import { listMeridiems } from "../../formatting/meridiems";
+import { listMonths } from "../formatting/months";
+import { listEras } from "../formatting/eras";
+import { listWeekdays } from "../formatting/weekdays";
+import { listMeridiems } from "../formatting/meridiems";
 import {
   FormattingToken
 } from "../../types/formatting";
 import { ConflictingSpecificationError } from "../../errors";
 import { dateTimeFormatter, parseFormat } from "../../utils/format";
 import { memo } from "../../utils/caching";
-import { MacroToken, macroTokens } from "../../formatting/formatPresets";
+import { MacroToken, macroTokens } from "../formatting/presets";
 import { digitRegex, parseDigits } from "../../utils/digits";
 import Zone from "../../types/zone";
 import { parseMillis } from "../../utils/numeric";

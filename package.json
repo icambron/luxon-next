@@ -7,7 +7,8 @@
   "scripts": {
     "test": "TZ=\"America/New_York\" jest",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
-    "docs": "typedoc src/dateTime src/duration src/model"
+    "docs": "typedoc src/dateTime src/duration src/model",
+    "circular": "dpdm src/**/*.ts"
   },
   "devDependencies": {
     "@babel/cli": "latest",
@@ -18,6 +19,7 @@
     "jest": "latest",
     "prettier": "latest",
     "typedoc": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "dpdm": "latest"
   }
 }

@@ -1,4 +1,4 @@
-import { formatEra } from "../../../src/formatting/eras";
+import { formatEra } from "../../../src/impl/formatting/eras";
 import { fromGregorian } from "../../../src/dateTime/core";
 
 const dtMaker = () =>

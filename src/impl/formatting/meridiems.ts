@@ -1,8 +1,8 @@
-import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../utils/format";
-import { FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../types/formatting";
-import { utcInstance } from "../model/zones/fixedOffsetZone";
-import { memo } from "../utils/caching";
-import Zone from "../types/zone";
+import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../../utils/format";
+import { FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../../types/formatting";
+import { utcInstance } from "../../model/zones/fixedOffsetZone";
+import { memo } from "../../utils/caching";
+import Zone from "../../types/zone";
 
 export const formatMeridiem = (
   firstArg?: FormatFirstArg<MeridiemFormatOpts>,

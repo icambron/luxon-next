@@ -1,4 +1,4 @@
-import { fromISO, simpleParsingOptions } from "../../../src/parsing/parse";
+import { fromISO, simpleParsingOptions } from "../../../src/dateTime/parse";
 import { now, offset, toGregorian, zoneName } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 import { UnitOutOfRangeError } from "../../../src/errors";
