@@ -1,5 +1,5 @@
 import { getDefaultFormat } from "../settings";
-import { dateTimeFormatter, getFormattingOpts } from "../impl/util/format";
+import { dateTimeFormat, getFormattingOpts } from "../impl/util/format";
 import * as presets from "../impl/formatting/presets";
 import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
 import {
@@ -117,7 +117,7 @@ const withDtf = <T>(
   toJs<T>((d, zone) => {
     let formatOpts = getFormattingOpts(firstArg, secondArg);
     formatOpts = combineWithDefaultFormat(formatOpts);
-    const dtf = dateTimeFormatter(formatOpts.locale, zone, formatOpts);
+    const dtf = dateTimeFormat(formatOpts, zone);
     return f(dtf)(d, zone);
   });
 

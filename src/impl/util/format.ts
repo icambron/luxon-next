@@ -1,7 +1,14 @@
 import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
 import { FormatStringError, UnknownError } from "../../errors";
 import { memo } from "./caching";
-import { Zone, FormatFirstArg, FormatSecondArg, FormattingToken, SharedFormattingOpts } from "../../types";
+import {
+  Zone,
+  FormatFirstArg,
+  FormatSecondArg,
+  FormattingToken,
+  SharedFormattingOpts,
+  GeneralFormattingOpts
+} from "../../types";
 import { isValidIANAZone } from "../zone/zone";
 
 export const getDtf = memo(
@@ -9,34 +16,13 @@ export const getDtf = memo(
   ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts)
 );
 
-const zoneOptionForZone = (zone: Zone | undefined): string | null => {
-  if (!zone) {
-    return null;
-  } else if (zone.isUniversal) {
-    const gmtOffset = zone.offset(0);
-    const offsetZ = gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
-    const isOffsetZoneSupported = isValidIANAZone(offsetZ);
-    if (gmtOffset !== 0 && isOffsetZoneSupported) {
-      return offsetZ;
-    } else {
-      return "UTC";
-    }
-  } else if (zone.type === "system") {
-    return null;
-  } else {
-    return zone.name;
-  }
-};
+export const dateTimeFormat = (opts: GeneralFormattingOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
+  const { locale, ...rest } = opts;
 
-export const getDtfArgs = (
-  locale: string | undefined,
-  zone: Zone | undefined,
-  format: Intl.DateTimeFormatOptions | undefined
-): [string, Intl.DateTimeFormatOptions] => {
   const fullOpts: Intl.DateTimeFormatOptions = {
     calendar: getDefaultOutputCalendar(),
     numberingSystem: getDefaultNumberingSystem(),
-    ...format,
+    ...rest,
   };
 
   const zOption = zoneOptionForZone(zone);
@@ -45,14 +31,8 @@ export const getDtfArgs = (
     fullOpts.timeZone = zOption;
   }
 
-  return [locale || getDefaultLocale(), fullOpts];
-};
-
-export const dateTimeFormatter = (
-  locale: string | undefined,
-  zone: Zone | undefined,
-  format: Intl.DateTimeFormatOptions | undefined
-): Intl.DateTimeFormat => getDtf(getDtfArgs(locale, zone, format));
+  return getDtf([locale || getDefaultLocale(), fullOpts]);
+}
 
 export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): string => {
   const results = df.formatToParts(jsDate);
@@ -159,4 +139,23 @@ export const parseFormat = (fmt: string): FormattingToken[] => {
   addToken(bracketed, currentToken);
 
   return tokens;
+};
+
+const zoneOptionForZone = (zone: Zone | undefined): string | null => {
+  if (!zone) {
+    return null;
+  } else if (zone.isUniversal) {
+    const gmtOffset = zone.offset(0);
+    const offsetZ = gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
+    const isOffsetZoneSupported = isValidIANAZone(offsetZ);
+    if (gmtOffset !== 0 && isOffsetZoneSupported) {
+      return offsetZ;
+    } else {
+      return "UTC";
+    }
+  } else if (zone.type === "system") {
+    return null;
+  } else {
+    return zone.name;
+  }
 };

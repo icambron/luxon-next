@@ -1,4 +1,4 @@
-import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../util/format";
+import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, FormatFirstArg, FormatSecondArg, WeekdayFormatOpts } from "../../types";
@@ -24,7 +24,7 @@ const weekdayDtf = (formatOpts: WeekdayFormatOpts, zone: Zone): Intl.DateTimeFor
   const width = formatOpts.width || "long";
   const options: Intl.DateTimeFormatOptions =
     mode === "format" ? { weekday: width, day: "numeric" } : { weekday: width };
-  return getDtf(getDtfArgs(formatOpts.locale, zone, { ...options, ...formatOpts }));
+  return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
 const formatWeekdayMemo =

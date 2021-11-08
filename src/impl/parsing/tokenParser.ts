@@ -3,7 +3,7 @@ import { listEras } from "../formatting/eras";
 import { listWeekdays } from "../formatting/weekdays";
 import { listMeridiems } from "../formatting/meridiems";
 import { ConflictingSpecificationError } from "../../errors";
-import { dateTimeFormatter, parseFormat } from "../util/format";
+import { dateTimeFormat, parseFormat } from "../util/format";
 import { memo } from "../util/caching";
 import { MacroToken, macroTokens } from "../formatting/presets";
 import { digitRegex, parseDigits } from "../util/digits";
@@ -376,7 +376,7 @@ const maybeExpandMacroToken = (token: FormattingToken, parsingOpts: TokenParsing
     return token;
   }
 
-  const formatter = dateTimeFormatter(parsingOpts.locale, undefined, formatOpts);
+  const formatter = dateTimeFormat(parsingOpts.locale, undefined, formatOpts);
 
   const parts = formatter.formatToParts(getDummyDateTime());
 

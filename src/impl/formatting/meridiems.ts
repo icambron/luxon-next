@@ -1,4 +1,4 @@
-import { extract, getDtf, getDtfArgs, getFormattingOpts} from "../util/format";
+import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, FormatFirstArg, FormatSecondArg, MeridiemFormatOpts } from "../../types";
@@ -49,5 +49,5 @@ const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeF
     width == "simple"
       ? { hourCycle: "h12", timeStyle: "long" }
       : { hour: "numeric", hourCycle: "h12", dayPeriod: width };
-  return getDtf(getDtfArgs(formatOpts.locale, zone, { ...options, ...formatOpts }));
+  return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };

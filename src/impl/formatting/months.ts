@@ -1,4 +1,4 @@
-import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../util/format";
+import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../../types";
@@ -41,6 +41,5 @@ const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat 
   const mode = formatOpts.mode || "standalone";
   const width = formatOpts.width || "long";
   const options: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
-  const dtfArgs = getDtfArgs(formatOpts.locale, zone, { ...options, ...formatOpts });
-  return getDtf(dtfArgs);
+  return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };

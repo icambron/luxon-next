@@ -1,4 +1,4 @@
-import { extract, getDtf, getDtfArgs, getFormattingOpts} from "../util/format";
+import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, EraFormatOpts, FormatFirstArg, FormatSecondArg } from "../../types";
@@ -41,5 +41,5 @@ const listErasMemo = memo("eraList", (formatOpts: EraFormatOpts) => {
 const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const width = formatOpts.width || "short";
   const options: Intl.DateTimeFormatOptions = { year: "numeric", era: width };
-  return getDtf(getDtfArgs(formatOpts.locale, zone, { ...options, ...formatOpts }));
+  return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
