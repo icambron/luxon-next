@@ -1,9 +1,8 @@
 import { tryFromHTTP, tryFromISO, tryFromRFC2822 } from "../../../src/dateTime/parse";
-import { DateTime } from "../../../src/model/DateTime";
 import { offset } from "../../../src/dateTime/core";
 
 test("tryFromISO returns a DateTime for valid values", () => {
-  expect(tryFromISO("2021-11-06")).toBeInstanceOf(DateTime);
+  expect(tryFromISO("2021-11-06").isLuxonDateTime).toBe(true);
 });
 
 test("tryFromISO accepts options", () => {
@@ -16,7 +15,7 @@ test.each(["goats", "2016-14-06", "2021-02-30"])("tryFromISO returns null for ba
 });
 
 test("tryFromRFC2822() returns a DateTime for valid values", () => {
-  expect(tryFromRFC2822("Sun, 12 Apr 2015 13:23:12 +0600")).toBeInstanceOf(DateTime);
+  expect(tryFromRFC2822("Sun, 12 Apr 2015 13:23:12 +0600").isLuxonDateTime).toBe(true);
 });
 
 test.each([
@@ -30,7 +29,7 @@ test.each([
 });
 
 test("tryFromHTTP() returns a DateTime for valid values", () => {
-  expect(tryFromHTTP("Wed Nov 16 08:49:37 1994")).toBeInstanceOf(DateTime);
+  expect(tryFromHTTP("Wed Nov 16 08:49:37 1994").isLuxonDateTime).toBe(true);
 });
 
 test.each([

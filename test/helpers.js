@@ -1,30 +1,27 @@
-/* global test */
-/* eslint no-global-assign: "off" */
-
 import {
   getDefaultFormat,
   getDefaultLocale,
-  getDefaultNowFn,
+  getNowFn,
   getDefaultZone,
   setDefaultFormat,
   setDefaultLocale,
-  setDefaultNowFn,
+  setNowFn,
   setDefaultZone,
+  clearCaches,
 } from "../src/settings";
-import { resetCache as resetIANACache } from "../src/model/zones/IANAZone";
 
 const resetCaches = () => {
-  resetIANACache();
+  clearCaches();
 };
 
 export const withNow = (nowfn, f) => {
-  const oldNow = getDefaultNowFn();
+  const oldNow = getNowFn();
 
   try {
-    setDefaultNowFn(nowfn);
+    setNowFn(nowfn);
     f();
   } finally {
-    setDefaultNowFn(oldNow);
+    setNowFn(oldNow);
   }
 };
 

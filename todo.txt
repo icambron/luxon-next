@@ -9,7 +9,6 @@ Others:
  * Relative time
 
 Organization stuff:
- * how to export model types usefully?
 
 Odds and ends:
  * redo format presets in light of `timeStyle` and `dateStyle`

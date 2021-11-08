@@ -1,14 +1,11 @@
-import { Calendar } from "../../types/calendar";
-import { createIANAZone } from "../../model/zones/IANAZone";
+import { Zone, Calendar, Time } from "../../types";
 import { InvalidArgumentError, NoMatchingParserPattern } from "../../errors";
-import { englishMonthsShort } from "../../utils/english";
-import { gregorianInstance } from "../../model/calendars/GregorianCalendar";
-import { utcInstance } from "../../model/zones/FixedOffsetZone";
-import Zone from "../../types/zone";
-import { Time } from "../../types/time";
-import { parseInteger } from "../../utils/numeric";
-import { untruncateYear } from "../../utils/dateMath";
-import { isNumber, isUndefined } from "../../utils/typeCheck";
+import { gregorianInstance } from "../calendars/gregorian";
+import { parseInteger } from "../util/numeric";
+import { untruncateYear } from "../util/dateMath";
+import { isNumber, isUndefined } from "../util/typeCheck";
+import { utcInstance } from "../zone/fixedOffset";
+import { ianaZone } from "../zone/iana";
 
 // internal-only types
 export type Cursor = number;
@@ -57,7 +54,7 @@ export const combineExtractors = (...extractors: Extractor[]): Extractor => {
 };
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
-  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No utils input provided");
+  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No util input provided");
 
   for (const { regex, extractor } of patterns) {
     const m = regex.exec(s);
@@ -128,7 +125,7 @@ export const fromStrings = (
 };
 
 export const extractIANAZone = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
-  const zone = match[cursor] ? createIANAZone(match[cursor]) : null;
+  const zone = match[cursor] ? ianaZone(match[cursor]) : null;
   return {
     calendar: null,
     calendarUnits: {},
@@ -137,3 +134,6 @@ export const extractIANAZone = (match: RegExpMatchArray, cursor: number): Extrac
     cursor: cursor + 1,
   };
 };
+
+const englishMonthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+

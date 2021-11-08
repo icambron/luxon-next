@@ -1,12 +1,11 @@
-// todo - make this public?
-import Zone, { Zoneish } from "../types/zone";
-import { isNumber, isString, isUndefined } from "../utils/typeCheck";
-import { getDefaultZone } from "../settings";
-import { isValidIANASpecifier, isZone } from "../utils/zone";
-import { systemZone } from "../model/zones/SystemZone";
-import { fixedOffsetZone, parseFixedOffset, utcInstance } from "../model/zones/FixedOffsetZone";
-import { createIANAZone} from "../model/zones/IANAZone";
-import { InvalidZoneError } from "../errors";
+import { Zone, Zoneish } from "../../types";
+import { isNumber, isString, isUndefined, isZone } from "../util/typeCheck";
+import { getDefaultZone } from "../../settings";
+import { systemZone } from "./system";
+import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./fixedOffset";
+import { ianaZone } from "./iana";
+import { InvalidZoneError } from "../../errors";
+import { isValidIANASpecifier } from "./zone";
 
 export const normalizeZone = (zoneish: Zoneish): Zone => {
   if (isUndefined(zoneish) || zoneish === null) return getDefaultZone();
@@ -17,7 +16,7 @@ export const normalizeZone = (zoneish: Zoneish): Zone => {
     if (lowered === "system") return systemZone;
     if (lowered === "utc") return utcInstance;
 
-    if (isValidIANASpecifier(lowered)) return createIANAZone(zoneish);
+    if (isValidIANASpecifier(lowered)) return ianaZone(zoneish);
 
     const parsed = parseFixedOffset(lowered);
 

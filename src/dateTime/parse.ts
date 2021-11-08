@@ -2,28 +2,30 @@ import { setZone } from "./zone";
 import { ExtractedResult } from "../impl/parsing/regexParser";
 import { parseISODateTime } from "../impl/parsing/isoParser";
 import { parseFromFormat } from "../impl/parsing/tokenParser";
-import { DateTime} from "../model/DateTime";
-import { ordinalInstance } from "../model/calendars/OrdinalCalendar";
-import { isoWeekCalendarInstance } from "../model/calendars/IsoWeekCalendar";
-import { gregorianInstance } from "../model/calendars/GregorianCalendar";
+import { ordinalInstance } from "../impl/calendars/ordinal";
+import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
+import { gregorianInstance } from "../impl/calendars/gregorian";
 import { parseRFC2822 } from "../impl/parsing/rfc2822Parser";
 import { parseHTTPDate } from "../impl/parsing/httpParser";
-import { getFormattingOpts } from "../utils/format";
-import { isUndefined } from "../utils/typeCheck";
+import { getFormattingOpts } from "../impl/util/format";
+import { isUndefined } from "../impl/util/typeCheck";
 import { getDefaultZone } from "../settings";
 import { NoMatchingParserPattern } from "../errors";
-import { Calendar } from "../types/calendar";
-import { FormatFirstArg, FormatSecondArg } from "../types/formatting";
-import Zone, { Zoneish } from "../types/zone";
 import {
+  Zone,
+  Calendar,
+  DateTime,
+  FormatFirstArg,
+  FormatSecondArg,
   GeneralParsingOpts,
   ParsingOptions,
   TokenParsedValue,
   TokenParsingOpts,
   TokenParsingSummary,
-} from "../types/parsing";
-import { fromCalendar} from "../impl/dateTime";
-import { normalizeZone } from "../impl/zone";
+  Zoneish,
+} from "../types";
+import { fromCalendar } from "../impl/dateTime";
+import { normalizeZone } from "../impl/zone/normalizeZone";
 
 export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingOptions => ({
   interpretationZone: zone,
@@ -87,14 +89,17 @@ const dateTimeFromParsedValues = (parsed: TokenParsedValue, opts: ParsingOptions
 
 export const fromISO = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
   fromRegexParse(parseISODateTime(input), opts);
+
 export const tryFromISO = wrapError(fromISO);
 
 export const fromRFC2822 = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
   fromRegexParse(parseRFC2822(input), opts);
+
 export const tryFromRFC2822 = wrapError(fromRFC2822);
 
 export const fromHTTP = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
   fromRegexParse(parseHTTPDate(input), opts);
+
 export const tryFromHTTP = wrapError(fromHTTP);
 
 export const fromFormatExplain = (

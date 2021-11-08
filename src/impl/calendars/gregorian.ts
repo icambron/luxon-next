@@ -1,45 +1,14 @@
-import { Calendar } from "../../types/calendar";
-import { daysInMonth } from "../../utils/dateMath";
-import { buildNormalizer, gregorianUnits, normalizeUnitBundle, simplePlural } from "../../utils/units";
-import Zone from "../../types/zone";
-import { GregorianDate, GregorianUnit } from "../../types/gregorian";
-import { Time } from "../../types/time";
-import { integerBetween } from "../../utils/numeric";
-import { isInteger } from "../../utils/typeCheck";
+import { daysInMonth } from "../util/dateMath";
+import { buildNormalizer, gregorianUnits, normalizeUnitBundle, simplePlural } from "../util/units";
+import { integerBetween } from "../util/numeric";
+import { isInteger } from "../util/typeCheck";
+import { Zone, GregorianCalendar, GregorianDate, GregorianUnit, Time } from "../../types";
 
 /*
 The Gregorian calendar (i.e. the dates we use in everyday life) is the lingua franca of Luxon. It's thus a sort of
 privileged calendar, primarily because we know how to convert it to and from a timestamp. We can do that with other
 calendars too, but only by converting them to or from Gregorian first.
  */
-
-const gregorianNormalizer = buildNormalizer<GregorianUnit>(gregorianUnits, simplePlural);
-
-export class GregorianCalendar implements Calendar<GregorianDate> {
-    name = "gregorian";
-    defaultValues = { year: 1, month: 1, day: 1 };
-
-    fromObject = (obj: object): GregorianDate => normalizeUnitBundle<GregorianDate>(obj, gregorianNormalizer);
-    fromGregorian = (obj: GregorianDate): GregorianDate => obj;
-    toGregorian = (obj: GregorianDate): GregorianDate => obj;
-
-    isDateInvalid = ({year, month, day}: any): [string, number] | null => {
-        if (!isInteger(year)) {
-            return ["year", year];
-        } else if (!integerBetween(month, 1, 12)) {
-            return ["month", month];
-        } else if (!integerBetween(day, 1, daysInMonth(year, month))) {
-            return ["day", day];
-        } else return null;
-    };
-
-    areEqual = (obj1: GregorianDate, obj2: GregorianDate): boolean  =>
-        obj1.year === obj2.year &&
-        obj1.month === obj2.month &&
-        obj1.day === obj2.day;
-}
-
-export const gregorianInstance: GregorianCalendar = new GregorianCalendar();
 
 // convert a calendar object to a local timestamp (epoch, but with the offset baked in)
 export const gregorianToLocalTS = (gregorianDate: GregorianDate, time: Time) => {
@@ -119,3 +88,32 @@ const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number
     // If it's different, we're in a hole time. The offset has changed, but the we don't adjust the time
     return [localTS - Math.min(o2, o3) * 60 * 1000, Math.max(o2, o3), true];
 };
+
+const gregorianNormalizer = buildNormalizer<GregorianUnit>(gregorianUnits, simplePlural);
+
+class GregorianCalendarImpl implements  GregorianCalendar {
+    name = "gregorian";
+    defaultValues = { year: 1, month: 1, day: 1 };
+
+    fromObject = (obj: object): GregorianDate => normalizeUnitBundle<GregorianDate>(obj, gregorianNormalizer);
+    fromGregorian = (obj: GregorianDate): GregorianDate => obj;
+    toGregorian = (obj: GregorianDate): GregorianDate => obj;
+
+    isDateInvalid = ({year, month, day}: any): [string, number] | null => {
+        if (!isInteger(year)) {
+            return ["year", year];
+        } else if (!integerBetween(month, 1, 12)) {
+            return ["month", month];
+        } else if (!integerBetween(day, 1, daysInMonth(year, month))) {
+            return ["day", day];
+        } else return null;
+    };
+
+    areEqual = (obj1: GregorianDate, obj2: GregorianDate): boolean  =>
+      obj1.year === obj2.year &&
+      obj1.month === obj2.month &&
+      obj1.day === obj2.day;
+}
+
+export const gregorianInstance: GregorianCalendar = new GregorianCalendarImpl();
+

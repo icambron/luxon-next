@@ -1,9 +1,11 @@
-import { InvalidUnitError } from "../errors";
-import { GregorianUnit, GregorianUnitPlural } from "../types/gregorian";
-import { TimeUnit, TimeUnitPlural } from "../types/time";
-import { MiscDurationUnit, MiscDurationUnitPlural } from "../types/duration";
-import { IsoWeekUnit } from "../types/isoWeek";
-import { OrdinalUnit } from "../types/ordinal";
+import { InvalidUnitError } from "../../errors";
+import {
+  GregorianUnit,
+  GregorianUnitPlural,
+  IsoWeekUnit,
+  MiscDurationUnit,
+  MiscDurationUnitPlural, OrdinalUnit, TimeUnit, TimeUnitPlural
+} from "../../types";
 
 export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) => keyof T | null): T => {
   const entries = Object.entries(obj)

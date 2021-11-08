@@ -1,15 +1,10 @@
-import {
-  Duration,
-  toIso as toIsoInternal,
-  normalizeDurationUnit,
-  durationUnits,
-} from "../model/Duration";
 import { InvalidUnitError } from "../errors";
-import { DurationUnit, DurationValues } from "../types/duration";
-import { asNumber } from "../utils/numeric";
-import { alter as alterInternal, isDuration as isDurationInternal } from "../impl/duration";
+import { asNumber } from "../impl/util/numeric";
+import { alter, durationUnits, fromValues, normalizeDurationUnit, toIso as toIsoInternal } from "../impl/duration";
+import { Duration, DurationUnit, DurationValues } from "../types";
+import { isDuration as isDurationInternal } from "../impl/util/typeCheck";
 
-export const duration = (values: Partial<DurationValues>) => new Duration(values);
+export const duration = fromValues;
 export const durFromMillis = (milliseconds: number) => duration({ milliseconds });
 
 export const durNegate = (): ((dur: Duration) => Duration) => {
@@ -18,16 +13,16 @@ export const durNegate = (): ((dur: Duration) => Duration) => {
     for (const k of Object.keys(dur.values) as Array<keyof DurationValues>) {
       negated[k] = -(dur.values[k] as number);
     }
-    return new Duration(negated as Partial<DurationValues>);
+    return fromValues(negated as Partial<DurationValues>);
   };
 };
 
-export const durFromValues = (values: Partial<DurationValues>): Duration => new Duration(values);
+export const durFromValues = (values: Partial<DurationValues>): Duration => fromValues(values);
 
 export const durToMillis = (): ((dur: Duration) => number) => (dur) => dur.valueOf();
 export const durToISO = (): ((dur: Duration) => string) => (dur) => toIsoInternal(dur);
-export const durAlter = (values: Partial<DurationValues>): ((dur: Duration) => Duration) => alterInternal(values);
-export const isDuration = (dur: Duration): boolean => isDurationInternal(dur);
+export const durAlter = alter;
+export const isDuration = isDurationInternal;
 export const durValues = (dur: Duration): Partial<DurationValues> => ({ ...dur.values });
 
 /**

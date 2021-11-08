@@ -1,8 +1,7 @@
-import { FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../../types/formatting";
-import { utcInstance } from "../../model/zones/FixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../../utils/format";
-import { memo } from "../../utils/caching";
-import Zone from "../../types/zone";
+import { extract, getDtf, getDtfArgs, getFormattingOpts, hasKeys } from "../util/format";
+import { memo } from "../util/caching";
+import { utcInstance } from "../zone/fixedOffset";
+import { Zone, FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../../types";
 
 export const formatMonth = (
   firstArg?: FormatFirstArg<MonthFormatOpts>,

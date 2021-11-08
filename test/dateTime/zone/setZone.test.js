@@ -19,7 +19,7 @@ import {
 import { setZone, toUTC } from "../../../src/dateTime/zone";
 import { withDefaultZone } from "../../helpers";
 import { InvalidZoneError } from "../../../src/errors";
-import { createIANAZone } from "../../../src/model/zones/IANAZone";
+import { ianaZone } from "../../../src/impl/zone/iana";
 
 const millis = 391147200000,
   // 1982-05-25T04:00:00.000Z
@@ -46,7 +46,7 @@ test("setZone accepts 'system'", () => {
 
 test("setZone accepts 'system' and ignores the default zone", () => {
   const localZoneName = zoneName(now());
-  withDefaultZone(createIANAZone("Europe/Paris"), () => {
+  withDefaultZone(ianaZone("Europe/Paris"), () => {
     expect(utcNow() |> setZone("system") |> zoneName).toBe(localZoneName);
   });
 });
@@ -57,7 +57,7 @@ test("setZone accepts 'default'", () => {
 });
 
 test("setZone accepts 'default' and uses the default zone", () => {
-  withDefaultZone(createIANAZone("Europe/Paris"), () => {
+  withDefaultZone(ianaZone("Europe/Paris"), () => {
     expect(utcNow() |> setZone("default") |> zoneName).toBe("Europe/Paris");
   });
 });

@@ -1,18 +1,16 @@
-import { DateTime} from "../model/DateTime";
-import { OrdinalCalendar } from "../model/calendars/OrdinalCalendar";
-import Zone from "../types/zone";
-import { OrdinalDate } from "../types/ordinal";
-import { Time } from "../types/time";
 import { fromCalendar, getCalendarValue } from "../impl/dateTime";
-
-const ordinalCalendar = new OrdinalCalendar();
+import { ordinalInstance } from "../impl/calendars/ordinal";
+import { Zone, DateTime, OrdinalDate, Time } from "../types";
 
 export const fromOrdinal = (obj: Partial<OrdinalDate & Time>, zone?: Zone): DateTime =>
-  fromCalendar(ordinalCalendar, obj, zone);
+  fromCalendar(ordinalInstance, obj, zone);
 
-export const toOrdinal = (): ((dt: DateTime) => Partial<OrdinalCalendar & Time>) => (dt) => ({
-  ...getCalendarValue(dt, ordinalCalendar),
+export const toOrdinal = (): ((dt: DateTime) => Partial<OrdinalDate & Time>) => (dt) => ({
+  ...getCalendarValue(dt, ordinalInstance),
   ...dt.time,
 });
 
-export const ordinal = (dt: DateTime): number => getCalendarValue(dt, ordinalCalendar).ordinal;
+export const ordinal = (dt: DateTime): number => getCalendarValue(dt, ordinalInstance).ordinal;
+
+// year() from core will work too, because we always create the gregorian year, so this is really just for completeness
+export const ordinalYear = (dt: DateTime): number => getCalendarValue(dt, ordinalInstance).year;

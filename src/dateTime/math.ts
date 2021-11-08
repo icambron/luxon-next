@@ -1,20 +1,25 @@
-import { DateTime} from "../model/DateTime";
 import { month } from "./core";
-import { isoWeekCalendarInstance } from "../model/calendars/IsoWeekCalendar";
-import { gregorianInstance, gregorianToTS } from "../model/calendars/GregorianCalendar";
-import { Duration, toMillis, durationUnits } from "../model/Duration";
+import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
+import { gregorianInstance, gregorianToTS } from "../impl/calendars/gregorian";
 import { durNegate } from "../duration/core";
 import { InvalidUnitError } from "../errors";
 import { getDefaultConversionAccuracy } from "../settings";
-import { buildNormalizer, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../utils/units";
-import { ConversionAccuracy, DurationValues, MiscDurationUnit } from "../types/duration";
-import { GregorianUnit } from "../types/gregorian";
-import { TimeUnit } from "../types/time";
-import { intAndFraction, roundTo } from "../utils/numeric";
-import { bestBy } from "../utils/array";
+import { buildNormalizer, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../impl/util/units";
+import { intAndFraction, roundTo } from "../impl/util/numeric";
+import { bestBy } from "../impl/util/array";
 import { alter, set } from "../impl/dateTime";
-import { convert, defaultEmpties, isDuration } from "../impl/duration";
-import { daysInMonth } from "../utils/dateMath";
+import { convert, defaultEmpties, durationUnits, fromValues, toMillis } from "../impl/duration";
+import { daysInMonth } from "../impl/util/dateMath";
+import {
+  ConversionAccuracy,
+  DateTime,
+  Duration,
+  DurationValues,
+  GregorianUnit,
+  MiscDurationUnit,
+  TimeUnit,
+} from "../types";
+import { isDuration } from "../impl/util/typeCheck";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -85,7 +90,7 @@ export const startOf = (unit: StartEndUnit): ((dt: DateTime) => DateTime) => {
       o.month = (q - 1) * 3 + 1;
     }
 
-    return set(dt, o.weekday ? isoWeekCalendarInstance : gregorianInstance, o);
+    return o.weekday ? set(dt, isoWeekCalendarInstance, o) : set(dt, gregorianInstance, o);
   };
 };
 
@@ -128,7 +133,7 @@ export const plus = (
   durOrObj: Duration | Partial<DurationValues>,
   conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
 ): ((dt: DateTime) => DateTime) => {
-  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
+  const dur = isDuration(durOrObj) ? durOrObj : fromValues(durOrObj);
   const adjustment = adjustTime(dur, conversionAccuracy);
   return (dt) => {
     const [ts, offset] = adjustment(dt);
@@ -140,7 +145,7 @@ export const minus = (
   durOrObj: Duration | Partial<DurationValues>,
   conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
 ): ((dt: DateTime) => DateTime) => {
-  const dur = isDuration(durOrObj) ? durOrObj : new Duration(durOrObj);
+  const dur = isDuration(durOrObj) ? durOrObj : fromValues(durOrObj);
   const negated = durNegate()(dur);
   const adjustment = adjustTime(negated, conversionAccuracy);
   return (dt) => {
@@ -178,7 +183,7 @@ const shiftFractionsToMillis =
     // no fractional millis please
     newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
 
-    return new Duration(newVals.ints as Partial<DurationValues>);
+    return fromValues(newVals.ints as Partial<DurationValues>);
   };
 
 const adjustTime = (dur: Duration, conversionAccuracy: ConversionAccuracy): ((dt: DateTime) => [number, number]) => {

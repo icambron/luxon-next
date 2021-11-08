@@ -1,15 +1,12 @@
-import Zone from "../types/zone";
-import { padStart } from "./string";
-import { InvalidArgumentError } from "../errors";
-
-export const isZone = (maybeZone: any): maybeZone is Zone => maybeZone?.name !== undefined;
+import { InvalidArgumentError } from "../../errors";
+import { padStart } from "../util/string";
 
 /**
  * Returns whether the provided string identifies a real zone
  * @param {string} zone - The string to check
- * @example IANAZone.isValidZone("America/New_York") //=> true
- * @example IANAZone.isValidZone("Fantasia/Castle") //=> false
- * @example IANAZone.isValidZone("Sport~~blorp") //=> false
+ * @example isValidZone("America/New_York") //=> true
+ * @example isValidZone("Fantasia/Castle") //=> false
+ * @example isValidZone("Sport~~blorp") //=> false
  * @return {boolean}
  */
 export const isValidIANAZone = (zone: string): boolean => {
@@ -21,8 +18,8 @@ export const isValidIANAZone = (zone: string): boolean => {
   }
 }; // signedOffset('-5', '30') -> -330
 
-export const ianaRegex = /[A-Za-z_+-]{1,256}(:?\/[A-Za-z0-9_+-]{1,256}(\/[A-Za-z0-9_+-]{1,256})?)?/;
-const matchingRegex = RegExp(`^${ianaRegex.source}$`);
+const ianaRegex = /^[A-Za-z_+-]{1,256}(:?\/[A-Za-z0-9_+-]{1,256}(\/[A-Za-z0-9_+-]{1,256})?)?$/;
+
 /**
  * Returns whether the provided string is a valid specifier. This only checks the string's format, not that the specifier identifies a known zone; see isValidZone for that.
  * @param {string} s - The string to check validity on
@@ -32,7 +29,7 @@ const matchingRegex = RegExp(`^${ianaRegex.source}$`);
  * @return {boolean}
  */
 export const isValidIANASpecifier = (s: string): boolean => {
-  return !!(s && matchingRegex.exec(s) !== null);
+  return !!(s && ianaRegex.exec(s) !== null);
 };
 
 export function parseZoneInfo(ts: number, offsetFormat?: "long" | "short", locale?: string, timeZone?: string) {
@@ -44,7 +41,7 @@ export function parseZoneInfo(ts: number, offsetFormat?: "long" | "short", local
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone,
+    timeZone
   };
 
   const modified: Intl.DateTimeFormatOptions = { timeZoneName: offsetFormat, ...intlOptions };
@@ -84,3 +81,4 @@ export function formatOffset(offset: number, format: "narrow" | "short" | "techi
       throw new InvalidArgumentError(`Format ${format} isn't supported`);
   }
 }
+

@@ -1,13 +1,11 @@
-import { DateTime } from "../model/DateTime";
 import { durFromMillis, durFromValues, durPlus as durationPlus } from "./core";
 import { as, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
-import { Duration } from "../model/Duration";
 import { month, quarter, year } from "../dateTime/core";
-import { DurationUnit, DurationValues } from "../types/duration";
-import { isString, isUndefined } from "../utils/typeCheck";
-import { maybeArray } from "../utils/array";
+import { isUndefined } from "../impl/util/typeCheck";
+import { maybeArray } from "../impl/util/array";
+import { DateTime, Duration, DurationUnit, DurationValues } from "../types";
 
 type Differ = (a: DateTime, b: DateTime) => number;
 

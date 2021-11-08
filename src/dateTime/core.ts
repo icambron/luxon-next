@@ -1,20 +1,17 @@
 // rule: only depends on model and lib
-import { adjustCalendarOverflow, gregorianInstance } from "../model/calendars/GregorianCalendar";
-import { DateTime} from "../model/DateTime";
-import { daysInMonth, daysInYear, isLeapYear } from "../utils/dateMath";
-import { getDefaultNowFn } from "../settings";
-import { utcInstance } from "../model/zones/FixedOffsetZone";
+import { adjustCalendarOverflow, gregorianInstance } from "../impl/calendars/gregorian";
+import { daysInMonth, daysInYear, isLeapYear } from "../impl/util/dateMath";
+import { getNowFn } from "../settings";
 import { InvalidArgumentError } from "../errors";
-import Zone, { Zoneish } from "../types/zone";
-import { GregorianDate } from "../types/gregorian";
-import { Time } from "../types/time";
-import { isDate } from "../utils/typeCheck";
+import { isDate, isDateTime as isDateTimeInternal } from "../impl/util/typeCheck";
 import { fromCalendar, fromMillis as fromMillisInternal, set } from "../impl/dateTime";
-import { normalizeZone } from "../impl/zone";
+import { utcInstance } from "../impl/zone/fixedOffset";
+import { Zone, DateTime, GregorianDate, Time, Zoneish } from "../types";
+import { normalizeZone } from "../impl/zone/normalizeZone";
 
 // BASICS
 // these are strictly unneeded but they make the interface more consistent
-export const isDateTime = (obj: any): boolean => obj.isLuxonDateTime;
+export const isDateTime = isDateTimeInternal;
 export const zone = (dt: DateTime): Zone => dt.zone;
 export const zoneName = (dt: DateTime): string => dt.zone.name;
 export const offset = (dt: DateTime): number => dt.offset;
@@ -30,7 +27,7 @@ export const toMillis = (dt: DateTime): number => dt.ts;
 export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 
 // FROM ESSENTIALS
-export const now = (zone?: Zoneish) => fromMillisInternal(getDefaultNowFn()(), normalizeZone(zone));
+export const now = (zone?: Zoneish) => fromMillisInternal(getNowFn()(), normalizeZone(zone));
 export const utcNow = () => now(utcInstance);
 export const fromMillis = (ms: number, zone?: Zoneish) => fromMillisInternal(ms, normalizeZone(zone));
 
@@ -60,15 +57,17 @@ export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>)
   ...dt.time,
 });
 
-// friendly alias for Luxon users
-export const toObject = toGregorian;
-
 export const setGregorian =
   (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) =>
   (dt) =>
     set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
       original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
     );
+
+// ALIASES
+// friendly aliases for Luxon users, though they won't accept week and ordinal data
+export const fromObject = fromGregorian;
+export const toObject = toGregorian;
 
 // GREGORIAN GETTERS
 export const year = (dt: DateTime): number => dt.gregorian.year;

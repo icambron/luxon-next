@@ -1,8 +1,7 @@
-import { EraFormatOpts, FormatFirstArg, FormatSecondArg } from "../../types/formatting";
-import { utcInstance } from "../../model/zones/FixedOffsetZone";
-import { extract, getDtf, getDtfArgs, getFormattingOpts} from "../../utils/format";
-import { memo } from "../../utils/caching";
-import Zone from "../../types/zone";
+import { extract, getDtf, getDtfArgs, getFormattingOpts} from "../util/format";
+import { memo } from "../util/caching";
+import { utcInstance } from "../zone/fixedOffset";
+import { Zone, EraFormatOpts, FormatFirstArg, FormatSecondArg } from "../../types";
 
 export const formatEra = (
   firstArg?: FormatFirstArg<EraFormatOpts>,

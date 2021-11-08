@@ -1,10 +1,10 @@
-import { gregorianInstance } from "../../model/calendars/GregorianCalendar";
-import { fixedOffsetZone } from "../../model/zones/FixedOffsetZone";
+import { gregorianInstance } from "../calendars/gregorian";
 import { ExtractedResult, combineRegexes, combineExtractors, parse, int, simpleParse } from "./regexParser";
-import { isoWeekCalendarInstance } from "../../model/calendars/IsoWeekCalendar";
-import { ordinalInstance } from "../../model/calendars/OrdinalCalendar";
-import { parseMillis } from "../../utils/numeric";
-import { signedOffset } from "../../utils/zone";
+import { isoWeekCalendarInstance } from "../calendars/isoWeek";
+import { ordinalInstance } from "../calendars/ordinal";
+import { parseMillis } from "../util/numeric";
+import { fixedOffsetZone } from "../zone/fixedOffset";
+import { signedOffset } from "../zone/zone";
 
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;
 const isoTimeBaseRegex = /(\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d{1,30}))?)?)?/;

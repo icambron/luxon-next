@@ -1,14 +1,12 @@
-import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../../utils/dateMath";
-import { Calendar } from "../../types/calendar";
-import { buildNormalizer, normalizeUnitBundle, ordinalUnits, simplePlural } from "../../utils/units";
-import { GregorianDate } from "../../types/gregorian";
-import { OrdinalDate, OrdinalUnit } from "../../types/ordinal";
-import { integerBetween } from "../../utils/numeric";
-import { isInteger } from "../../utils/typeCheck";
+import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../util/dateMath";
+import { buildNormalizer, normalizeUnitBundle, ordinalUnits, simplePlural } from "../util/units";
+import { integerBetween } from "../util/numeric";
+import { isInteger } from "../util/typeCheck";
+import { GregorianDate, OrdinalCalendar, OrdinalDate, OrdinalUnit } from "../../types";
 
 const ordinalNormalizer = buildNormalizer<OrdinalUnit>(ordinalUnits, simplePlural);
 
-export class OrdinalCalendar implements Calendar<OrdinalDate> {
+class OrdinalCalendarImpl implements OrdinalCalendar {
     defaultValues = { year: 1, ordinal: 1 };
     name = "ordinal"
 
@@ -39,4 +37,4 @@ export class OrdinalCalendar implements Calendar<OrdinalDate> {
         obj1.ordinal === obj2.ordinal;
 }
 
-export const ordinalInstance = new OrdinalCalendar();
+export const ordinalInstance = new OrdinalCalendarImpl();

@@ -1,47 +1,44 @@
-import { systemZone } from "./model/zones/SystemZone";
 import { InvalidArgumentError } from "./errors";
-import {clearCaches as clearCachesInternal} from "./utils/caching";
-import Zone from "./types/zone";
-import { ConversionAccuracy } from "./types/duration";
-import { isZone } from "./utils/zone";
+import {clearCaches as clearCachesInternal} from "./impl/util/caching";
+import { systemZone } from "./impl/zone/system";
+import { Zone, ConversionAccuracy } from "./types";
+import { isZone } from "./impl/util/typeCheck";
 
-type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
-
-let _zone: Zone = systemZone;
-let _nowFn: () => number = () => Date.now();
-let _defaultConversionAccuracy: ConversionAccuracy = "casual";
-let _defaultLocale: string = "en-US";
-let _defaultNumberingSystem: string | undefined = undefined;
-let _defaultOutputCalendar: string | undefined = undefined;
-let _defaultFormat: DateTimeFormatOptions = {
+let defaultZone: Zone = systemZone;
+let nowFn: () => number = () => Date.now();
+let defaultConversionAccuracy: ConversionAccuracy = "casual";
+let defaultLocale: string = "en-US";
+let defaultNumberingSystem: string | undefined = undefined;
+let defaultOutputCalendar: string | undefined = undefined;
+let defaultFormat: Intl.DateTimeFormatOptions = {
   dateStyle: "medium",
   timeStyle: "medium",
 }
 
-export const getDefaultZone = (): Zone => _zone;
+export const getDefaultZone = (): Zone => defaultZone;
 export const setDefaultZone = (zone?: Zone) => {
   if (zone !== undefined && zone != null && !isZone(zone)) {
     throw new InvalidArgumentError("must set the default zone to an instance of Zone");
   }
-  _zone = zone || systemZone;
+  defaultZone = zone || systemZone;
 };
 
-export const getDefaultNowFn = (): (() => number) => _nowFn;
-export const setDefaultNowFn = (fn: () => number) => _nowFn = fn;
+export const getNowFn = (): (() => number) => nowFn;
+export const setNowFn = (fn: () => number) => nowFn = fn;
 
-export const getDefaultConversionAccuracy = (): ConversionAccuracy => _defaultConversionAccuracy;
-export const setDefaultConversionAccuracy = (accuracy: ConversionAccuracy) => _defaultConversionAccuracy = accuracy;
+export const getDefaultConversionAccuracy = (): ConversionAccuracy => defaultConversionAccuracy;
+export const setDefaultConversionAccuracy = (accuracy: ConversionAccuracy) => defaultConversionAccuracy = accuracy;
 
-export const getDefaultLocale = (): string => _defaultLocale;
-export const setDefaultLocale = (loc: string)  => _defaultLocale = loc;
+export const getDefaultLocale = (): string => defaultLocale;
+export const setDefaultLocale = (loc: string)  => defaultLocale = loc;
 
-export const getDefaultFormat = (): DateTimeFormatOptions => _defaultFormat;
-export const setDefaultFormat = (format: DateTimeFormatOptions)  => _defaultFormat = format;
+export const getDefaultFormat = (): Intl.DateTimeFormatOptions => defaultFormat;
+export const setDefaultFormat = (format: Intl.DateTimeFormatOptions)  => defaultFormat = format;
 
-export const getDefaultNumberingSystem = (): string | undefined => _defaultNumberingSystem;
-export const setDefaultNumberingSystem = (numberingSystem: string)  => _defaultNumberingSystem = numberingSystem;
+export const getDefaultNumberingSystem = (): string | undefined => defaultNumberingSystem;
+export const setDefaultNumberingSystem = (numberingSystem: string)  => defaultNumberingSystem = numberingSystem;
 
-export const getDefaultOutputCalendar = (): string  | undefined => _defaultOutputCalendar;
-export const setDefaultOutputCalendar = (outputCalendar: string)  => _defaultOutputCalendar = outputCalendar;
+export const getDefaultOutputCalendar = (): string  | undefined => defaultOutputCalendar;
+export const setDefaultOutputCalendar = (outputCalendar: string)  => defaultOutputCalendar = outputCalendar;
 
-export const clearCaches = () => clearCachesInternal();
+export const clearCaches = clearCachesInternal;

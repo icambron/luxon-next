@@ -38,3 +38,8 @@ export function weeksInWeekYear(weekYear: number): number {
     p2 = (last + Math.floor(last / 4) - Math.floor(last / 100) + Math.floor(last / 400)) % 7;
   return p1 === 4 || p2 === 3 ? 53 : 52;
 }
+
+export const dayOfWeek = (year: number, month: number, day: number) => {
+  const js = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return js === 0 ? 7 : js;
+};

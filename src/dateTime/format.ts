@@ -1,15 +1,5 @@
-import { DateTime } from "../model/DateTime";
-import {
-  EraFormatOpts,
-  FormatFirstArg,
-  FormatSecondArg,
-  GeneralFormattingOpts,
-  MeridiemFormatOpts,
-  MonthFormatOpts,
-  WeekdayFormatOpts,
-} from "../types/formatting";
 import { getDefaultFormat } from "../settings";
-import { dateTimeFormatter, getFormattingOpts } from "../utils/format";
+import { dateTimeFormatter, getFormattingOpts } from "../impl/util/format";
 import * as presets from "../impl/formatting/presets";
 import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
 import {
@@ -21,7 +11,17 @@ import {
   listWeekdays as listWeekdaysInternal,
 } from "../impl/formatting/weekdays";
 import { formatEra as formatErasInternal, listEras as listErasInternal } from "../impl/formatting/eras";
-import Zone from "../types/zone";
+import {
+  Zone,
+  DateTime,
+  EraFormatOpts,
+  FormatFirstArg,
+  FormatSecondArg,
+  GeneralFormattingOpts,
+  MeridiemFormatOpts,
+  MonthFormatOpts,
+  WeekdayFormatOpts,
+} from "../types";
 
 export const toLocaleString = (
   firstArg?: FormatFirstArg<GeneralFormattingOpts>,

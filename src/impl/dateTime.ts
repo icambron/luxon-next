@@ -1,13 +1,9 @@
-import { Calendar } from "../types/calendar";
-import { Time } from "../types/time";
-import Zone from "../types/zone";
-import { getDefaultNowFn, getDefaultZone } from "../settings";
+import { Zone, Calendar, DateTime, GregorianDate, Time } from "../types";
+import { getNowFn, getDefaultZone } from "../settings";
 import { fromObject, hasInvalidTimeData } from "./time";
 import { InvalidArgumentError, UnitOutOfRangeError } from "../errors";
-import { gregorianInstance, gregorianToTS, tsToGregorian } from "../model/calendars/GregorianCalendar";
-import { isNumber } from "../utils/typeCheck";
-import { GregorianDate } from "../types/gregorian";
-import { DateTime } from "../model/DateTime";
+import { gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
+import { isNumber } from "./util/typeCheck";
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
 
@@ -38,14 +34,14 @@ const quick = (ts: number, zone: Zone): [GregorianDate, Time, number] => {
   return [...tsToGregorian(ts, offset), offset];
 };
 
-export const fromMillis = (ts: number, zone?: Zone) => {
+export const fromMillis = (ts: number, zone?: Zone): DateTime => {
   if (!isNumber(ts)) {
     throw new InvalidArgumentError(`timestamps must be numerical, but received a ${typeof ts} with value ${ts}`);
   }
 
   const zoneToUse = zone || getDefaultZone();
   const [gregorian, time, offset] = quick(ts, zoneToUse);
-  return new DateTime(ts, zoneToUse, gregorian, time, offset);
+  return new DateTimeImpl(ts, zoneToUse, gregorian, time, offset);
 };
 
 export const fromCalendar = <TDate extends object>(
@@ -54,7 +50,7 @@ export const fromCalendar = <TDate extends object>(
   zone?: Zone
 ): DateTime => {
   const zoneToUse = zone || getDefaultZone();
-  const tsNow = getDefaultNowFn()();
+  const tsNow = getNowFn()();
   // sub in the defaults
   const [gregorNow, timeNow, offsetProvis] = quick(tsNow, zoneToUse);
   const calendarNow = calendar.fromGregorian(gregorNow);
@@ -88,7 +84,7 @@ export const fromCalendar = <TDate extends object>(
     calMap.set(calendar.name, date);
   }
 
-  return new DateTime(ts, zoneToUse, gregorianFinal, timeFinal, finalOffset, calMap);
+  return new DateTimeImpl(ts, zoneToUse, gregorianFinal, timeFinal, finalOffset, calMap);
 };
 
 export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number): DateTime => {
@@ -103,7 +99,7 @@ export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number): Da
     [gregorian, time] = tsToGregorian(ts, newOffset);
     calendarValues = new Map<string, any>();
   }
-  return new DateTime(ts, zone, gregorian, time, newOffset, calendarValues);
+  return new DateTimeImpl(ts, zone, gregorian, time, newOffset, calendarValues);
 };
 
 export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: Calendar<TDate>): TDate => {
@@ -136,3 +132,77 @@ export const set = <TDate extends object>(
   return alter(dt, ts, dt.zone, o);
 };
 
+export const MAX_DATE = 8.64e15;
+const assertValidTs = (ts: number) => {
+  if (isNaN(ts) || ts > MAX_DATE || ts < -MAX_DATE) {
+    throw new InvalidArgumentError("Timestamp out of range");
+  }
+};
+
+class DateTimeImpl implements DateTime {
+  readonly zone: Zone;
+  readonly ts: number;
+  readonly offset: number;
+  readonly isLuxonDateTime: boolean = true;
+
+  private readonly _gregorian: GregorianDate;
+  private readonly _time: Time;
+  private readonly _calendarDates: Map<string, any>;
+
+  get gregorian(): GregorianDate {
+    return { ...this._gregorian };
+  }
+
+  get time(): Time {
+    return { ...this._time };
+  }
+
+  get calendarDates(): Map<string, any> {
+    return new Map<string, any>(this._calendarDates);
+  }
+
+  // these are here so that automagic layers work as expected
+  toJSON(): string {
+    return this.toString();
+  }
+
+  toString(): string {
+    return new Date(this.ts).toISOString();
+  }
+
+  toBSON(): Date {
+    return new Date(this.ts);
+  }
+
+  valueOf(): number {
+    return this.ts;
+  }
+
+  equals(other: any): boolean {
+    return (
+      !!other &&
+      other.isLuxonDateTime !== undefined &&
+      this.valueOf() === other.valueOf() &&
+      this.zone.equals(other.zone)
+    );
+  }
+
+  constructor(
+    ts: number,
+    zone: Zone,
+    gregorian: GregorianDate,
+    time: Time,
+    offset: number,
+    otherCalendarDates: Map<string, any> = new Map<string, any>()
+  ) {
+    assertValidTs(ts);
+
+    this.zone = zone;
+    this.ts = ts;
+    this._gregorian = gregorian;
+    this._time = time;
+    this.offset = offset;
+    this._calendarDates = otherCalendarDates;
+    this._calendarDates.set(gregorianInstance.name, gregorian);
+  }
+}

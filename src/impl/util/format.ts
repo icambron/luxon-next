@@ -1,9 +1,8 @@
-import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../settings";
-import { FormatStringError, UnknownError } from "../errors";
-import { SharedFormattingOpts, FormatFirstArg, FormatSecondArg, FormattingToken } from "../types/formatting";
+import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
+import { FormatStringError, UnknownError } from "../../errors";
 import { memo } from "./caching";
-import Zone from "../types/zone";
-import { isValidIANAZone } from "./zone";
+import { Zone, FormatFirstArg, FormatSecondArg, FormattingToken, SharedFormattingOpts } from "../../types";
+import { isValidIANAZone } from "../zone/zone";
 
 export const getDtf = memo(
   "dateTimeFormat",

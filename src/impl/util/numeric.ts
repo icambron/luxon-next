@@ -1,4 +1,4 @@
-import { InvalidArgumentError } from "../errors";
+import { InvalidArgumentError } from "../../errors";
 import { isInteger, isUndefined } from "./typeCheck";
 
 export const integerBetween = (thing: number, bottom: number, top: number) =>

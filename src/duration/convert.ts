@@ -1,8 +1,8 @@
-import { Duration, normalizeDurationUnit, pickMatrix } from "../model/Duration";
 import { getDefaultConversionAccuracy } from "../settings";
-import { ConversionAccuracy, ConversionMatrix, DurationUnit } from "../types/duration";
-import { antiTrunc } from "../utils/numeric";
-import { isNumber, isUndefined } from "../utils/typeCheck";
+import { antiTrunc } from "../impl/util/numeric";
+import { isNumber, isUndefined } from "../impl/util/typeCheck";
+import { ConversionMatrix, fromValues, normalizeDurationUnit, pickMatrix } from "../impl/duration";
+import { ConversionAccuracy, Duration, DurationUnit } from "../types";
 
 // convert ordered by size
 const orderedUnits: DurationUnit[] = [
@@ -80,7 +80,7 @@ export const durNormalize =
   (dur) => {
     const map = durToMap(dur);
     normalizeValues(pickMatrix(conversionAccuracy), map);
-    return new Duration(Object.fromEntries(map));
+    return fromValues(Object.fromEntries(map));
   };
 
 export const durShiftTo =
@@ -146,5 +146,5 @@ export const durShiftTo =
 
     normalizeValues(matrix, built);
 
-    return new Duration(Object.fromEntries(built));
+    return fromValues(Object.fromEntries(built));
   };

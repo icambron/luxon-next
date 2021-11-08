@@ -1,14 +1,13 @@
-import { InvalidZoneError } from "../../errors";
-import { gregorianToLocalTS } from "../calendars/GregorianCalendar";
-import Zone from "../../types/zone";
-import { isValidIANAZone } from "../../utils/zone";
-import { isUndefined } from "../../utils/typeCheck";
-import { memo } from "../../utils/caching";
-
 // todo - move to central cache
-let dtfCache: Record<string, Intl.DateTimeFormat> = {};
+import { isUndefined } from "../util/typeCheck";
+import { InvalidZoneError } from "../../errors";
+import { gregorianToLocalTS } from "../calendars/gregorian";
+import { memo } from "../util/caching";
+import { Zone } from "../../types";
+import { isValidIANAZone } from "./zone";
 
-function makeDTF(zone: string): Intl.DateTimeFormat {
+let dtfCache: Record<string, Intl.DateTimeFormat> = {};
+const makeDTF = (zone: string): Intl.DateTimeFormat => {
   if (!dtfCache[zone]) {
     try {
       dtfCache[zone] = new Intl.DateTimeFormat("en-US", {
@@ -26,8 +25,7 @@ function makeDTF(zone: string): Intl.DateTimeFormat {
     }
   }
   return dtfCache[zone];
-}
-
+};
 const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   year: 0,
   month: 1,
@@ -36,7 +34,6 @@ const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   minute: 4,
   second: 5
 };
-
 const partsOffset = (dtf: Intl.DateTimeFormat, date: Date) => {
   const formatted = dtf.formatToParts(date);
   const filled = new Array<number>();
@@ -51,12 +48,10 @@ const partsOffset = (dtf: Intl.DateTimeFormat, date: Date) => {
   return filled;
 };
 
-let ianaZoneCache: Record<string, IANAZone> = {};
 /**
  * A zone identified by an IANA identifier, like America/New_York
- * @implements {Zone}
  */
-export default class IANAZone implements Zone {
+class IANAZone implements Zone {
   private readonly _zoneName: string;
 
   constructor(name: string) {
@@ -78,30 +73,29 @@ export default class IANAZone implements Zone {
     return false;
   }
 
-  offset(ts: number) {
+  offset = (ts: number) => {
     const date = new Date(ts),
       dtf = makeDTF(this.name),
       [year, month, day, hour, minute, second] = partsOffset(dtf, date);
 
     const asUTC = gregorianToLocalTS(
-        { year, month, day},
-        { hour, minute, second, millisecond: 0}
+      { year, month, day },
+      { hour, minute, second, millisecond: 0 }
     );
 
     let asTS = date.valueOf();
     const over = asTS % 1000;
     asTS -= over >= 0 ? over : 1000 + over;
     return (asUTC - asTS) / (60 * 1000);
-  }
+  };
 
-  equals(other: Zone) {
-    return other.type === "iana" && other.name === this.name;
-  }
+  equals = (other: Zone) => other.type === "iana" && other.name === this.name;
+
+  isLuxonZone = true;
 }
 
 /**
  * @param {string} name - Zone name
  * @return {IANAZone}
  */
-export const createIANAZone: (zoneName: string) => IANAZone = memo("ianaZone",  (name: string) => new IANAZone(name));
-
+export const ianaZone: (zoneName: string) => Zone = memo("ianaZone", (name: string) => new IANAZone(name));

@@ -1,28 +1,26 @@
-import FixedOffsetZone from "../../model/zones/FixedOffsetZone";
-import IANAZone from "../../model/zones/IANAZone";
 import { listMonths } from "../formatting/months";
 import { listEras } from "../formatting/eras";
 import { listWeekdays } from "../formatting/weekdays";
 import { listMeridiems } from "../formatting/meridiems";
-import {
-  FormattingToken
-} from "../../types/formatting";
 import { ConflictingSpecificationError } from "../../errors";
-import { dateTimeFormatter, parseFormat } from "../../utils/format";
-import { memo } from "../../utils/caching";
+import { dateTimeFormatter, parseFormat } from "../util/format";
+import { memo } from "../util/caching";
 import { MacroToken, macroTokens } from "../formatting/presets";
-import { digitRegex, parseDigits } from "../../utils/digits";
-import Zone from "../../types/zone";
-import { parseMillis } from "../../utils/numeric";
-import { untruncateYear } from "../../utils/dateMath";
-import { isUndefined } from "../../utils/typeCheck";
-import { signedOffset } from "../../utils/zone";
+import { digitRegex, parseDigits } from "../util/digits";
+import { parseMillis } from "../util/numeric";
+import { untruncateYear } from "../util/dateMath";
+import { isUndefined } from "../util/typeCheck";
+import { fixedOffsetZone } from "../zone/fixedOffset";
+import { ianaZone } from "../zone/iana";
 import {
+  Zone,
+  FormattingToken,
   TokenParsedField,
   TokenParsedFields,
   TokenParsedValue, TokenParsingOpts,
   TokenParsingSummary
-} from "../../types/parsing";
+} from "../../types";
+import { signedOffset } from "../zone/zone";
 
 // TYPES
 interface TokenParsingUnit {
@@ -197,7 +195,7 @@ const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => 
         return offset(new RegExp(`([+-]${oneOrTwo.source})(?::(${two.source}))?`), 2);
       case "ZZZ":
         return offset(new RegExp(`([+-]${oneOrTwo.source})(${two.source})?`), 2);
-      // we don't support ZZZZ (PST) or ZZZZZ (Pacific Standard Time) in utils
+      // we don't support ZZZZ (PST) or ZZZZZ (Pacific Standard Time) in util
       // because we don't have any way to figure out what they are
       case "z":
         return simple(/[a-z_+-/]{1,256}?/i);
@@ -294,9 +292,9 @@ const deserialize = (matches: RegExpMatchArray, handlers: TokenParsingUnit[]): T
 
 const zoneForMatch = (fields: TokenParsedFields): Zone | undefined  => {
   if (!isUndefined(fields.Z)) {
-    return new FixedOffsetZone(fields.Z);
+    return fixedOffsetZone(fields.Z);
   } else if (!isUndefined(fields.z)) {
-    return new IANAZone(fields.z);
+    return ianaZone(fields.z);
   } else {
     return undefined;
   }
@@ -407,7 +405,7 @@ export const parseFromFormat = (input: string, format: string, parsingOpts: Toke
     // step 2 - expand macro tokens
     const expandedTokens = expandMacroTokens(rawTokens, parsingOpts);
 
-    // step 3 - map the tokens to utils units (essentially regex + how to extract the value from the match) pairs
+    // step 3 - map the tokens to util units (essentially regex + how to extract the value from the match) pairs
     // this has two sub-steps:
     // a) get a map appropriate to the locale. This is a function FormatToken -> TokenParsingUnit
     const tokenMap = getUnitMap(parsingOpts);
