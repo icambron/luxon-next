@@ -40,3 +40,4 @@ const combineWithDefaultFormat = (formatOpts: FormatOpts): FormatOpts => {
   return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultFormat() } : formatOpts;
 };
 
+export const withoutArgs = <T>(f: (dt: DateTime) => T): () => (dt: DateTime) => T  => () => (dt) => f(dt);

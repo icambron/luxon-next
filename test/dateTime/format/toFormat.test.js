@@ -1,6 +1,6 @@
 import { fromGregorian, setGregorian } from "../../../src/dateTime/core";
 import { setZone, toUTC } from "../../../src/dateTime/zone";
-import { toFormat } from "../../../src/impl/formatting/tokenFormatter";
+import { toFormat } from "../../../src/dateTime/format";
 import { setISOWeek } from "../../../src/dateTime/isoWeek";
 import { plus } from "../../../src/dateTime/math";
 

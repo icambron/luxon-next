@@ -4,17 +4,23 @@ import { extractMonth, listMonths as listMonthsInternal } from "../impl/formatti
 import { extractMeridiem, listMeridiems as listMeridiemsInternal } from "../impl/formatting/meridiems";
 import { extractWeekday, listWeekdays as listWeekdaysInternal } from "../impl/formatting/weekdays";
 import { extractEra, listEras as listErasInternal } from "../impl/formatting/eras";
-import { NamedOffsetFormatOpts, NumericOffsetFormatWidth, OffsetFormatOpts } from "../types";
 import { formatNumericOffset } from "../impl/zone/zone";
+import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
 import { extractNamedOffset } from "../impl/formatting/namedOffset";
+import { DateTime, NamedOffsetFormatOpts, NumericOffsetFormatWidth, OffsetFormatOpts } from "../types";
+
 import {
   makeCombinedItemFormatter,
   makeDirectFormatter,
   makeItemFormatter,
   makeOptReader,
   toJs,
-  WithDt,
+  WithDt, withoutArgs
 } from "../impl/formatting/combinators";
+
+// think we'll just have to live with these deps?
+import { toUTC } from "./zone";
+import { year } from "./core";
 
 export const toLocaleString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
 export const toLocaleDateString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
@@ -23,6 +29,27 @@ export const toLocaleTimeString = makeDirectFormatter((loc, fmt) => (jsDate) => 
 export const toLocaleParts = makeCombinedItemFormatter(
   (opts) => (jsDate, zone) => dateTimeFormat(opts, zone).formatToParts(jsDate)
 );
+
+export const toFormat = toFormatInternal;
+
+export const toRFC2822 = withoutArgs(toFormat("EEE, dd LLL yyyy HH:mm:ss ZZZ", "en-US"))
+export const toHTTP = withoutArgs((dt) => toFormat("EEE, dd LLL yyyy HH:mm:ss [GMT]")(toUTC()(dt)));
+
+// todo - type options
+export const toISODate = (format: string = "extended"): (dt: DateTime) => string => {
+  let fmt = format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
+
+  return (dt) => {
+    if (year(dt) > 9999) {
+      fmt = "+" + fmt;
+    }
+    return toFormatInternal(fmt)(dt);
+  }
+}
+
+export const toISOWeekDate = withoutArgs(toFormat("kkkk-[W]W-c"));
+
+// todo - toIsoTime()
 
 export const formatMonth = makeItemFormatter(extractMonth);
 export const formatWeekday = makeItemFormatter(extractWeekday);
