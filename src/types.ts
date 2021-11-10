@@ -140,60 +140,65 @@ export type MonthFormatWidth = "narrow" | "short" | "long" | "numeric" | "2-digi
 export type WeekdayFormatWidth = "narrow" | "short" | "long";
 export type EraFormatWidth = "narrow" | "short" | "long";
 export type MeridiemFormatWidth = "simple" | "narrow" | "short" | "long";
+export type NamedOffsetFormatWidth = "short" | "long";
+export type NumericOffsetFormatWidth = "narrow" | "standard" | "techie";
+export type OffsetFormatWidth = NumericOffsetFormatWidth | NamedOffsetFormatWidth;
 export type FormatMode = "standalone" | "format";
 
-export interface SharedFormattingOpts {
+export interface SharedFormatOpts {
   locale?: string;
   numberingSystem?: string;
 }
 
-export interface GeneralFormattingOpts extends SharedFormattingOpts, Intl.DateTimeFormatOptions {
+export interface FormatOpts extends SharedFormatOpts, Intl.DateTimeFormatOptions {
 }
 
-export interface MonthFormatOpts extends GeneralFormattingOpts {
+export interface MonthFormatOpts extends FormatOpts {
   mode?: FormatMode;
   width?: MonthFormatWidth;
 }
 
-export interface WeekdayFormatOpts extends GeneralFormattingOpts {
+export interface WeekdayFormatOpts extends FormatOpts {
   mode?: FormatMode;
   width?: WeekdayFormatWidth;
 }
 
-export interface MeridiemFormatOpts extends GeneralFormattingOpts {
+export interface MeridiemFormatOpts extends FormatOpts {
   width?: MeridiemFormatWidth;
 }
 
-export interface EraFormatOpts extends GeneralFormattingOpts {
+export interface EraFormatOpts extends FormatOpts {
   width?: EraFormatWidth;
 }
 
-export interface FormattingToken {
+export interface NamedOffsetFormatOpts extends FormatOpts {
+  width?: NamedOffsetFormatWidth;
+}
+
+export interface OffsetFormatOpts extends FormatOpts {
+  width?: OffsetFormatWidth;
+}
+
+export interface FormatToken {
   name: string;
   literal?: boolean;
 }
 
-export type FormatFirstArg<T extends SharedFormattingOpts> = T | string | undefined;
-export type FormatSecondArg<T extends SharedFormattingOpts> = T | undefined;
+export type FormatFirstArg<T extends SharedFormatOpts> = T | string | undefined;
+export type FormatSecondArg<T extends SharedFormatOpts> = T | undefined;
 
 // PARSING
 
-export interface GeneralParsingOpts {
+export interface ParseOpts {
   interpretationZone?: Zoneish;
   targetZone?: Zoneish;
   useTargetZoneFromInput?: boolean;
 }
 
-export interface TokenParsingOpts extends GeneralParsingOpts, SharedFormattingOpts {
+export interface TokenParseOpts extends ParseOpts, SharedFormatOpts {
 }
 
-export interface ParsingOptions {
-  interpretationZone?: Zoneish;
-  targetZone?: Zoneish;
-  useTargetZoneFromInput?: boolean;
-}
-
-export interface TokenParsedValue {
+export interface TokenParseValue {
   gregorian: Partial<GregorianDate>;
   week: Partial<ISOWeekDate>;
   time: Partial<Time>;
@@ -223,16 +228,16 @@ export type TokenParsedField =
   | "Z"
   | "z";
 
-export type TokenParsedFields = Partial<{
+export type TokenParseFields = Partial<{
   [key in TokenParsedField]: any;
 }>;
 
-export interface TokenParsingSummary {
+export interface TokenParseSummary {
   input: string;
   format: string;
-  tokens: FormattingToken[];
+  tokens: FormatToken[];
   regex: RegExp;
   matches: RegExpMatchArray | null;
-  fields: TokenParsedFields | null;
-  parsed: TokenParsedValue | null;
+  fields: TokenParseFields | null;
+  parsed: TokenParseValue | null;
 }

@@ -1,4 +1,4 @@
-import { fromFormat, fromFormatExplain, simpleParsingOptions } from "../../../src/dateTime/parse";
+import { fromFormat, simpleParseOpts } from "../../../src/dateTime/parse";
 import {
   year,
   month,
@@ -449,7 +449,7 @@ test.each([
 });
 
 test("fromFormat() accepts a zone arguments", () => {
-  const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", simpleParsingOptions("Asia/Tokyo"));
+  const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", simpleParseOpts("Asia/Tokyo"));
   expect(dt |> zoneName).toBe("Asia/Tokyo");
   expect(dt |> offset).toBe(9 * 60);
   expect(dt |> year).toBe(1982);

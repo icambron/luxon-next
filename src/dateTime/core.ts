@@ -59,8 +59,7 @@ export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>)
 
 export const setGregorian =
   (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) =>
-  (dt) =>
-    set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
+    set<GregorianDate>(gregorianInstance, obj, (original, unadjusted) =>
       original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
     );
 

@@ -1,32 +1,16 @@
-import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
+import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
-import { Zone, FormatFirstArg, FormatSecondArg, MonthFormatOpts } from "../../types";
+import { Zone, MonthFormatOpts } from "../../types";
 
-export const formatMonth = (
-  firstArg?: FormatFirstArg<MonthFormatOpts>,
-  secondArg?: FormatSecondArg<MonthFormatOpts>
-): ((date: Date, zone: Zone) => string) => {
-  const formatOpts = getFormattingOpts<MonthFormatOpts>(firstArg, secondArg);
-  return (date, zone) => formatMonthMemo(formatOpts)(date, zone);
-};
-
-export const listMonths = (
-  firstArg?: FormatFirstArg<MonthFormatOpts>,
-  secondArg?: FormatSecondArg<MonthFormatOpts>
-): string[] => {
-  const formatOpts = getFormattingOpts<MonthFormatOpts>(firstArg, secondArg);
-  return listMonthsMemo(formatOpts);
-};
-
-const formatMonthMemo =
+export const extractMonth =
   (formatOpts: MonthFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = monthDtf(formatOpts, zone);
     return extract(d, dtf, "month");
   };
 
-const listMonthsMemo = memo("monthList", (formatOpts: MonthFormatOpts) => {
+export const listMonths = memo("monthList", (formatOpts: MonthFormatOpts) => {
   const dtf = monthDtf(formatOpts, utcInstance);
 
   // @ts-ignore

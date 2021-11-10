@@ -5,18 +5,18 @@ import {
   Zone,
   FormatFirstArg,
   FormatSecondArg,
-  FormattingToken,
-  SharedFormattingOpts,
-  GeneralFormattingOpts
+  FormatToken,
+  SharedFormatOpts,
+  FormatOpts
 } from "../../types";
 import { isValidIANAZone } from "../zone/zone";
 
-export const getDtf = memo(
+const getDtf = memo(
   "dateTimeFormat",
   ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts)
 );
 
-export const dateTimeFormat = (opts: GeneralFormattingOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
+export const dateTimeFormat = (opts: FormatOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
   const { locale, ...rest } = opts;
 
   const fullOpts: Intl.DateTimeFormatOptions = {
@@ -34,6 +34,22 @@ export const dateTimeFormat = (opts: GeneralFormattingOpts = {}, zone?: Zone ): 
   return getDtf([locale || getDefaultLocale(), fullOpts]);
 }
 
+export interface NumberFormatOpts extends SharedFormatOpts, Intl.NumberFormatOptions {
+}
+
+const getNf = memo("numberFormat", ([locale, opts]: [string, Intl.NumberFormatOptions]) => new Intl.NumberFormat(locale, opts));
+
+export const numberFormat = (opts: NumberFormatOpts = {}) => {
+  const { locale, ...rest } = opts;
+
+  const fullOpts: Intl.NumberFormatOptions = {
+    numberingSystem: getDefaultNumberingSystem(),
+    ...rest,
+  };
+
+  return getNf([locale || getDefaultLocale(), fullOpts]);
+};
+
 export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): string => {
   const results = df.formatToParts(jsDate);
   const matching = results.find((m) => m.type.toLowerCase() === field);
@@ -45,7 +61,7 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
-export const getFormattingOpts = <T extends SharedFormattingOpts>(
+export const getFormattingOpts = <T extends SharedFormatOpts>(
   firstArg: FormatFirstArg<T>,
   secondArg: FormatSecondArg<T>
 ): Partial<T> => {
@@ -75,12 +91,12 @@ export const hasKeys =
   (o: any): o is T =>
     typeof o === "object" && keys.some((k) => o[k]);
 
-export const parseFormat = (fmt: string): FormattingToken[] => {
+export const parseFormat = (fmt: string): FormatToken[] => {
   let currentChar: string | null = null;
   let currentToken: string | null = null;
   let bracketed = false;
   let escaped = false;
-  const tokens: FormattingToken[] = [];
+  const tokens: FormatToken[] = [];
 
   const addToken = (literal: boolean, name: string | null) => {
     if (name) {

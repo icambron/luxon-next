@@ -25,7 +25,7 @@ export const setZone = (zone: Zoneish, { keepLocalTime = false } = {}): ((dt: Da
         const offsetGuess = realZone.offset(dt.ts);
         [newTS] = gregorianToTS(dt.gregorian, dt.time, offsetGuess, realZone);
       }
-      return alter(dt, newTS, realZone);
+      return alter(newTS, realZone)(dt);
     }
   };
 };

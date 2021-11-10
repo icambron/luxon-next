@@ -1,3 +1,9 @@
+Middle of:
+ * adding formatting support
+ * need to make the options handling consistent with the other format stuff
+ * need to work through all the tests
+ * need to rationalize dependencies (currently needs a bunch off stuff from core)
+
 Big stuff:
  * Build and export
  * A new name!

@@ -3,7 +3,7 @@ import { listEras } from "../formatting/eras";
 import { listWeekdays } from "../formatting/weekdays";
 import { listMeridiems } from "../formatting/meridiems";
 import { ConflictingSpecificationError } from "../../errors";
-import { dateTimeFormat, parseFormat } from "../util/format";
+import { dateTimeFormat, parseFormat } from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { MacroToken, macroTokens } from "../formatting/presets";
 import { digitRegex, parseDigits } from "../util/digits";
@@ -14,11 +14,11 @@ import { fixedOffsetZone } from "../zone/fixedOffset";
 import { ianaZone } from "../zone/iana";
 import {
   Zone,
-  FormattingToken,
+  FormatToken,
   TokenParsedField,
-  TokenParsedFields,
-  TokenParsedValue, TokenParsingOpts,
-  TokenParsingSummary
+  TokenParseFields,
+  TokenParseValue, TokenParseOpts,
+  TokenParseSummary
 } from "../../types";
 import { signedOffset } from "../zone/zone";
 
@@ -68,11 +68,11 @@ const offset = (regex: RegExp, groups: number): TokenParsingUnit => ({
   groups
 });
 
-const literal = (t: FormattingToken): TokenParsingUnit => ({ regex: RegExp(escapeToken(t.name)), deser: ([s]) => s, literal: true });
+const literal = (t: FormatToken): TokenParsingUnit => ({ regex: RegExp(escapeToken(t.name)), deser: ([s]) => s, literal: true });
 
 const simple = (regex: RegExp): TokenParsingUnit => ({ regex, deser: ([s]) => s });
 
-const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => TokenParsingUnit => {
+const getUnitMap = (parsingOpts: TokenParseOpts): (token: FormatToken) => TokenParsingUnit => {
   const one = digitRegex(parsingOpts.numberingSystem);
   const two = digitRegex(parsingOpts.numberingSystem, "{2}");
   const three = digitRegex(parsingOpts.numberingSystem, "{3}");
@@ -85,7 +85,7 @@ const getUnitMap = (parsingOpts: TokenParsingOpts): (token: FormattingToken) => 
   const twoToFour = digitRegex(parsingOpts.numberingSystem, "{2,4}");
   const fourToSix = digitRegex(parsingOpts.numberingSystem, "{4,6}");
 
-  const unitate = (t: FormattingToken): TokenParsingUnit => {
+  const unitate = (t: FormatToken): TokenParsingUnit => {
     if (t.literal) {
       return literal(t);
     }
@@ -275,8 +275,8 @@ function buildRegex(units: TokenParsingUnit[]): RegExp {
   return RegExp(`^${re}$`, "i");
 }
 
-const deserialize = (matches: RegExpMatchArray, handlers: TokenParsingUnit[]): TokenParsedFields => {
-  const fields: TokenParsedFields = {};
+const deserialize = (matches: RegExpMatchArray, handlers: TokenParsingUnit[]): TokenParseFields => {
+  const fields: TokenParseFields = {};
 
   let matchIndex = 1;
   for (const h of handlers) {
@@ -290,7 +290,7 @@ const deserialize = (matches: RegExpMatchArray, handlers: TokenParsingUnit[]): T
   return fields;
 };
 
-const zoneForMatch = (fields: TokenParsedFields): Zone | undefined  => {
+const zoneForMatch = (fields: TokenParseFields): Zone | undefined  => {
   if (!isUndefined(fields.Z)) {
     return fixedOffsetZone(fields.Z);
   } else if (!isUndefined(fields.z)) {
@@ -300,8 +300,8 @@ const zoneForMatch = (fields: TokenParsedFields): Zone | undefined  => {
   }
 }
 
-const valsForFields = (fields: TokenParsedFields): TokenParsedValue => {
-  const parsed: TokenParsedValue = {
+const valsForFields = (fields: TokenParseFields): TokenParseValue => {
+  const parsed: TokenParseValue = {
     gregorian: {},
     week: {},
     time: {}
@@ -365,7 +365,7 @@ const getDummyDateTime = (): Date => {
   return dummyDateTimeCache;
 };
 
-const maybeExpandMacroToken = (token: FormattingToken, parsingOpts: TokenParsingOpts) => {
+const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts) => {
   if (token.literal) {
     return token;
   }
@@ -389,16 +389,16 @@ const maybeExpandMacroToken = (token: FormattingToken, parsingOpts: TokenParsing
   return tokens;
 };
 
-const expandMacroTokens = (tokens: FormattingToken[], parsingOpts: TokenParsingOpts) : FormattingToken[] =>
+const expandMacroTokens = (tokens: FormatToken[], parsingOpts: TokenParseOpts) : FormatToken[] =>
   Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, parsingOpts)));
 
 /**
  * @private
  */
-export const parseFromFormat = (input: string, format: string, parsingOpts: TokenParsingOpts): TokenParsingSummary => {
+export const parseFromFormat = (input: string, format: string, parsingOpts: TokenParseOpts): TokenParseSummary => {
 
   // prelude: we memoize the whole parser
-  const buildParser = memo("tokenParser", ([parsingOpts, format]: [TokenParsingOpts, string]): [TokenParsingUnit[], RegExp, FormattingToken[]] => {
+  const buildParser = memo("tokenParser", ([parsingOpts, format]: [TokenParseOpts, string]): [TokenParsingUnit[], RegExp, FormatToken[]] => {
     // step 1 - parse the format to string to generate a FormatToken[]
     const rawTokens = parseFormat(format);
 
@@ -425,8 +425,8 @@ export const parseFromFormat = (input: string, format: string, parsingOpts: Toke
   // step 5 - run the regex on the input
   const matches = input.match(regex);
 
-  let fields: TokenParsedFields | null = null;
-  let parsed: TokenParsedValue | null = null;
+  let fields: TokenParseFields | null = null;
+  let parsed: TokenParseValue | null = null;
   if (matches) {
     // step 6 - use the units to deserialize the matches and put them into a bucket of values
     // these fields are "dumb"; they don't understand anything about dates or times

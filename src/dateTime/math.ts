@@ -90,7 +90,7 @@ export const startOf = (unit: StartEndUnit): ((dt: DateTime) => DateTime) => {
       o.month = (q - 1) * 3 + 1;
     }
 
-    return o.weekday ? set(dt, isoWeekCalendarInstance, o) : set(dt, gregorianInstance, o);
+    return (o.weekday ? set(isoWeekCalendarInstance, o) : set(gregorianInstance, o))(dt);
   };
 };
 
@@ -137,7 +137,7 @@ export const plus = (
   const adjustment = adjustTime(dur, conversionAccuracy);
   return (dt) => {
     const [ts, offset] = adjustment(dt);
-    return alter(dt, ts, dt.zone, offset);
+    return alter(ts, dt.zone, offset)(dt);
   };
 };
 
@@ -150,7 +150,7 @@ export const minus = (
   const adjustment = adjustTime(negated, conversionAccuracy);
   return (dt) => {
     const [ts, offset] = adjustment(dt);
-    return alter(dt, ts, dt.zone, offset);
+    return alter(ts, dt.zone, offset)(dt);
   };
 };
 

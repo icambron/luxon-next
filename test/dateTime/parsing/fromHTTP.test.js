@@ -1,4 +1,4 @@
-import { fromHTTP} from "../../../src/dateTime/parse";
+import { fromHTTP } from "../../../src/dateTime/parse";
 import { toGregorian } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 

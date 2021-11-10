@@ -7,7 +7,7 @@ import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
 import { gregorianInstance } from "../impl/calendars/gregorian";
 import { parseRFC2822 } from "../impl/parsing/rfc2822Parser";
 import { parseHTTPDate } from "../impl/parsing/httpParser";
-import { getFormattingOpts } from "../impl/util/format";
+import { getFormattingOpts } from "../impl/util/formatUtil";
 import { isUndefined } from "../impl/util/typeCheck";
 import { getDefaultZone } from "../settings";
 import { NoMatchingParserPattern } from "../errors";
@@ -17,17 +17,16 @@ import {
   DateTime,
   FormatFirstArg,
   FormatSecondArg,
-  GeneralParsingOpts,
-  ParsingOptions,
-  TokenParsedValue,
-  TokenParsingOpts,
-  TokenParsingSummary,
+  ParseOpts,
+  TokenParseValue,
+  TokenParseOpts,
+  TokenParseSummary,
   Zoneish,
 } from "../types";
 import { fromCalendar } from "../impl/dateTime";
 import { normalizeZone } from "../impl/zone/normalizeZone";
 
-export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingOptions => ({
+export const simpleParseOpts = (zone: Zoneish = getDefaultZone()): ParseOpts => ({
   interpretationZone: zone,
   targetZone: zone,
   useTargetZoneFromInput: false,
@@ -35,7 +34,7 @@ export const simpleParsingOptions = (zone: Zoneish = getDefaultZone()): ParsingO
 
 const pickZone = (
   parsedZone: Zone | null | undefined,
-  opts: ParsingOptions = {}
+  opts: ParseOpts = {}
 ): { targetZone: Zone; interpretationZone: Zone } => {
   const interpretationZone: Zone = parsedZone || normalizeZone(opts.interpretationZone) || getDefaultZone();
   const targetZone =
@@ -43,7 +42,7 @@ const pickZone = (
   return { interpretationZone, targetZone };
 };
 
-const fromRegexParse = (extracted: ExtractedResult, opts: ParsingOptions): DateTime => {
+const fromRegexParse = (extracted: ExtractedResult, opts: ParseOpts): DateTime => {
   const { interpretationZone, targetZone } = pickZone(extracted.zone, opts);
   const calendar = extracted.calendar || gregorianInstance;
   const dt = fromCalendar(calendar, { ...extracted.calendarUnits, ...extracted.timeUnits }, interpretationZone);
@@ -51,7 +50,7 @@ const fromRegexParse = (extracted: ExtractedResult, opts: ParsingOptions): DateT
 };
 
 const wrapError =
-  (fn: (input: string, opts?: ParsingOptions) => DateTime): ((i: string, opts?: ParsingOptions) => DateTime | null) =>
+  (fn: (input: string, opts?: ParseOpts) => DateTime): ((i: string, opts?: ParseOpts) => DateTime | null) =>
   (i, opts) => {
     try {
       return fn(i, opts);
@@ -60,7 +59,7 @@ const wrapError =
     }
   };
 
-const dateTimeFromParsedValues = (parsed: TokenParsedValue, opts: ParsingOptions): DateTime => {
+const dateTimeFromParsedValues = (parsed: TokenParseValue, opts: ParseOpts): DateTime => {
   let calendar: Calendar<any>;
   let obj: object;
 
@@ -87,27 +86,24 @@ const dateTimeFromParsedValues = (parsed: TokenParsedValue, opts: ParsingOptions
   return setZone(targetZone)(dt);
 };
 
-export const fromISO = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
-  fromRegexParse(parseISODateTime(input), opts);
+export const fromISO = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);
 
 export const tryFromISO = wrapError(fromISO);
 
-export const fromRFC2822 = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
-  fromRegexParse(parseRFC2822(input), opts);
+export const fromRFC2822 = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseRFC2822(input), opts);
 
 export const tryFromRFC2822 = wrapError(fromRFC2822);
 
-export const fromHTTP = (input: string, opts: GeneralParsingOpts = {}): DateTime =>
-  fromRegexParse(parseHTTPDate(input), opts);
+export const fromHTTP = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseHTTPDate(input), opts);
 
 export const tryFromHTTP = wrapError(fromHTTP);
 
 export const fromFormatExplain = (
   input: string,
   format: string,
-  firstArg?: FormatFirstArg<TokenParsingOpts>,
-  secondArg?: FormatSecondArg<TokenParsingOpts>
-): TokenParsingSummary => {
+  firstArg?: FormatFirstArg<TokenParseOpts>,
+  secondArg?: FormatSecondArg<TokenParseOpts>
+): TokenParseSummary => {
   const parsingOpts = getFormattingOpts(firstArg, secondArg);
   return parseFromFormat(input, format, parsingOpts);
 };
@@ -115,8 +111,8 @@ export const fromFormatExplain = (
 export const fromFormat = (
   input: string,
   format: string,
-  firstArg?: FormatFirstArg<TokenParsingOpts>,
-  secondArg?: FormatSecondArg<TokenParsingOpts>
+  firstArg?: FormatFirstArg<TokenParseOpts>,
+  secondArg?: FormatSecondArg<TokenParseOpts>
 ): DateTime => {
   const parsingOpts = getFormattingOpts(firstArg, secondArg);
   const summary = fromFormatExplain(input, format, parsingOpts);

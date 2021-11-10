@@ -3,7 +3,7 @@ import { getNowFn, getDefaultZone } from "../settings";
 import { fromObject, hasInvalidTimeData } from "./time";
 import { InvalidArgumentError, UnitOutOfRangeError } from "../errors";
 import { gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
-import { isNumber } from "./util/typeCheck";
+import { isNumber, isUndefined } from "./util/typeCheck";
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
 
@@ -87,19 +87,20 @@ export const fromCalendar = <TDate extends object>(
   return new DateTimeImpl(ts, zoneToUse, gregorianFinal, timeFinal, finalOffset, calMap);
 };
 
-export const alter = (dt: DateTime, ts: number, zone: Zone, offset?: number): DateTime => {
-  let calendarValues: Map<string, any>, gregorian: GregorianDate, time: Time, newOffset: number;
-  if (ts === dt.ts && zone.equals(dt.zone)) {
-    newOffset = dt.offset;
-    gregorian = dt.gregorian;
-    time = dt.time;
-    calendarValues = dt.calendarDates;
-  } else {
-    newOffset = offset || zone.offset(ts);
-    [gregorian, time] = tsToGregorian(ts, newOffset);
-    calendarValues = new Map<string, any>();
+export const alter = (ts: number, zone?: Zone, offset?: number): (dt: DateTime) => DateTime => {
+  return (dt) => {
+    if (isUndefined(zone)) {
+      zone = dt.zone;
+    }
+    if (ts === dt.ts && zone.equals(dt.zone)) {
+      return dt;
+    } else {
+      const newOffset = offset || zone.offset(ts);
+      const [gregorian, time] = tsToGregorian(ts, newOffset);
+      const calendarValues = new Map<string, any>();
+      return new DateTimeImpl(ts, zone, gregorian, time, newOffset, calendarValues);
+    }
   }
-  return new DateTimeImpl(ts, zone, gregorian, time, newOffset, calendarValues);
 };
 
 export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: Calendar<TDate>): TDate => {
@@ -114,22 +115,22 @@ export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: C
 };
 
 export const set = <TDate extends object>(
-  dt: DateTime,
   calendar: Calendar<TDate>,
   obj: Partial<TDate & Time>,
   adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time
-): DateTime => {
-  const current = getCalendarValue(dt, calendar);
-  let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
+): (dt: DateTime) => DateTime =>
+  (dt) => {
+    const current = getCalendarValue(dt, calendar);
+    let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
 
-  if (adjust) {
-    mixed = adjust(obj, mixed);
-  }
+    if (adjust) {
+      mixed = adjust(obj, mixed);
+    }
 
-  const gregorian = calendar.toGregorian(mixed);
+    const gregorian = calendar.toGregorian(mixed);
 
-  const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
-  return alter(dt, ts, dt.zone, o);
+    const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
+    return alter(ts, dt.zone, o)(dt);
 };
 
 export const MAX_DATE = 8.64e15;

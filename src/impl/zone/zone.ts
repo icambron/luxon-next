@@ -1,5 +1,6 @@
 import { InvalidArgumentError } from "../../errors";
 import { padStart } from "../util/string";
+import { OffsetFormatWidth } from "../../types";
 
 /**
  * Returns whether the provided string identifies a real zone
@@ -32,26 +33,6 @@ export const isValidIANASpecifier = (s: string): boolean => {
   return !!(s && ianaRegex.exec(s) !== null);
 };
 
-export function parseZoneInfo(ts: number, offsetFormat?: "long" | "short", locale?: string, timeZone?: string) {
-  const date = new Date(ts);
-  const intlOptions: Intl.DateTimeFormatOptions = {
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone
-  };
-
-  const modified: Intl.DateTimeFormatOptions = { timeZoneName: offsetFormat, ...intlOptions };
-
-  const parsed = new Intl.DateTimeFormat(locale, modified)
-    .formatToParts(date)
-    .find((m) => m.type.toLowerCase() === "timezonename");
-  return parsed ? parsed.value : null;
-}
-
 export function signedOffset(offHourStr: string, offMinuteStr: string) {
   let offHour = parseInt(offHourStr, 10);
 
@@ -65,13 +46,13 @@ export function signedOffset(offHourStr: string, offMinuteStr: string) {
   return offHour * 60 + offMinSigned;
 }
 
-export function formatOffset(offset: number, format: "narrow" | "short" | "techie") {
-  const hours = Math.trunc(Math.abs(offset / 60)),
-    minutes = Math.trunc(Math.abs(offset % 60)),
-    sign = offset >= 0 ? "+" : "-";
+export function formatNumericOffset(offset: number, format: OffsetFormatWidth) {
+  const hours = Math.trunc(Math.abs(offset / 60));
+  const minutes = Math.trunc(Math.abs(offset % 60));
+  const sign = offset >= 0 ? "+" : "-";
 
   switch (format) {
-    case "short":
+    case "standard":
       return `${sign}${padStart(hours, 2)}:${padStart(minutes, 2)}`;
     case "narrow":
       return `${sign}${hours}${minutes > 0 ? `:${minutes}` : ""}`;

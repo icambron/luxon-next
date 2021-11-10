@@ -1,5 +1,5 @@
 import { Zone } from "../../types";
-import { formatOffset, signedOffset } from "./zone";
+import { formatNumericOffset, signedOffset } from "./zone";
 
 class FixedOffsetZone implements Zone {
   private readonly _fixed: number;
@@ -14,7 +14,7 @@ class FixedOffsetZone implements Zone {
   }
 
   get name() {
-    return this._fixed === 0 ? "UTC" : `UTC${formatOffset(this._fixed, "narrow")}`;
+    return this._fixed === 0 ? "UTC" : `UTC${formatNumericOffset(this._fixed, "narrow")}`;
   }
 
   get isUniversal() {

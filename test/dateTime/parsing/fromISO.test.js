@@ -1,4 +1,4 @@
-import { fromISO, simpleParsingOptions } from "../../../src/dateTime/parse";
+import { fromISO, simpleParseOpts } from "../../../src/dateTime/parse";
 import { now, offset, toGregorian, zoneName } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 import { UnitOutOfRangeError } from "../../../src/errors";
@@ -153,7 +153,7 @@ test("fromISO()'s interpretationZone and targetZone can work in combination", ()
 });
 
 test("fromISO() accepts a simpleParingOptions that sets both target and interpretation zones", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123", simpleParsingOptions("utc+6"));
+  const dt = fromISO("2016-05-25T09:08:34.123", simpleParseOpts("utc+6"));
   expect(offset(dt)).toEqual(6 * 60);
   expect(dt |> toGregorian()).toEqual({
     year: 2016,

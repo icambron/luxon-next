@@ -1,127 +1,46 @@
-import { getDefaultFormat } from "../settings";
-import { dateTimeFormat, getFormattingOpts } from "../impl/util/format";
+import { dateTimeFormat } from "../impl/util/formatUtil";
 import * as presets from "../impl/formatting/presets";
-import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
+import { extractMonth, listMonths as listMonthsInternal } from "../impl/formatting/months";
+import { extractMeridiem, listMeridiems as listMeridiemsInternal } from "../impl/formatting/meridiems";
+import { extractWeekday, listWeekdays as listWeekdaysInternal } from "../impl/formatting/weekdays";
+import { extractEra, listEras as listErasInternal } from "../impl/formatting/eras";
+import { NamedOffsetFormatOpts, NumericOffsetFormatWidth, OffsetFormatOpts } from "../types";
+import { formatNumericOffset } from "../impl/zone/zone";
+import { extractNamedOffset } from "../impl/formatting/namedOffset";
 import {
-  formatMeridiem as formatMeridiemInternal,
-  listMeridiems as listMeridiemsInternal,
-} from "../impl/formatting/meridiems";
-import {
-  formatWeekday as formatWeekdayInternal,
-  listWeekdays as listWeekdaysInternal,
-} from "../impl/formatting/weekdays";
-import { formatEra as formatErasInternal, listEras as listErasInternal } from "../impl/formatting/eras";
-import {
-  Zone,
-  DateTime,
-  EraFormatOpts,
-  FormatFirstArg,
-  FormatSecondArg,
-  GeneralFormattingOpts,
-  MeridiemFormatOpts,
-  MonthFormatOpts,
-  WeekdayFormatOpts,
-} from "../types";
+  makeCombinedItemFormatter,
+  makeDirectFormatter,
+  makeItemFormatter,
+  makeOptReader,
+  toJs,
+  WithDt,
+} from "../impl/formatting/combinators";
 
-export const toLocaleString = (
-  firstArg?: FormatFirstArg<GeneralFormattingOpts>,
-  secondArg?: FormatSecondArg<GeneralFormattingOpts>
-): ((dt: DateTime) => string) =>
-  withFormatting<string>(firstArg, secondArg, (loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
+export const toLocaleString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
+export const toLocaleDateString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
+export const toLocaleTimeString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleTimeString(loc, fmt));
 
-export const toLocaleParts = (
-  firstArg?: FormatFirstArg<GeneralFormattingOpts>,
-  secondArg?: FormatSecondArg<GeneralFormattingOpts>
-): ((dt: DateTime) => Intl.DateTimeFormatPart[]) =>
-  withDtf<Intl.DateTimeFormatPart[]>(firstArg, secondArg, (dtf) => (jsDate) => dtf.formatToParts(jsDate));
+export const toLocaleParts = makeCombinedItemFormatter(
+  (opts) => (jsDate, zone) => dateTimeFormat(opts, zone).formatToParts(jsDate)
+);
 
-export const toLocaleDateString = (
-  firstArg?: FormatFirstArg<GeneralFormattingOpts>,
-  format?: Intl.DateTimeFormatOptions
-): ((dt: DateTime) => string) =>
-  withFormatting<string>(firstArg, format, (loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
+export const formatMonth = makeItemFormatter(extractMonth);
+export const formatWeekday = makeItemFormatter(extractWeekday);
+export const formatMeridiem = makeItemFormatter(extractMeridiem);
+export const formatEra = makeItemFormatter(extractEra);
 
-export const toLocaleTimeString = (
-  firstArg?: FormatFirstArg<GeneralFormattingOpts>,
-  secondArg?: FormatSecondArg<GeneralFormattingOpts>
-): ((dt: DateTime) => string) =>
-  withFormatting<string>(firstArg, secondArg, (loc, fmt) => (jsDate) => jsDate.toLocaleTimeString(loc, fmt));
+export const formatOffset = makeOptReader<OffsetFormatOpts, WithDt<string>>((opts) => {
+  const width = opts.width || "short";
+  return width === "short" || width === "long"
+    ? toJs(extractNamedOffset(opts as NamedOffsetFormatOpts))
+    : (dt) => formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth)
+  });
 
-export const formatMonth =
-  (
-    firstArg?: FormatFirstArg<MonthFormatOpts>,
-    secondArg?: FormatSecondArg<MonthFormatOpts>
-  ): ((dt: DateTime) => string) =>
-  (dt) =>
-    formatMonthInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
-
-export const formatWeekday =
-  (
-    firstArg?: FormatFirstArg<WeekdayFormatOpts>,
-    secondArg?: FormatSecondArg<WeekdayFormatOpts>
-  ): ((dt: DateTime) => string) =>
-  (dt) =>
-    formatWeekdayInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
-
-export const formatMeridiem =
-  (
-    firstArg?: FormatFirstArg<MeridiemFormatOpts>,
-    secondArg?: FormatSecondArg<MeridiemFormatOpts>
-  ): ((dt: DateTime) => string) =>
-  (dt) =>
-    formatMeridiemInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
-
-export const formatEra =
-  (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): ((dt: DateTime) => string) =>
-  (dt) =>
-    formatErasInternal(firstArg, secondArg)(new Date(+dt), dt.zone);
-
-export const listMonths = listMonthsInternal;
-export const listWeekdays = listWeekdaysInternal;
-export const listMeridiems = listMeridiemsInternal;
-
+export const listMonths = makeOptReader(listMonthsInternal);
+export const listWeekdays = makeOptReader(listWeekdaysInternal);
+export const listMeridiems = makeOptReader(listMeridiemsInternal);
 // note this doesn't support Japanese eras
-export const listEras = listErasInternal;
-
-const combineWithDefaultFormat = (formatOpts: GeneralFormattingOpts): GeneralFormattingOpts => {
-  const { locale, calendar, numberingSystem, ...rest } = formatOpts;
-  return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultFormat() } : formatOpts;
-};
-
-const withFormatting = <T>(
-  firstArg: FormatFirstArg<GeneralFormattingOpts>,
-  secondArg: FormatSecondArg<GeneralFormattingOpts>,
-  f: Formatter<T>
-): ((dt: DateTime) => T) =>
-  toJs<T>((d, zone) => {
-    let formatOpts = getFormattingOpts(firstArg, secondArg);
-    formatOpts = combineWithDefaultFormat(formatOpts);
-    return f(formatOpts.locale, formatOpts)(d, zone);
-  });
-
-type Formatter<T> = (
-  locale: string | undefined,
-  opts: Intl.DateTimeFormatOptions | undefined
-) => (jsDate: Date, zone: Zone) => T;
-
-const toJs =
-  <T>(f: (jsDate: Date, zone: Zone) => T): ((dt: DateTime) => T) =>
-  (dt) =>
-    f(new Date(+dt), dt.zone);
-
-const withDtf = <T>(
-  firstArg: FormatFirstArg<GeneralFormattingOpts>,
-  secondArg: FormatSecondArg<GeneralFormattingOpts>,
-  f: DtFer<T>
-): ((dt: DateTime) => T) =>
-  toJs<T>((d, zone) => {
-    let formatOpts = getFormattingOpts(firstArg, secondArg);
-    formatOpts = combineWithDefaultFormat(formatOpts);
-    const dtf = dateTimeFormat(formatOpts, zone);
-    return f(dtf)(d, zone);
-  });
-
-type DtFer<T> = (dtf: Intl.DateTimeFormat) => (jsDate: Date, zone: Zone) => T;
+export const listEras = makeOptReader(listErasInternal);
 
 // todo - revisit these
 export const DATE_SHORT = presets.DATE_SHORT;

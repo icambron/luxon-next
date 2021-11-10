@@ -1,4 +1,4 @@
-import { fromRFC2822, simpleParsingOptions } from "../../../src/dateTime/parse";
+import { fromRFC2822, simpleParseOpts } from "../../../src/dateTime/parse";
 import { day, offset, toGregorian, zone } from "../../../src/dateTime/core";
 import { toUTC } from "../../../src/dateTime/zone";
 
@@ -101,7 +101,7 @@ test("fromRFC2822() uses -0000 to indicate that the zone is unknown", () => {
     millisecond: 0,
   });
 
-  dt = fromRFC2822("01 Nov 2016 13:23:12 -0000", simpleParsingOptions("utc"));
+  dt = fromRFC2822("01 Nov 2016 13:23:12 -0000", simpleParseOpts("utc"));
   expect(zone(dt).type).toBe("fixed");
   expect(offset(dt)).toEqual(0);
   expect(dt |> toGregorian()).toEqual({

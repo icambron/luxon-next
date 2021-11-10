@@ -1,32 +1,16 @@
-import { dateTimeFormat, extract, getFormattingOpts } from "../util/format";
+import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
-import { Zone, EraFormatOpts, FormatFirstArg, FormatSecondArg } from "../../types";
+import { Zone, EraFormatOpts} from "../../types";
 
-export const formatEra = (
-  firstArg?: FormatFirstArg<EraFormatOpts>,
-  secondArg?: FormatSecondArg<EraFormatOpts>
-): ((date: Date, zone: Zone) => string) => {
-  const formatOpts = getFormattingOpts<EraFormatOpts>(firstArg, secondArg);
-  return (date, zone) => formatEraMemo(formatOpts)(date, zone);
-};
-
-export const listEras = (
-  firstArg?: FormatFirstArg<EraFormatOpts>,
-  secondArg?: FormatSecondArg<EraFormatOpts>
-): string[] => {
-  const formatOpts = getFormattingOpts<EraFormatOpts>(firstArg, secondArg);
-  return listErasMemo(formatOpts);
-};
-
-const formatEraMemo =
+export const extractEra =
   (formatOpts: EraFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = eraDtf(formatOpts, zone);
     return extract(d, dtf, "era");
   };
 
-const listErasMemo = memo("eraList", (formatOpts: EraFormatOpts) => {
+export const listEras = memo("eraList", (formatOpts: EraFormatOpts) => {
   const dtf = eraDtf(formatOpts, utcInstance);
 
   // @ts-ignore
