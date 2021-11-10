@@ -395,18 +395,18 @@ test("toFormat('TT') returns a medium 24-hour time representation", () => {
 
 test("toFormat('ttt') returns a medium time representation", () => {
   // these seem to fail on Travis
-  // expect(dt.toFormat('ttt')).toBe('9:23:54 AM GMT');
-  // expect(dt.setGregorian({ hour: 13 }).toFormat('ttt')).toBe('1:23:54 PM GMT');
-  // expect(dt.reconfigure({ locale: 'fr' }).toFormat('ttt')).toBe('09:23:54 UTC');
-  // expect(dt.setGregorian({ hour: 13 }).reconfigure({ locale: 'fr' }).toFormat('ttt')).toBe('13:23:54 UTC');
+  expect(dt |> toFormat('ttt')).toBe('9:23:54 AM UTC');
+  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('ttt')).toBe('1:23:54 PM UTC');
+  expect(dt |> toFormat('ttt', { locale: 'fr' })).toBe('9:23:54 UTC');
+  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('ttt', { locale: 'fr' })).toBe('13:23:54 UTC');
 });
 
 test("toFormat('TTT') returns a medium time representation", () => {
   // these seem to fail on Travis
-  // expect(dt.toFormat('TTT')).toBe('09:23:54 GMT');
-  // expect(dt.setGregorian({ hour: 13 }).toFormat('TTT')).toBe('13:23:54 GMT');
-  // expect(dt.reconfigure({locale: 'fr' }).toFormat('TTT')).toBe('09:23:54 UTC');
-  // expect(dt.setGregorian({hour: 13 }).reconfigure({ locale: 'fr' }).toFormat('TTT')).toBe('13:23:54 UTC');
+  expect(dt |> toFormat('TTT')).toBe('09:23:54 UTC');
+  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('TTT')).toBe('13:23:54 UTC');
+  expect(dt |> toFormat('TTT', {locale: 'fr' })).toBe('9:23:54 UTC');
+  expect(dt |> setGregorian({hour: 13 }) |> toFormat('TTT', { locale: 'fr' })).toBe('13:23:54 UTC');
 });
 
 test("toFormat('f') returns a short date/time representation without seconds", () => {
