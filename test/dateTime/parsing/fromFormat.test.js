@@ -533,3 +533,83 @@ test("fromFormat containing special regex token", () => {
   expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd[T]HH-mm[t]z[t]")).not.toThrow();
   expect(() => fromFormat("2019-01-14T11-30\tIndian/Maldives\t", "yyyy-MM-dd[T]HH-mm[t]z[t]")).toThrow();
 });
+
+test("fromFormat prefers z over ZZ", () => {
+  const ianaFormat = "yyyy-MM-dd[T]HH-mmZZ\\[z\\]";
+  const dt = fromFormat("2019-01-14T11-30+1:00[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
+  expect(dt |> zoneName).toBe("Indian/Maldives");
+
+  expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
+  expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd[T]HH-mm[t]z[t]")).not.toThrow();
+  expect(() => fromFormat("2019-01-14T11-30\tIndian/Maldives\t", "yyyy-MM-dd[T]HH-mm[t]z[t]")).toThrow();
+});
+
+
+test("fromFormat() ignores numerical offsets when they conflict with the zone", () => {
+  // +11:00 is not a valid offset for the Australia/Perth time zone
+  const i = fromFormat(
+    "2021-11-12T09:07:13.000+11:00[Australia/Perth]",
+    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
+    { useTargetZoneFromInput: true }
+  );
+  expect(i |> year).toBe(2021);
+  expect(i |> month).toBe(11);
+  expect(i |> day).toBe(12);
+  expect(i |> hour).toBe(9);
+  expect(i |> minute).toBe(7);
+  expect(i |> second).toBe(13);
+  expect(i |> millisecond).toBe(0);
+  expect(i |> offset).toBe(480); //+08:00
+  expect(i |> zoneName).toBe("Australia/Perth");
+});
+
+test("fromFormat() ignores numerical offsets when they are are wrong right now", () => {
+  // DST is not in effect at this timestamp, so +10:00 is the correct offset
+  const i = fromFormat(
+    "2021-10-03T01:30:00.000+11:00[Australia/Sydney]",
+    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
+    { useTargetZoneFromInput: true }
+  );
+  expect(i |> year).toBe(2021);
+  expect(i |> month).toBe(10);
+  expect(i |> day).toBe(3);
+  expect(i |> hour).toBe(1);
+  expect(i |> minute).toBe(30);
+  expect(i |> second).toBe(0);
+  expect(i |> millisecond).toBe(0);
+  expect(i |> offset).toBe(600); //+10:00
+  expect(i |> zoneName).toBe("Australia/Sydney");
+});
+
+test("fromFormat() maintains offset that belongs to time zone during overlap", () => {
+  // On this day, 02:30 exists for both offsets, due to DST ending.
+  let i = fromFormat(
+    "2021-04-04T02:30:00.000+11:00[Australia/Sydney]",
+    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
+    { useTargetZoneFromInput: true }
+  );
+  expect(i |> year).toBe(2021);
+  expect(i |> month).toBe(4);
+  expect(i |> day).toBe(4);
+  expect(i |> hour).toBe(2);
+  expect(i |> minute).toBe(30);
+  expect(i |> second).toBe(0);
+  expect(i |> millisecond).toBe(0);
+  expect(i |> offset).toBe(660); //+11:00
+  expect(i |> zoneName).toBe("Australia/Sydney");
+
+  i = fromFormat(
+    "2021-04-04T02:30:00.000+10:00[Australia/Sydney]",
+    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
+    { useTargetZoneFromInput: true }
+  );
+  expect(i |> year).toBe(2021);
+  expect(i |> month).toBe(4);
+  expect(i |> day).toBe(4);
+  expect(i |> hour).toBe(2);
+  expect(i |> minute).toBe(30);
+  expect(i |> second).toBe(0);
+  expect(i |> millisecond).toBe(0);
+  expect(i |> offset).toBe(600); //+10:00
+  expect(i |> zoneName).toBe("Australia/Sydney");
+});

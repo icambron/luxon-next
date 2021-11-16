@@ -18,7 +18,7 @@ import {
   TokenParsedField,
   TokenParseFields,
   TokenParseValue, TokenParseOpts,
-  TokenParseSummary
+  TokenParseSummary, TokenFormatOpts
 } from "../../types";
 import { signedOffset } from "../zone/zone";
 
@@ -251,10 +251,10 @@ const partTypeStyleToTokenVal: PartToStyle = {
   },
 };
 
-function tokenForPart(part: Intl.DateTimeFormatPart, formatOps: Intl.DateTimeFormatOptions) {
+function tokenForPart(part: Intl.DateTimeFormatPart, formatOps: Intl.DateTimeFormatOptions): FormatToken | undefined {
   const { type, value } = part;
 
-  if (type === "literal") return { literal: true, val: value };
+  if (type === "literal") return { literal: true, name: value };
 
   let val = partTypeStyleToTokenVal[type];
   if (!isUndefined(val)) {
@@ -263,7 +263,7 @@ function tokenForPart(part: Intl.DateTimeFormatPart, formatOps: Intl.DateTimeFor
     const specific = val[style] || val["*"];
 
     if (specific) {
-      return { literal: false, val };
+      return { literal: false, name: value };
     }
   }
 
@@ -290,24 +290,35 @@ const deserialize = (matches: RegExpMatchArray, handlers: TokenParsingUnit[]): T
   return fields;
 };
 
-const zoneForMatch = (fields: TokenParseFields): Zone | undefined  => {
-  if (!isUndefined(fields.Z)) {
-    return fixedOffsetZone(fields.Z);
-  } else if (!isUndefined(fields.z)) {
-    return ianaZone(fields.z);
-  } else {
-    return undefined;
+const zoneForMatch = (fields: TokenParseFields): [Zone | undefined, number | undefined] => {
+
+  let zone = undefined;
+  let specificOffset = undefined;
+
+  if (!isUndefined(fields.z)) {
+    zone = ianaZone(fields.z);
   }
+
+  if (!isUndefined(fields.Z)) {
+    if (!zone) {
+      zone = fixedOffsetZone(fields.Z);
+    }
+    specificOffset = fields.Z;
+  }
+
+  return [zone, specificOffset];
 }
 
 const valsForFields = (fields: TokenParseFields): TokenParseValue => {
+  const [zone, knownOffset] = zoneForMatch(fields);
+
   const parsed: TokenParseValue = {
     gregorian: {},
     week: {},
-    time: {}
+    time: {},
+    zone,
+    knownOffset
   }
-
-  parsed.zone = zoneForMatch(fields);
 
   // gregorian
   parsed.gregorian.year = fields.G === 0 && fields.y ? -fields.y : fields.y;
@@ -365,32 +376,32 @@ const getDummyDateTime = (): Date => {
   return dummyDateTimeCache;
 };
 
-const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts) => {
+const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts): FormatToken[] => {
   if (token.literal) {
-    return token;
+    return [token];
   }
 
   const formatOpts = macroTokens[token.name as MacroToken];
   if (!formatOpts) {
     // not actually a macro token
-    return token;
+    return [token];
   }
 
-  const formatter = dateTimeFormat(parsingOpts.locale, undefined, formatOpts);
+  const formatter = dateTimeFormat({ ...parsingOpts, ...formatOpts });
 
   const parts = formatter.formatToParts(getDummyDateTime());
 
   const tokens = parts.map((p) => tokenForPart(p, formatOpts));
 
   if (tokens.includes(undefined)) {
-    return token;
+    return [token];
   }
 
-  return tokens;
+  return tokens as FormatToken[];
 };
 
-const expandMacroTokens = (tokens: FormatToken[], parsingOpts: TokenParseOpts) : FormatToken[] =>
-  Array.prototype.concat(...tokens.map((t) => maybeExpandMacroToken(t, parsingOpts)));
+const expandMacroTokens = (tokens: FormatToken[], parsingOpts: TokenFormatOpts) : FormatToken[] =>
+  Array.prototype.concat(...tokens.map(t => maybeExpandMacroToken(t, parsingOpts)));
 
 /**
  * @private

@@ -114,8 +114,6 @@ export interface DateTime {
   equals(other: any): boolean;
 }
 
-// UNITS
-
 // DURATION
 export type MiscDurationUnit = "week" | "quarter";
 export type MiscDurationUnitPlural = "weeks" | "quarters";
@@ -150,9 +148,13 @@ export interface SharedFormatOpts {
   numberingSystem?: string;
 }
 
-
-
 export interface FormatOpts extends SharedFormatOpts, Intl.DateTimeFormatOptions {
+}
+
+export interface TokenFormatOpts extends SharedFormatOpts {
+  forceSimple?: boolean,
+  allowZ?: boolean,
+  calendar?: string
 }
 
 export interface MonthFormatOpts extends FormatOpts {
@@ -206,6 +208,7 @@ export interface TokenParseValue {
   time: Partial<Time>;
   ordinal?: number;
   zone?: Zone;
+  knownOffset?: number;
 }
 
 export type TokenParsedField =

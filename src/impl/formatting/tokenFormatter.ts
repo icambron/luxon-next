@@ -16,11 +16,10 @@ import {
   FormatToken,
   MeridiemFormatOpts,
   MonthFormatOpts,
-  OffsetFormatWidth, TimeUnit,
+  OffsetFormatWidth, TimeUnit, TokenFormatOpts,
   WeekdayFormatOpts
 } from "../../types";
 import { MacroToken, macroTokens } from "./presets";
-import { TokenFormatOpts } from "../../types/types";
 import { getCalendarValue } from "../dateTime";
 import { ordinalInstance } from "../calendars/ordinal";
 import { gregorianInstance } from "../calendars/gregorian";

@@ -29,8 +29,8 @@ const fillInDefaults = <T extends object>(
   return [result, foundFirst];
 };
 
-const quick = (ts: number, zone: Zone): [GregorianDate, Time, number] => {
-  const offset = zone.offset(ts);
+const quick = (ts: number, zone: Zone, knownOffset?: number): [GregorianDate, Time, number] => {
+  const offset = isUndefined(knownOffset) ? zone.offset(ts) : knownOffset;
   return [...tsToGregorian(ts, offset), offset];
 };
 
@@ -47,12 +47,13 @@ export const fromMillis = (ts: number, zone?: Zone): DateTime => {
 export const fromCalendar = <TDate extends object>(
   calendar: Calendar<TDate>,
   o: Partial<TDate & Time>,
-  zone?: Zone
+  zone?: Zone,
+  knownOffset?: number
 ): DateTime => {
   const zoneToUse = zone || getDefaultZone();
   const tsNow = getNowFn()();
   // sub in the defaults
-  const [gregorNow, timeNow, offsetProvis] = quick(tsNow, zoneToUse);
+  const [gregorNow, timeNow, offsetProvis] = quick(tsNow, zoneToUse, knownOffset);
   const calendarNow = calendar.fromGregorian(gregorNow);
 
   let [date, found] = fillInDefaults<TDate>(calendar.defaultValues, calendarNow, calendar.fromObject(o));

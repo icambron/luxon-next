@@ -82,7 +82,7 @@ const dateTimeFromParsedValues = (parsed: TokenParseValue, opts: ParseOpts): Dat
     obj = parsed.gregorian;
   }
 
-  const dt = fromCalendar(calendar, { ...obj, ...parsed.time }, interpretationZone);
+  const dt = fromCalendar(calendar, { ...obj, ...parsed.time }, interpretationZone, parsed.knownOffset);
   return setZone(targetZone)(dt);
 };
 
