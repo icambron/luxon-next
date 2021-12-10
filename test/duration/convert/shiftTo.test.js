@@ -79,3 +79,10 @@ test("shiftTo does not normalize values", () => {
     days: 400,
   });
 });
+
+test("shiftTo boils hours down to hours and minutes", () => {
+  expect(durFromValues({ hours: 2.4 }) |> durShiftTo(["hours", "minutes"]) |> durValues).toEqual({
+    hours: 2,
+    minutes: 24
+  });
+});
