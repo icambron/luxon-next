@@ -1,8 +1,13 @@
-import { fromGregorian, setGregorian } from "../../../src/dateTime/core";
-import { setZone, toFixedOffset, toUTC } from "../../../src/dateTime/zone";
-import { toFormat } from "../../../src/dateTime/format";
-import { setISOWeek } from "../../../src/dateTime/isoWeek";
-import { plus } from "../../../src/dateTime/math";
+import {
+  fromGregorian,
+  setGregorian,
+  setZone,
+  toFixedOffset,
+  toUTC,
+  toFormat,
+  setISOWeek,
+  plus,
+} from "../../../src/luxon";
 
 const dt = fromGregorian(
   {
@@ -211,7 +216,7 @@ test("toFormat('MM' || 'LL') return the padded month number", () => {
 
 test("toFormat('MMM') returns the short format month name", () => {
   expect(toFormat(dt, "MMM")).toBe("May");
-  expect(toFormat(dt, "MMM", { locale: "de"})).toBe("Mai");
+  expect(toFormat(dt, "MMM", { locale: "de" })).toBe("Mai");
   expect(toFormat(setGregorian(dt, { month: 8 }), "MMM")).toBe("Aug");
 });
 
@@ -334,56 +339,52 @@ test("toFormat('qq') returns a padded quarter", () => {
   expect(toFormat(setGregorian(dt, { month: 2 }), "qq")).toBe("01");
 });
 
- test("toFormat('D') returns a short date representation", () => {
-   expect(toFormat(dt, "D")).toBe("5/25/1982");
-   expect(toFormat(dt, "D", { locale: "fr" })).toBe("25/05/1982");
- });
+test("toFormat('D') returns a short date representation", () => {
+  expect(toFormat(dt, "D")).toBe("5/25/1982");
+  expect(toFormat(dt, "D", { locale: "fr" })).toBe("25/05/1982");
+});
 
- test("toFormat('DD') returns a medium date representation", () => {
-   expect(toFormat(dt, "DD")).toBe("May 25, 1982");
-   expect(toFormat(setGregorian(dt, { month: 8 }), "DD")).toBe("Aug 25, 1982");
-   expect(toFormat(dt, "DD", { locale: "fr" })).toBe("25 mai 1982");
-   expect(toFormat(setGregorian(dt, { month: 2 }), "DD", { locale: "fr" })).toBe("25 févr. 1982");
- });
+test("toFormat('DD') returns a medium date representation", () => {
+  expect(toFormat(dt, "DD")).toBe("May 25, 1982");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "DD")).toBe("Aug 25, 1982");
+  expect(toFormat(dt, "DD", { locale: "fr" })).toBe("25 mai 1982");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "DD", { locale: "fr" })).toBe("25 févr. 1982");
+});
 
- test("toFormat('DDD') returns a long date representation", () => {
-   expect(toFormat(dt, "DDD")).toBe("May 25, 1982");
-   expect(toFormat(setGregorian(dt, { month: 8 }), "DDD")).toBe("August 25, 1982");
-   expect(toFormat(dt, "DDD", { locale: "fr" })).toBe("25 mai 1982");
-   expect(toFormat(setGregorian(dt, { month: 2 }), "DDD", { locale: "fr" })).toBe(
-     "25 février 1982"
-   );
- });
+test("toFormat('DDD') returns a long date representation", () => {
+  expect(toFormat(dt, "DDD")).toBe("May 25, 1982");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "DDD")).toBe("August 25, 1982");
+  expect(toFormat(dt, "DDD", { locale: "fr" })).toBe("25 mai 1982");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "DDD", { locale: "fr" })).toBe("25 février 1982");
+});
 
- test("toFormat('DDDD') returns a long date representation", () => {
-   expect(toFormat(dt, "DDDD")).toBe("Tuesday, May 25, 1982");
-   expect(toFormat(setGregorian(dt, { month: 8 }), "DDDD")).toBe("Wednesday, August 25, 1982");
-   expect(toFormat(dt, "DDDD", { locale: "fr" })).toBe("mardi 25 mai 1982");
-   expect(toFormat(setGregorian(dt, { month: 2 }), "DDDD", { locale: "fr" })).toBe(
-     "jeudi 25 février 1982"
-   );
- });
+test("toFormat('DDDD') returns a long date representation", () => {
+  expect(toFormat(dt, "DDDD")).toBe("Tuesday, May 25, 1982");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "DDDD")).toBe("Wednesday, August 25, 1982");
+  expect(toFormat(dt, "DDDD", { locale: "fr" })).toBe("mardi 25 mai 1982");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "DDDD", { locale: "fr" })).toBe("jeudi 25 février 1982");
+});
 
- test("toFormat('t') returns a short time representation", () => {
-   expect(toFormat(dt, "t")).toBe("9:23 AM");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "t")).toBe("1:23 PM");
-   expect(toFormat(dt, "t", { locale: "fr" })).toBe("09:23");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "t", { locale: "fr" })).toBe("13:23");
- });
+test("toFormat('t') returns a short time representation", () => {
+  expect(toFormat(dt, "t")).toBe("9:23 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "t")).toBe("1:23 PM");
+  expect(toFormat(dt, "t", { locale: "fr" })).toBe("09:23");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "t", { locale: "fr" })).toBe("13:23");
+});
 
- test("toFormat('T') returns a short 24-hour time representation", () => {
-   expect(toFormat(dt, "T")).toBe("09:23");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "T")).toBe("13:23");
-   expect(toFormat(dt, "T", { locale: "fr" })).toBe("09:23");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "T", { locale: "fr" })).toBe("13:23");
- });
+test("toFormat('T') returns a short 24-hour time representation", () => {
+  expect(toFormat(dt, "T")).toBe("09:23");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "T")).toBe("13:23");
+  expect(toFormat(dt, "T", { locale: "fr" })).toBe("09:23");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "T", { locale: "fr" })).toBe("13:23");
+});
 
- test("toFormat('tt') returns a medium time representation", () => {
-   expect(toFormat(dt, "tt")).toBe("9:23:54 AM");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "tt")).toBe("1:23:54 PM");
-   expect(toFormat(dt, "tt", { locale: "fr" })).toBe("09:23:54");
-   expect(toFormat(setGregorian(dt, { hour: 13 }), "tt", { locale: "fr" })).toBe("13:23:54");
- });
+test("toFormat('tt') returns a medium time representation", () => {
+  expect(toFormat(dt, "tt")).toBe("9:23:54 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "tt")).toBe("1:23:54 PM");
+  expect(toFormat(dt, "tt", { locale: "fr" })).toBe("09:23:54");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "tt", { locale: "fr" })).toBe("13:23:54");
+});
 
 test("toFormat('TT') returns a medium 24-hour time representation", () => {
   expect(toFormat(dt, "TT")).toBe("09:23:54");
@@ -394,27 +395,25 @@ test("toFormat('TT') returns a medium 24-hour time representation", () => {
 
 test("toFormat('ttt') returns a medium time representation", () => {
   // these seem to fail on Travis
-  expect(toFormat(dt, 'ttt')).toBe('9:23:54 AM UTC');
-  expect(toFormat(setGregorian(dt, { hour: 13 }), 'ttt')).toBe('1:23:54 PM UTC');
-  expect(toFormat(dt, 'ttt', { locale: 'fr' })).toBe('9:23:54 UTC');
-  expect(toFormat(setGregorian(dt, { hour: 13 }), 'ttt', { locale: 'fr' })).toBe('13:23:54 UTC');
+  expect(toFormat(dt, "ttt")).toBe("9:23:54 AM UTC");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "ttt")).toBe("1:23:54 PM UTC");
+  expect(toFormat(dt, "ttt", { locale: "fr" })).toBe("9:23:54 UTC");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "ttt", { locale: "fr" })).toBe("13:23:54 UTC");
 });
 
 test("toFormat('TTT') returns a medium time representation", () => {
   // these seem to fail on Travis
-  expect(toFormat(dt, 'TTT')).toBe('09:23:54 UTC');
-  expect(toFormat(setGregorian(dt, { hour: 13 }), 'TTT')).toBe('13:23:54 UTC');
-  expect(toFormat(dt, 'TTT', {locale: 'fr' })).toBe('9:23:54 UTC');
-  expect(toFormat(setGregorian(dt, {hour: 13 }), 'TTT', { locale: 'fr' })).toBe('13:23:54 UTC');
+  expect(toFormat(dt, "TTT")).toBe("09:23:54 UTC");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "TTT")).toBe("13:23:54 UTC");
+  expect(toFormat(dt, "TTT", { locale: "fr" })).toBe("9:23:54 UTC");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "TTT", { locale: "fr" })).toBe("13:23:54 UTC");
 });
 
 test("toFormat('f') returns a short date/time representation without seconds", () => {
   expect(toFormat(dt, "f")).toBe("5/25/1982, 9:23 AM");
   expect(toFormat(setGregorian(dt, { hour: 13 }), "f")).toBe("5/25/1982, 1:23 PM");
   expect(toFormat(dt, "f", { locale: "fr" })).toBe("25/05/1982, 09:23");
-  expect(toFormat(setGregorian(dt, { hour: 13 }), "f", { locale: "fr" })).toBe(
-    "25/05/1982, 13:23"
-  );
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "f", { locale: "fr" })).toBe("25/05/1982, 13:23");
 });
 
 test("toFormat('ff') returns a medium date/time representation without seconds", () => {
@@ -422,12 +421,8 @@ test("toFormat('ff') returns a medium date/time representation without seconds",
   expect(toFormat(setGregorian(dt, { hour: 13 }), "ff")).toBe("May 25, 1982, 1:23 PM");
   expect(toFormat(setGregorian(dt, { month: 8 }), "ff")).toBe("Aug 25, 1982, 9:23 AM");
   expect(toFormat(dt, "ff", { locale: "fr" })).toBe("25 mai 1982, 09:23");
-  expect(toFormat(setGregorian(dt, { month: 2 }), "ff", { locale: "fr" })).toBe(
-    "25 févr. 1982, 09:23"
-  );
-  expect(toFormat(setGregorian(dt, { hour: 13 }), "ff", { locale: "fr" })).toBe(
-    "25 mai 1982, 13:23"
-  );
+  expect(toFormat(setGregorian(dt, { month: 2 }), "ff", { locale: "fr" })).toBe("25 févr. 1982, 09:23");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "ff", { locale: "fr" })).toBe("25 mai 1982, 13:23");
 });
 
 test("toFormat('fff') returns a medium date/time representation without seconds", () => {
@@ -435,25 +430,30 @@ test("toFormat('fff') returns a medium date/time representation without seconds"
   expect(toFormat(setGregorian(ny, { hour: 13 }), "fff")).toBe("May 25, 1982, 1:23 PM EDT");
   expect(toFormat(setGregorian(ny, { month: 8 }), "fff")).toBe("August 25, 1982, 9:23 AM EDT");
   expect(toFormat(ny, "fff", { locale: "fr" })).toBe("25 mai 1982, 09:23 UTC−4");
-  expect(toFormat(setGregorian(ny, { month: 2 }), "fff", { locale: "fr" })).toBe( "25 février 1982, 09:23 UTC−5");
-  expect(toFormat(setGregorian(ny, { hour: 13 }), "fff", { locale: "fr" })).toBe( "25 mai 1982, 13:23 UTC−4");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "fff", { locale: "fr" })).toBe("25 février 1982, 09:23 UTC−5");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "fff", { locale: "fr" })).toBe("25 mai 1982, 13:23 UTC−4");
 });
 
 test("toFormat('ffff') returns a long date/time representation without seconds", () => {
   expect(toFormat(ny, "ffff")).toBe("Tuesday, May 25, 1982, 9:23 AM Eastern Daylight Time");
-  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff")).toBe( "Tuesday, May 25, 1982, 1:23 PM Eastern Daylight Time");
-  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff")).toBe( "Thursday, February 25, 1982, 9:23 AM Eastern Standard Time");
-  expect(toFormat(ny, "ffff", { locale: "fr" })).toBe( "mardi 25 mai 1982, 09:23 heure d’été de l’Est");
-  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff", { locale: "fr" })).toBe( "jeudi 25 février 1982, 09:23 heure normale de l’Est nord-américain");
-  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff", { locale: "fr" })).toBe( "mardi 25 mai 1982, 13:23 heure d’été de l’Est"); });
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff")).toBe("Tuesday, May 25, 1982, 1:23 PM Eastern Daylight Time");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff")).toBe(
+    "Thursday, February 25, 1982, 9:23 AM Eastern Standard Time"
+  );
+  expect(toFormat(ny, "ffff", { locale: "fr" })).toBe("mardi 25 mai 1982, 09:23 heure d’été de l’Est");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff", { locale: "fr" })).toBe(
+    "jeudi 25 février 1982, 09:23 heure normale de l’Est nord-américain"
+  );
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff", { locale: "fr" })).toBe(
+    "mardi 25 mai 1982, 13:23 heure d’été de l’Est"
+  );
+});
 
 test("toFormat('F') returns a short date/time representation with seconds", () => {
   expect(toFormat(dt, "F")).toBe("5/25/1982, 9:23:54 AM");
   expect(toFormat(setGregorian(dt, { hour: 13 }), "F")).toBe("5/25/1982, 1:23:54 PM");
   expect(toFormat(dt, "F", { locale: "fr" })).toBe("25/05/1982, 09:23:54");
-  expect(toFormat(setGregorian(dt, { hour: 13 }), "F", { locale: "fr" })).toBe(
-    "25/05/1982, 13:23:54"
-  );
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "F", { locale: "fr" })).toBe("25/05/1982, 13:23:54");
 });
 
 test("toFormat('FF') returns a medium date/time representation with seconds", () => {
@@ -461,12 +461,8 @@ test("toFormat('FF') returns a medium date/time representation with seconds", ()
   expect(toFormat(setGregorian(dt, { hour: 13 }), "FF")).toBe("May 25, 1982, 1:23:54 PM");
   expect(toFormat(setGregorian(dt, { month: 8 }), "FF")).toBe("Aug 25, 1982, 9:23:54 AM");
   expect(toFormat(dt, "FF", { locale: "fr" })).toBe("25 mai 1982, 09:23:54");
-  expect(toFormat(setGregorian(dt, { month: 2 }), "FF", { locale: "fr" })).toBe(
-    "25 févr. 1982, 09:23:54"
-  );
-  expect(toFormat(setGregorian(dt, { hour: 13 }), "FF", { locale: "fr" })).toBe(
-    "25 mai 1982, 13:23:54"
-  );
+  expect(toFormat(setGregorian(dt, { month: 2 }), "FF", { locale: "fr" })).toBe("25 févr. 1982, 09:23:54");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "FF", { locale: "fr" })).toBe("25 mai 1982, 13:23:54");
 });
 
 test("toFormat('FFF') returns a medium date/time representation without seconds", () => {
@@ -474,12 +470,8 @@ test("toFormat('FFF') returns a medium date/time representation without seconds"
   expect(toFormat(setGregorian(ny, { hour: 13 }), "FFF")).toBe("May 25, 1982, 1:23:54 PM EDT");
   expect(toFormat(setGregorian(ny, { month: 8 }), "FFF")).toBe("August 25, 1982, 9:23:54 AM EDT");
   expect(toFormat(ny, "FFF", { locale: "fr" })).toBe("25 mai 1982, 9:23:54 UTC−4");
-  expect(toFormat(setGregorian(ny, { month: 2 }), "FFF", { locale: "fr" })).toBe(
-    "25 février 1982, 9:23:54 UTC−5"
-  );
-  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFF", { locale: "fr" })).toBe(
-    "25 mai 1982, 13:23:54 UTC−4"
-  );
+  expect(toFormat(setGregorian(ny, { month: 2 }), "FFF", { locale: "fr" })).toBe("25 février 1982, 9:23:54 UTC−5");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFF", { locale: "fr" })).toBe("25 mai 1982, 13:23:54 UTC−4");
 });
 
 test("toFormat('FFFF') returns a long date/time representation without seconds", () => {
@@ -490,9 +482,7 @@ test("toFormat('FFFF') returns a long date/time representation without seconds",
   expect(toFormat(setGregorian(ny, { month: 2 }), "FFFF")).toBe(
     "Thursday, February 25, 1982, 9:23:54 AM Eastern Standard Time"
   );
-  expect(toFormat(ny, "FFFF", { locale: "fr" })).toBe(
-    "mardi 25 mai 1982, 9:23:54 heure d’été de l’Est"
-  );
+  expect(toFormat(ny, "FFFF", { locale: "fr" })).toBe("mardi 25 mai 1982, 9:23:54 heure d’été de l’Est");
   expect(toFormat(setGregorian(ny, { month: 2 }), "FFFF", { locale: "fr" })).toBe(
     "jeudi 25 février 1982, 9:23:54 heure normale de l’Est nord-américain"
   );

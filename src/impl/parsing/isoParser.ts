@@ -4,7 +4,7 @@ import { isoWeekCalendarInstance } from "../calendars/isoWeek";
 import { ordinalInstance } from "../calendars/ordinal";
 import { parseMillis } from "../util/numeric";
 import { fixedOffsetZone } from "../zone/fixedOffset";
-import { signedOffset } from "../zone/zone";
+import { signedOffset } from "../util/zoneUtils";
 
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;
 const isoTimeBaseRegex = /(\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d{1,30}))?)?)?/;

@@ -1,8 +1,7 @@
 /* global test expect */
 
-import { day, fromGregorian, hour, minute, offset, second } from "../../../src/dateTime/core";
+import { day, fromGregorian, hour, minute, offset, second, endOf, minus, plus, startOf } from "../../../src/luxon";
 import { withNow } from "../../helpers";
-import { endOf, minus, plus, startOf } from "../../../src/dateTime/math";
 
 const ny = (year, month, day, hour) => fromGregorian({ year, month, day, hour }, "America/New_York");
 
@@ -82,15 +81,17 @@ test("Changing a calendar date to land on an ambiguous time chooses the closest 
 });
 
 test("Start of a 0:00->1:00 DST day is 1:00", () => {
-  const d =
-    startOf(fromGregorian(
+  const d = startOf(
+    fromGregorian(
       {
         year: 2017,
         month: 10,
         day: 15,
       },
       "America/Sao_Paulo"
-    ), "day");
+    ),
+    "day"
+  );
   expect(day(d)).toBe(15);
   expect(hour(d)).toBe(1);
   expect(minute(d)).toBe(0);
@@ -98,15 +99,17 @@ test("Start of a 0:00->1:00 DST day is 1:00", () => {
 });
 
 test("End of a 0:00->1:00 DST day is 23:59", () => {
-  const d =
-    endOf(fromGregorian(
+  const d = endOf(
+    fromGregorian(
       {
         year: 2017,
         month: 10,
         day: 15,
       },
       "America/Sao_Paulo"
-    ), "day");
+    ),
+    "day"
+  );
   expect(day(d)).toBe(15);
   expect(hour(d)).toBe(23);
   expect(minute(d)).toBe(59);

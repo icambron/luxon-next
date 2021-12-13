@@ -1,11 +1,12 @@
 {
-  "name": "luxon",
-  "version": "3.0.0",
+  "name": "luxon-next",
+  "version": "0.0.1",
   "description": "",
   "author": "",
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
     "test": "TZ=\"America/New_York\" jest",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",

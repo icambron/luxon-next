@@ -88,7 +88,7 @@ export const fromCalendar = <TDate extends object>(
   return new DateTimeImpl(ts, zoneToUse, gregorianFinal, timeFinal, finalOffset, calMap);
 };
 
-export const alter = (ts: number, zone?: Zone, offset?: number): (dt: DateTime) => DateTime => {
+export const alter = (ts: number, zone?: Zone, offset?: number): ((dt: DateTime) => DateTime) => {
   return (dt) => {
     if (isUndefined(zone)) {
       zone = dt.zone;
@@ -101,7 +101,7 @@ export const alter = (ts: number, zone?: Zone, offset?: number): (dt: DateTime) 
       const calendarValues = new Map<string, any>();
       return new DateTimeImpl(ts, zone, gregorian, time, newOffset, calendarValues);
     }
-  }
+  };
 };
 
 export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: Calendar<TDate>): TDate => {
@@ -121,7 +121,6 @@ export const set = <TDate extends object>(
   obj: Partial<TDate & Time>,
   adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time
 ): DateTime => {
-
   const calObj = calendar.fromObject(obj);
   const timeObj = fromObject(obj);
 

@@ -15,11 +15,13 @@ import {
   fromGregorian,
   ymd,
   fromJSDate,
-} from "../../../src/dateTime/core";
-import { setZone, toUTC } from "../../../src/dateTime/zone";
+  setZone,
+  toUTC,
+  InvalidZoneError,
+  ianaZone,
+} from "../../../src/luxon";
+
 import { withDefaultZone } from "../../helpers";
-import { InvalidZoneError } from "../../../src/errors";
-import { ianaZone } from "../../../src/impl/zone/iana";
 
 const millis = 391147200000,
   // 1982-05-25T04:00:00.000Z
@@ -117,7 +119,7 @@ test("setZone accepts a keepLocalTime option", () => {
 });
 
 test("setZone with keepLocalTime can span wacky offsets", () => {
-  const d = fromGregorian({ year: 1, month: 1, day: 1 }, "UTC")
+  const d = fromGregorian({ year: 1, month: 1, day: 1 }, "UTC");
   const zoned = setZone(d, "America/Curacao", { keepLocalTime: true });
   expect(year(zoned)).toBe(1);
   expect(month(zoned)).toBe(1);

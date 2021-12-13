@@ -1,7 +1,6 @@
 /* global test expect */
 
-const { fromGregorian, year, month, day, hour, minute, second, millisecond } = require("../../../src/dateTime/core");
-const { startOf, endOf } = require("../../../src/dateTime/math");
+import { startOf, endOf, fromGregorian, year, month, day, hour, minute, second, millisecond } from "../../../src/luxon";
 
 function makeDt() {
   return fromGregorian({
@@ -29,8 +28,8 @@ test("startOf('year') goes to the start of the year", () => {
 
 test("startOf('quarter') goes to the start of the quarter", () => {
   const monthToQuarterStart = (m, quarterStart) => {
-    const dt =
-      startOf(fromGregorian({
+    const dt = startOf(
+      fromGregorian({
         year: 2017,
         month: m,
         day: 10,
@@ -38,7 +37,9 @@ test("startOf('quarter') goes to the start of the quarter", () => {
         minute: 5,
         second: 6,
         millisecond: 7,
-      }), "quarter");
+      }),
+      "quarter"
+    );
 
     expect(year(dt)).toBe(2017);
     expect(month(dt)).toBe(quarterStart);
@@ -170,8 +171,8 @@ test("endOf('quarter') goes to the end of the quarter", () => {
 
 test("endOf('quarter') goes to the end of the quarter in December", () => {
   const monthToQuarterEnd = (m, endMonth) => {
-    const dt =
-      endOf(fromGregorian({
+    const dt = endOf(
+      fromGregorian({
         year: 2017,
         month: m,
         day: 10,
@@ -179,7 +180,9 @@ test("endOf('quarter') goes to the end of the quarter in December", () => {
         minute: 5,
         second: 6,
         millisecond: 7,
-      }), "quarter");
+      }),
+      "quarter"
+    );
 
     expect(year(dt)).toBe(2017);
     expect(month(dt)).toBe(endMonth);

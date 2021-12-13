@@ -7,6 +7,16 @@ import {
   parseFormat
 } from "../util/formatUtil";
 import { padStart } from "../util/string";
+import { MacroToken, macroTokens } from "./presets";
+import { getCalendarValue } from "../dateTime";
+import { ordinalInstance } from "../calendars/ordinal";
+import { gregorianInstance } from "../calendars/gregorian";
+import { isoWeekCalendarInstance } from "../calendars/isoWeek";
+import { formatWeekday } from "./weekdays";
+import { formatMeridiem } from "./meridiems";
+import { formatMonth } from "./months";
+import { formatEra } from "./eras";
+import { formatOffset } from "./namedOffset";
 import {
   Calendar,
   DateTime,
@@ -18,16 +28,6 @@ import {
   OffsetFormatWidth, TimeUnit, TokenFormatOpts,
   WeekdayFormatOpts
 } from "../../types";
-import { MacroToken, macroTokens } from "./presets";
-import { getCalendarValue } from "../dateTime";
-import { ordinalInstance } from "../calendars/ordinal";
-import { gregorianInstance } from "../calendars/gregorian";
-import { isoWeekCalendarInstance } from "../calendars/isoWeek";
-import { formatWeekday } from "./weekdays";
-import { formatMeridiem } from "./meridiems";
-import { formatMonth } from "./months";
-import { formatEra } from "./eras";
-import { formatOffset } from "./namedOffset";
 
 interface ExtendedNumberFormatOpts extends NumberFormatOpts {
   forceSimple?: boolean
@@ -92,6 +92,7 @@ const tokenToString = (dt: DateTime, token: FormatToken, formatOpts: TokenFormat
 
   const withCal = (cal: Calendar<any>): (field: string) => number =>
     (field) => getCalendarValue(dt, cal)[field];
+
   const g = withCal(gregorianInstance);
   const iso = withCal(isoWeekCalendarInstance);
   const ordinal = () => withCal(ordinalInstance)("ordinal");

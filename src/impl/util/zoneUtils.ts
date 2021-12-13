@@ -62,4 +62,3 @@ export function formatNumericOffset(offset: number, format: OffsetFormatWidth) {
       throw new InvalidArgumentError(`Format ${format} isn't supported`);
   }
 }
-

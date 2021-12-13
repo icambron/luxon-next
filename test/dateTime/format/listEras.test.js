@@ -1,4 +1,4 @@
-import { listEras } from "../../../src/dateTime/format";
+import { listEras } from "../../../src/luxon";
 
 test("listEras() lists both eras", () => {
   expect(listEras()).toEqual(["BC", "AD"]);

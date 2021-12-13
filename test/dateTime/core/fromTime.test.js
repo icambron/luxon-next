@@ -1,5 +1,5 @@
 /* global test expect */
-import { fromTime, year, month, day, hour, minute, second, millisecond, now, zone } from "../../../src/dateTime/core";
+import { fromTime, year, month, day, hour, minute, second, millisecond, now, zone } from "../../../src/luxon";
 
 test("fromTime constructs a time in the current date", () => {
   const dt = fromTime({ hour: 1, minute: 2, second: 3, millisecond: 4 });

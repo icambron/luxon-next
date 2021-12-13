@@ -1,5 +1,4 @@
-import { durNormalize } from "../../../src/duration/convert";
-import { duration, durValues } from "../../../src/duration/core";
+import { durNormalize, duration, durValues } from "../../../src/luxon";
 
 test("normalize() rebalances negative convert", () => {
   const dur = durNormalize(duration({ years: 2, days: -2 }));

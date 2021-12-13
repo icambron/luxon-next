@@ -62,11 +62,10 @@ const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, numbe
   }, null);
 };
 
-export const as =
-  (dur: Duration, unit: DurationUnit): number => {
-    const shifted = durShiftTo(dur, [unit]);
-    return shifted.values[unit] || 0;
-  };
+export const as = (dur: Duration, unit: DurationUnit): number => {
+  const shifted = durShiftTo(dur, [unit]);
+  return shifted.values[unit] || 0;
+};
 
 /**
  * Reduce this Duration to its canonical representation in its current convert.
@@ -74,74 +73,76 @@ export const as =
  * @example fromValues({ hours: 12, minutes: -45 }) |> normalize() |> values //=> { hours: 11, minutes: 15 }
  * @return {Duration}
  */
-export const durNormalize =
-  (dur: Duration, conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): Duration => {
-    const map = durToMap(dur);
-    normalizeValues(pickMatrix(conversionAccuracy), map);
-    return fromValues(Object.fromEntries(map));
-  };
+export const durNormalize = (
+  dur: Duration,
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
+): Duration => {
+  const map = durToMap(dur);
+  normalizeValues(pickMatrix(conversionAccuracy), map);
+  return fromValues(Object.fromEntries(map));
+};
 
-export const durShiftTo =
-  (dur: Duration,
-    units: DurationUnit[],
-    conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
-  ): Duration => {
-    if (units.length === 0) {
-      return dur;
-    }
+export const durShiftTo = (
+  dur: Duration,
+  units: DurationUnit[],
+  conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
+): Duration => {
+  if (units.length === 0) {
+    return dur;
+  }
 
-    units = units.map((u) => normalizeDurationUnit(u, true)) as DurationUnit[];
-    const valueMap = durToMap(dur);
-    const built = new Map<DurationUnit, number>();
-    const accumulated = new Map<DurationUnit, number>();
-    let lastUnit: DurationUnit = units[0];
+  units = units.map((u) => normalizeDurationUnit(u, true)) as DurationUnit[];
+  const valueMap = durToMap(dur);
+  const built = new Map<DurationUnit, number>();
+  const accumulated = new Map<DurationUnit, number>();
+  let lastUnit: DurationUnit = units[0];
 
-    const matrix = pickMatrix(conversionAccuracy);
+  const matrix = pickMatrix(conversionAccuracy);
 
-    for (const k of orderedUnits) {
-      if (units.indexOf(k) >= 0) {
-        lastUnit = k;
+  for (const k of orderedUnits) {
+    if (units.indexOf(k) >= 0) {
+      lastUnit = k;
 
-        let own = 0;
+      let own = 0;
 
-        // anything we haven't boiled down yet should get boiled to this unit
-        for (const ak of accumulated.keys()) {
-          own += matrix[ak][k] * (accumulated.get(ak) as number);
-          accumulated.set(ak, 0);
-        }
-
-        // plus anything that's already in this unit
-        if (isNumber(valueMap.get(k))) {
-          own += valueMap.get(k) as number;
-        }
-
-        const i = Math.trunc(own);
-        built.set(k, i);
-        accumulated.set(k, (1000 * own - 1000 * i) / 1000); // we'd like to absorb these fractions in another unit
-
-        // plus anything further down the chain that should be rolled up in to this
-        for (const down of valueMap.keys()) {
-          if (orderedUnits.indexOf(down) > orderedUnits.indexOf(k)) {
-            convertInternal(matrix, valueMap, down, built, k);
-          }
-        }
-        // otherwise, keep it in the wings to boil it later
-      } else if (isNumber(valueMap.get(k))) {
-        accumulated.set(k, valueMap.get(k) as number);
+      // anything we haven't boiled down yet should get boiled to this unit
+      for (const ak of accumulated.keys()) {
+        own += matrix[ak][k] * (accumulated.get(ak) as number);
+        accumulated.set(ak, 0);
       }
-    }
 
-    // anything leftover becomes the decimal for the last unit
-    for (const key of accumulated.keys()) {
-      if (accumulated.get(key) !== 0) {
-        const accVal = accumulated.get(key) as number;
-        let builtVal = built.get(lastUnit) as number;
-        builtVal += key === lastUnit ? accVal : accVal / matrix[lastUnit][key];
-        built.set(lastUnit, builtVal);
+      // plus anything that's already in this unit
+      if (isNumber(valueMap.get(k))) {
+        own += valueMap.get(k) as number;
       }
+
+      const i = Math.trunc(own);
+      built.set(k, i);
+      accumulated.set(k, (1000 * own - 1000 * i) / 1000); // we'd like to absorb these fractions in another unit
+
+      // plus anything further down the chain that should be rolled up in to this
+      for (const down of valueMap.keys()) {
+        if (orderedUnits.indexOf(down) > orderedUnits.indexOf(k)) {
+          convertInternal(matrix, valueMap, down, built, k);
+        }
+      }
+      // otherwise, keep it in the wings to boil it later
+    } else if (isNumber(valueMap.get(k))) {
+      accumulated.set(k, valueMap.get(k) as number);
     }
+  }
 
-    normalizeValues(matrix, built);
+  // anything leftover becomes the decimal for the last unit
+  for (const key of accumulated.keys()) {
+    if (accumulated.get(key) !== 0) {
+      const accVal = accumulated.get(key) as number;
+      let builtVal = built.get(lastUnit) as number;
+      builtVal += key === lastUnit ? accVal : accVal / matrix[lastUnit][key];
+      built.set(lastUnit, builtVal);
+    }
+  }
 
-    return fromValues(Object.fromEntries(built));
-  };
+  normalizeValues(matrix, built);
+
+  return fromValues(Object.fromEntries(built));
+};

@@ -1,14 +1,19 @@
 import { dateTimeFormat } from "../impl/util/formatUtil";
 import * as presets from "../impl/formatting/presets";
 import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
-import { formatMeridiem as formatMeridiemInternal, listMeridiems as listMeridiemsInternal } from "../impl/formatting/meridiems";
-import { formatWeekday as formatWeekdayInternal, listWeekdays as listWeekdaysInternal } from "../impl/formatting/weekdays";
+import {
+  formatMeridiem as formatMeridiemInternal,
+  listMeridiems as listMeridiemsInternal,
+} from "../impl/formatting/meridiems";
+import {
+  formatWeekday as formatWeekdayInternal,
+  listWeekdays as listWeekdaysInternal,
+} from "../impl/formatting/weekdays";
 import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
 import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
 import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
-import { DateTime, ISOFormatLength, ISOFormatOpts } from "../types";
-
-import { makeCombinedItemFormatter, makeDirectFormatter} from "../impl/formatting/combinators";
+import { makeCombinedItemFormatter, makeDirectFormatter } from "../impl/formatting/combinators";
+import { DateTime, ISOFormatOpts } from "../types";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
@@ -29,24 +34,35 @@ export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH
 export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
   `${toISODate(dt, opts)}T${toISOTime(dt, opts)}`;
 
-export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}):string => {
-  let realOpts = {format: "extended", ...opts }
+export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}): string => {
+  let realOpts = { format: "extended", ...opts };
+
   let fmt = realOpts.format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
 
   if (dt.gregorian.year > 9999) {
     fmt = "+" + fmt;
   }
   return toFormatInternal(dt, fmt);
-}
+};
 
 export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
 
-export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> =  {}) => {
-  let realOpts = {seconds: true, milliseconds: true, elideZeroSeconds: false, elideZeroMilliseconds: false, format: "extended", includeOffset: true, ...opts}
+export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) => {
+  let realOpts = {
+    seconds: true,
+    milliseconds: true,
+    elideZeroSeconds: false,
+    elideZeroMilliseconds: false,
+    format: "extended",
+    includeOffset: true,
+    ...opts,
+  };
   let fmt = realOpts.format === "basic" ? "HHmm" : "HH:mm";
 
-  const shouldElideMilliseconds = !realOpts.milliseconds || (realOpts.elideZeroMilliseconds && dt.time.millisecond === 0);
-  const shouldElideSeconds = !realOpts.seconds || (realOpts.elideZeroSeconds && dt.time.second === 0 && dt.time.millisecond == 0);
+  const shouldElideMilliseconds =
+    !realOpts.milliseconds || (realOpts.elideZeroMilliseconds && dt.time.millisecond === 0);
+  const shouldElideSeconds =
+    !realOpts.seconds || (realOpts.elideZeroSeconds && dt.time.second === 0 && dt.time.millisecond == 0);
 
   if (!shouldElideSeconds) {
     fmt += realOpts.format === "basic" ? "ss" : ":ss";
@@ -61,7 +77,7 @@ export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> =  {}) => {
   }
 
   return toFormatInternal(dt, fmt, { allowZ: true });
-}
+};
 
 export const formatEra = formatEraInternal;
 export const listEras = listErasInternal;

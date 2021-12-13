@@ -8,7 +8,7 @@ import {
   setNowFn,
   setDefaultZone,
   clearCaches,
-} from "../src/settings";
+} from "../src/luxon";
 
 const resetCaches = () => {
   clearCaches();

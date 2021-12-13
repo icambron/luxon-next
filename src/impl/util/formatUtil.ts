@@ -9,7 +9,7 @@ import {
   SharedFormatOpts,
   FormatOpts
 } from "../../types";
-import { isValidIANAZone } from "../zone/zone";
+import { isValidIANAZone } from "../util/zoneUtils";
 
 const getDtf = memo(
   "dateTimeFormat",

@@ -9,8 +9,8 @@ import {
   zoneName,
   fromMillis,
   toMillis,
-} from "../../../src/dateTime/core";
-import { toUTC } from "../../../src/dateTime/zone";
+  toUTC,
+} from "../../../src/luxon";
 
 test("fromMillis results in the right timestamp", () => {
   const bigValue = 391147200000;

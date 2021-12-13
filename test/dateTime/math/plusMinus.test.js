@@ -1,18 +1,28 @@
 /* global test expect */
-import { day, fromGregorian, hour, minute, month, quarter, year, ymd } from "../../../src/dateTime/core";
-import { plus } from "../../../src/dateTime/math";
-import { duration, durToMillis } from "../../../src/duration/core";
+import {
+  day,
+  fromGregorian,
+  hour,
+  minute,
+  month,
+  quarter,
+  year,
+  ymd,
+  plus,
+  duration,
+  durToMillis,
+} from "../../../src/luxon";
 import { InvalidArgumentError } from "../../../src/errors";
 
 const dt = fromGregorian({
-    year: 2010,
-    month: 2,
-    day: 3,
-    hour: 4,
-    minute: 5,
-    second: 6,
-    millisecond: 7,
-  });
+  year: 2010,
+  month: 2,
+  day: 3,
+  hour: 4,
+  minute: 5,
+  second: 6,
+  millisecond: 7,
+});
 
 test("plus({ years: 1 }) adds a year", () => {
   const i = plus(dt, { years: 1 });
@@ -98,7 +108,7 @@ test("plus throws when out of max. datetime range using days", () => {
 
 test("plus throws when out of max. datetime range using seconds", () => {
   expect(() => {
-     plus(fromGregorian({ year: 1970 }), { seconds: 1e8 * 24 * 60 * 60 + 1 });
+    plus(fromGregorian({ year: 1970 }), { seconds: 1e8 * 24 * 60 * 60 + 1 });
   }).toThrow(InvalidArgumentError);
 });
 
@@ -116,7 +126,7 @@ test("plus handles fractional large convert", () => {
   const d = ymd(2016, 1, 31, 10);
   for (const unit of units) {
     const first = plus(d, { [unit]: 8.7 });
-    const dur = duration({ [unit]: 0.7 })
+    const dur = duration({ [unit]: 0.7 });
     const second = plus(d, { [unit]: 8, milliseconds: durToMillis(dur) });
     expect(first).toEqual(second);
   }

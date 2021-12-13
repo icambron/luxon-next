@@ -1,9 +1,16 @@
-import { fromISO, simpleParseOpts } from "../../../src/dateTime/parse";
-import { now, offset, toGregorian, zoneName } from "../../../src/dateTime/core";
-import { toUTC } from "../../../src/dateTime/zone";
+import {
+  fromISO,
+  simpleParseOpts,
+  now,
+  offset,
+  toGregorian,
+  zoneName,
+  toUTC,
+  fixedOffsetZone,
+} from "../../../src/luxon";
+
 import { UnitOutOfRangeError } from "../../../src/errors";
 import { withDefaultZone } from "../../helpers";
-import { fixedOffsetZone } from "../../../src/impl/zone/fixedOffset";
 
 test("fromISO() parses as local by default", () => {
   const dt = fromISO("2016-05-25T09:08:34.123");
@@ -86,7 +93,7 @@ test("fromISO() can optionally specify a targetZone", () => {
   withDefaultZone(fixedOffsetZone(6 * 60), () => {
     let dt = fromISO("2016-05-25T09:08:34.123", { targetZone: "utc" });
     expect(offset(dt)).toEqual(0);
-  expect(toGregorian(dt)).toEqual({
+    expect(toGregorian(dt)).toEqual({
       year: 2016,
       month: 5,
       day: 25,

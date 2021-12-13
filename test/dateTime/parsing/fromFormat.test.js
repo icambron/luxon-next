@@ -1,5 +1,6 @@
-import { fromFormat, simpleParseOpts } from "../../../src/dateTime/parse";
 import {
+  fromFormat,
+  simpleParseOpts,
   year,
   month,
   day,
@@ -11,12 +12,15 @@ import {
   now,
   zoneName,
   offset,
-} from "../../../src/dateTime/core";
-import { ConflictingSpecificationError } from "../../../src/errors";
-import { weekday, weekNumber, weekYear } from "../../../src/dateTime/isoWeek";
-import { ordinal } from "../../../src/dateTime/ordinal";
-import { toUTC } from "../../../src/dateTime/zone";
+  weekday,
+  weekNumber,
+  weekYear,
+  ordinal,
+  toUTC,
+} from "../../../src/luxon";
+
 import { withDefaultLocale } from "../../helpers";
+import { ConflictingSpecificationError } from "../../../src/errors";
 
 test("fromFormat() parses basic times", () => {
   const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS");
@@ -541,14 +545,11 @@ test("fromFormat prefers z over ZZ", () => {
   expect(() => fromFormat("2019-01-14T11-30\tIndian/Maldives\t", "yyyy-MM-dd[T]HH-mm[t]z[t]")).toThrow();
 });
 
-
 test("fromFormat() ignores numerical offsets when they conflict with the zone", () => {
   // +11:00 is not a valid offset for the Australia/Perth time zone
-  const i = fromFormat(
-    "2021-11-12T09:07:13.000+11:00[Australia/Perth]",
-    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
-    { useTargetZoneFromInput: true }
-  );
+  const i = fromFormat("2021-11-12T09:07:13.000+11:00[Australia/Perth]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
+    useTargetZoneFromInput: true,
+  });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(11);
   expect(day(i)).toBe(12);
@@ -562,11 +563,9 @@ test("fromFormat() ignores numerical offsets when they conflict with the zone", 
 
 test("fromFormat() ignores numerical offsets when they are are wrong right now", () => {
   // DST is not in effect at this timestamp, so +10:00 is the correct offset
-  const i = fromFormat(
-    "2021-10-03T01:30:00.000+11:00[Australia/Sydney]",
-    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
-    { useTargetZoneFromInput: true }
-  );
+  const i = fromFormat("2021-10-03T01:30:00.000+11:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
+    useTargetZoneFromInput: true,
+  });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(10);
   expect(day(i)).toBe(3);
@@ -580,11 +579,9 @@ test("fromFormat() ignores numerical offsets when they are are wrong right now",
 
 test("fromFormat() maintains offset that belongs to time zone during overlap", () => {
   // On this day, 02:30 exists for both offsets, due to DST ending.
-  let i = fromFormat(
-    "2021-04-04T02:30:00.000+11:00[Australia/Sydney]",
-    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
-    { useTargetZoneFromInput: true }
-  );
+  let i = fromFormat("2021-04-04T02:30:00.000+11:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
+    useTargetZoneFromInput: true,
+  });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(4);
   expect(day(i)).toBe(4);
@@ -595,11 +592,9 @@ test("fromFormat() maintains offset that belongs to time zone during overlap", (
   expect(offset(i)).toBe(660); //+11:00
   expect(zoneName(i)).toBe("Australia/Sydney");
 
-  i = fromFormat(
-    "2021-04-04T02:30:00.000+10:00[Australia/Sydney]",
-    "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
-    { useTargetZoneFromInput: true }
-  );
+  i = fromFormat("2021-04-04T02:30:00.000+10:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
+    useTargetZoneFromInput: true,
+  });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(4);
   expect(day(i)).toBe(4);

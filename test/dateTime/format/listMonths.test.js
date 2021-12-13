@@ -1,4 +1,4 @@
-import { listMonths } from "../../../src/dateTime/format";
+import { listMonths } from "../../../src/luxon";
 
 test("listMonths lists the months in English by default", () => {
   expect(listMonths()).toEqual([

@@ -12,6 +12,7 @@ import { untruncateYear } from "../util/dateMath";
 import { isUndefined } from "../util/typeCheck";
 import { fixedOffsetZone } from "../zone/fixedOffset";
 import { ianaZone } from "../zone/iana";
+import { signedOffset } from "../util/zoneUtils";
 import {
   Zone,
   FormatToken,
@@ -20,7 +21,6 @@ import {
   TokenParseValue, TokenParseOpts,
   TokenParseSummary, TokenFormatOpts
 } from "../../types";
-import { signedOffset } from "../zone/zone";
 
 // TYPES
 interface TokenParsingUnit {

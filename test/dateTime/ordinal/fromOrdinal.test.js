@@ -1,5 +1,4 @@
-import { toGregorian } from "../../../src/dateTime/core";
-import { fromOrdinal, toOrdinal } from "../../../src/dateTime/ordinal";
+import { fromOrdinal, toOrdinal, toGregorian } from "../../../src/luxon";
 
 test("fromOrdinal() builds the right Gregorian date", () => {
   const dt = fromOrdinal({ year: 2016, ordinal: 146, hour: 1, minute: 2, second: 3, millisecond: 4 });

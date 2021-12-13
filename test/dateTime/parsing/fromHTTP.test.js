@@ -1,6 +1,4 @@
-import { fromHTTP } from "../../../src/dateTime/parse";
-import { toGregorian } from "../../../src/dateTime/core";
-import { toUTC } from "../../../src/dateTime/zone";
+import { fromHTTP, toGregorian, toUTC } from "../../../src/luxon";
 
 test("fromHTTP() can parse RFC 1123", () => {
   const dt = fromHTTP("Sun, 06 Nov 1994 08:49:37 GMT");

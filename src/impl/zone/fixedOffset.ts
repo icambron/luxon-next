@@ -1,5 +1,5 @@
 import { Zone } from "../../types";
-import { formatNumericOffset, signedOffset } from "./zone";
+import { formatNumericOffset, signedOffset } from "../util/zoneUtils";
 
 class FixedOffsetZone implements Zone {
   private readonly _fixed: number;

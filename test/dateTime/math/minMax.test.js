@@ -1,5 +1,4 @@
-import { max, min } from "../../../src/dateTime/math";
-import { fromJSDate } from "../../../src/dateTime/core";
+import { max, min, fromJSDate } from "../../../src/luxon";
 
 test("min() returns the only dateTime if solo", () => {
   const m = min([fromJSDate(new Date(1982, 5, 25))]);

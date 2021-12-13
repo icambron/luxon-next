@@ -1,10 +1,11 @@
-import { getDefaultZone } from "../settings";
 import { gregorianToTS } from "../impl/calendars/gregorian";
 import { alter } from "../impl/dateTime";
-import { fixedOffsetZone, utcInstance } from "../impl/zone/fixedOffset";
-import { systemZone } from "../impl/zone/system";
-import { DateTime, Zoneish } from "../types";
+import { fixedOffsetZone as fixedOffsetZoneInternal, utcInstance } from "../impl/zone/fixedOffset";
+import { ianaZone as ianaZoneInternal } from "../impl/zone/iana";
+import { systemZone as systemZoneInternal } from "../impl/zone/system";
 import { normalizeZone } from "../impl/zone/normalizeZone";
+import { DateTime, Zoneish } from "../types";
+import { getDefaultZone } from "../settings";
 
 /**
  * "Set" the DateTime's zone to specified zone. Returns a newly-constructed DateTime.
@@ -31,7 +32,7 @@ export const setZone = (dt: DateTime, zone: Zoneish, { keepLocalTime = false } =
  * "Set" the DateTime's zone to UTC. Returns a newly-constructed DateTime.
  *
  * Equivalent to {@link setZone}(dt, 'utc')
-*  @param dt
+ *  @param dt
  * @param [opts={}] - options to pass to `setZone()`
  */
 export const toUTC = (dt: DateTime, opts: object = {}): DateTime => setZone(dt, utcInstance, opts);
@@ -39,11 +40,12 @@ export const toUTC = (dt: DateTime, opts: object = {}): DateTime => setZone(dt, 
 /**
  * "Set" the DateTime's zone to a fixed-offset zone with the specified offset. Returns a newly-constructed DateTime.
  *
-*  @param dt
+ *  @param dt
  * @param offset - an offset from UTC in minutes
  * @param [opts={}] - options to pass to `setZone()`
  */
-export const toFixedOffset = (dt: DateTime, offset: number, opts: object = {}) => setZone(dt, fixedOffsetZone(offset), opts);
+export const toFixedOffset = (dt: DateTime, offset: number, opts: object = {}) =>
+  setZone(dt, fixedOffsetZoneInternal(offset), opts);
 
 /**
  * "Set" the DateTime's zone to the system's time zone. Returns a newly-constructed DateTime.
@@ -51,7 +53,7 @@ export const toFixedOffset = (dt: DateTime, offset: number, opts: object = {}) =
  *
  * Equivalent to `{@link setZone}(dt, "system")`
  */
-export const toSystemZone = (dt: DateTime): DateTime => setZone(dt, systemZone);
+export const toSystemZone = (dt: DateTime): DateTime => setZone(dt, systemZoneInternal);
 
 /**
  * "Set" the DateTime's zone to the default zone. Returns a newly-constructed DateTime.
@@ -61,3 +63,7 @@ export const toSystemZone = (dt: DateTime): DateTime => setZone(dt, systemZone);
  * Equivalent to `{@link setZone}(dt, "default")`
  */
 export const toDefaultZone = (dt: DateTime): DateTime => setZone(dt, getDefaultZone());
+
+export const ianaZone = ianaZoneInternal;
+export const fixedOffsetZone = fixedOffsetZoneInternal;
+export const systemZone = systemZoneInternal;

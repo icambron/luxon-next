@@ -1,6 +1,6 @@
 /* global test expect */
 
-import { toGregorian, ymd } from "../../../src/dateTime/core";
+import { toGregorian, ymd } from "../../../src/luxon";
 
 test("toGregorian returns the object", () => {
   const dt = ymd(1982, 5, 25, 9, 23, 54, 123);

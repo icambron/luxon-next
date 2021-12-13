@@ -1,4 +1,4 @@
-import { listMeridiems } from "../../../src/dateTime/format";
+import { listMeridiems } from "../../../src/luxon";
 
 test("listMeridiems() lists the meridiems", () => {
   expect(listMeridiems("en")).toEqual(["AM", "PM"]);

@@ -1,7 +1,6 @@
 /* global test expect */
 
-import { ymd } from "../../../src/dateTime/core";
-import { setZone } from "../../../src/dateTime/zone";
+import { ymd, setZone } from "../../../src/luxon";
 
 test("equals self", () => {
   const l = ymd(2017, 5, 15);

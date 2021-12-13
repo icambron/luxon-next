@@ -1,6 +1,6 @@
 /* global test expect */
 
-import { daysInCurrentMonth, daysInCurrentYear, fromGregorian, isInLeapYear } from "../../../src/dateTime/core";
+import { daysInCurrentMonth, daysInCurrentYear, fromGregorian, isInLeapYear } from "../../../src/luxon";
 
 test("isInLeapYear returns the whether the DateTime's year is in a leap year", () => {
   expect(isInLeapYear(fromGregorian({ year: 2017, month: 5, day: 25 }))).toBe(false);

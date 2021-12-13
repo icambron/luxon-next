@@ -1,24 +1,24 @@
-import { fromGregorian, setGregorian } from "../../../src/dateTime/core";
-import { startOf } from "../../../src/dateTime/math";
-import { setZone } from "../../../src/dateTime/zone";
-import { toISOTime } from "../../../src/dateTime/format";
+import { fromGregorian, setGregorian, startOf, setZone, toISOTime } from "../../../src/luxon";
 
-const dt = fromGregorian({
-  year: 1982,
-  month: 5,
-  day: 25,
-  hour: 9,
-  minute: 23,
-  second: 54,
-  millisecond: 123,
-}, "utc");
+const dt = fromGregorian(
+  {
+    year: 1982,
+    month: 5,
+    day: 25,
+    hour: 9,
+    minute: 23,
+    second: 54,
+    millisecond: 123,
+  },
+  "utc"
+);
 
 test("toISOTime() returns an ISO 8601 date", () => {
   expect(toISOTime(dt)).toBe("09:23:54.123Z");
 });
 
 test("toISOTime() won't suppress seconds by default", () => {
-  const i = startOf(dt, "minute")
+  const i = startOf(dt, "minute");
   expect(toISOTime(i)).toBe("09:23:00.000Z");
 });
 
@@ -54,7 +54,7 @@ test("toISOTime({milliseconds: false}) will won't display milliseconds", () => {
 });
 
 test("toISOTime() handles other offsets", () => {
-  const i = setZone(dt, "America/New_York")
+  const i = setZone(dt, "America/New_York");
   expect(toISOTime(i)).toBe("05:23:54.123-04:00");
 });
 

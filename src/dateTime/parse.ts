@@ -1,4 +1,3 @@
-import { setZone } from "./zone";
 import { ExtractedResult } from "../impl/parsing/regexParser";
 import { parseISODateTime } from "../impl/parsing/isoParser";
 import { parseFromFormat } from "../impl/parsing/tokenParser";
@@ -9,6 +8,7 @@ import { parseRFC2822 } from "../impl/parsing/rfc2822Parser";
 import { parseHTTPDate } from "../impl/parsing/httpParser";
 import { getFormattingOpts } from "../impl/util/formatUtil";
 import { isUndefined } from "../impl/util/typeCheck";
+import { fromCalendar } from "../impl/dateTime";
 import { getDefaultZone } from "../settings";
 import { NoMatchingParserPattern } from "../errors";
 import {
@@ -23,8 +23,10 @@ import {
   TokenParseSummary,
   Zoneish,
 } from "../types";
-import { fromCalendar } from "../impl/dateTime";
+
+// todo - these two should be on the same level
 import { normalizeZone } from "../impl/zone/normalizeZone";
+import { setZone } from "./zone";
 
 export const simpleParseOpts = (zone: Zoneish = getDefaultZone()): ParseOpts => ({
   interpretationZone: zone,

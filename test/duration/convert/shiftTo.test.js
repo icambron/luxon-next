@@ -5,8 +5,8 @@ import {
   durHours,
   durMinutes,
   durMilliseconds,
-} from "../../../src/duration/core";
-import { durShiftTo } from "../../../src/duration/convert";
+  durShiftTo,
+} from "../../../src/luxon";
 
 test("shiftTo() rolls milliseconds up hours and minutes", () => {
   const dur = durFromMillis(5760000);
@@ -73,7 +73,7 @@ test("shiftTo accumulates when rolling up", () => {
 
 test("shiftTo keeps unnecessary higher-order negative convert 0", () => {
   const dur = duration({ milliseconds: -100 });
-  const shifted = durShiftTo(dur, ["hours", "minutes", "seconds"]) 
+  const shifted = durShiftTo(dur, ["hours", "minutes", "seconds"]);
   expect(durValues(shifted)).toEqual({
     hours: 0,
     minutes: 0,
@@ -96,6 +96,6 @@ test("shiftTo boils hours down to hours and minutes", () => {
   const shifted = durShiftTo(dur, ["hours", "minutes"]);
   expect(durValues(shifted)).toEqual({
     hours: 2,
-    minutes: 24
+    minutes: 24,
   });
 });

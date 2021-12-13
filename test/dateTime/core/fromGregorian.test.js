@@ -12,7 +12,7 @@ import {
   toJSDate,
   year,
   zone,
-} from "../../../src/dateTime/core";
+} from "../../../src/luxon";
 import { InvalidZoneError, UnitOutOfRangeError } from "../../../src/errors";
 
 const baseObject = {

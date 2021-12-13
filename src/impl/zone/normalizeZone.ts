@@ -5,7 +5,8 @@ import { systemZone } from "./system";
 import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./fixedOffset";
 import { ianaZone } from "./iana";
 import { InvalidZoneError } from "../../errors";
-import { isValidIANASpecifier } from "./zone";
+import { isValidIANASpecifier } from "../util/zoneUtils";
+
 
 export const normalizeZone = (zoneish: Zoneish): Zone => {
   if (isUndefined(zoneish) || zoneish === null) return getDefaultZone();

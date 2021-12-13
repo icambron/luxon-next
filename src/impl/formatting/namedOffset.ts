@@ -5,7 +5,7 @@ import {
   Zone
 } from "../../types";
 import { dateTimeFormat, extract } from "../util/formatUtil";
-import { formatNumericOffset } from "../zone/zone";
+import { formatNumericOffset } from "../util/zoneUtils";
 import { makeDtOptReader, toJs } from "./combinators";
 
 const extractNamedOffset =

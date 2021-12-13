@@ -1,7 +1,6 @@
 /* global test expect */
 
-import { fromMillis, toSeconds } from "../../../src/dateTime/core";
-import { toUTC } from "../../../src/dateTime/zone";
+import { fromMillis, toSeconds, toUTC } from "../../../src/luxon";
 
 test("fromMillis translates to the right gregorian value", () => {
   const dt = toUTC(fromMillis(1615082936814));

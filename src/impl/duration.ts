@@ -26,7 +26,12 @@ export const toIso = (dur: Duration): string => {
     s += (dur._values.months || 0) + (dur._values.quarters || 0) * 3 + "M";
   if (dur._values.weeks !== 0) s += dur._values.weeks + "W";
   if (dur._values.days !== 0) s += dur._values.days + "D";
-  if (dur._values.hours !== 0 || dur._values.minutes !== 0 || dur._values.seconds !== 0 || dur._values.milliseconds !== 0)
+  if (
+    dur._values.hours !== 0 ||
+    dur._values.minutes !== 0 ||
+    dur._values.seconds !== 0 ||
+    dur._values.milliseconds !== 0
+  )
     s += "T";
   if (dur._values.hours !== 0) s += dur._values.hours + "H";
   if (dur._values.minutes !== 0) s += dur._values.minutes + "M";
@@ -86,7 +91,7 @@ const durationZeroes: DurationValues = {
   milliseconds: 0,
 };
 
-class DurationImpl implements Duration {
+export class DurationImpl implements Duration {
   readonly _values: Partial<DurationValues>;
   readonly isLuxonDuration = true;
 

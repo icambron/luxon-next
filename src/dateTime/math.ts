@@ -1,23 +1,18 @@
-import { month } from "./core";
 import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
 import { gregorianInstance, gregorianToTS } from "../impl/calendars/gregorian";
-import { durNegate } from "../duration/core";
-import { InvalidUnitError } from "../errors";
-import { getDefaultConversionAccuracy } from "../settings";
 import { buildNormalizer, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../impl/util/units";
 import { intAndFraction, roundTo } from "../impl/util/numeric";
 import { bestBy } from "../impl/util/array";
 import { alter, set } from "../impl/dateTime";
 import { convert, defaultEmpties, durationUnits, fromValues, toMillis } from "../impl/duration";
 import { daysInMonth } from "../impl/util/dateMath";
-import {
-  ConversionAccuracy,
-  DateTime,
-  Duration,
-  DurationValues,
-  StartEndUnit
-} from "../types";
+import { ConversionAccuracy, DateTime, Duration, DurationValues, StartEndUnit } from "../types";
 import { isDuration } from "../impl/util/typeCheck";
+import { InvalidUnitError } from "../errors";
+import { getDefaultConversionAccuracy } from "../settings";
+
+// weird dep
+import { durNegate } from "../duration/core";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -78,10 +73,9 @@ export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
   }
 
   if (u === "quarter") {
-    const q = Math.ceil(month(dt) / 3);
+    const q = Math.ceil(dt.gregorian.month / 3);
     o.month = (q - 1) * 3 + 1;
   }
-
 
   return o.weekday ? set(dt, isoWeekCalendarInstance, o) : set(dt, gregorianInstance, o);
 };

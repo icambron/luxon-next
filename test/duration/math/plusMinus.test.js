@@ -1,13 +1,5 @@
 /* global test expect */
-const {
-  durPlus,
-  durMinus,
-  duration,
-  durHours,
-  durMinutes,
-  durSeconds,
-  durMilliseconds,
-} = require("../../../src/duration/core");
+import { durPlus, durMinus, duration, durHours, durMinutes, durSeconds, durMilliseconds } from "../../../src/luxon";
 
 test("Duration#plus add straightforward durations", () => {
   const first = duration({ hours: 4, minutes: 12, seconds: 2 });

@@ -1,18 +1,17 @@
-import { fromGregorian } from "../../../src/dateTime/core";
-import { formatMonth } from "../../../src/dateTime/format";
+import { fromGregorian, formatMonth } from "../../../src/luxon";
 
 const dt = fromGregorian(
-    {
-      year: 2014,
-      month: 8,
-      day: 6,
-      hour: 9,
-      minute: 23,
-      second: 54,
-      millisecond: 123,
-    },
-    "utc"
-  );
+  {
+    year: 2014,
+    month: 8,
+    day: 6,
+    hour: 9,
+    minute: 23,
+    second: 54,
+    millisecond: 123,
+  },
+  "utc"
+);
 
 test("formatMonth defaults to English", () => {
   expect(formatMonth(dt)).toEqual("August");

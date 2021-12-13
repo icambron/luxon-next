@@ -1,22 +1,18 @@
-import { fromGregorian } from "../../../src/dateTime/core";
-import { toLocaleParts } from "../../../src/dateTime/format";
+import { fromGregorian, toLocaleParts } from "../../../src/luxon";
 import { withDefaultFormat } from "../../helpers";
 
-const dtMaker = () =>
-  fromGregorian(
-    {
-      year: 1982,
-      month: 5,
-      day: 25,
-      hour: 9,
-      minute: 23,
-      second: 54,
-      millisecond: 123,
-    },
-    "utc"
-  );
-
-const dt = dtMaker();
+const dt = fromGregorian(
+  {
+    year: 1982,
+    month: 5,
+    day: 25,
+    hour: 9,
+    minute: 23,
+    second: 54,
+    millisecond: 123,
+  },
+  "utc"
+);
 
 test("toLocaleParts() returns a en-US by default", () => {
   expect(toLocaleParts(dt)).toEqual([
@@ -61,7 +57,7 @@ test("toLocaleParts() accepts a locale string", () => {
     { type: "month", value: "мая" },
     { type: "literal", value: " " },
     { type: "year", value: "1982" },
-    { type: "literal", value:  " г., " },
+    { type: "literal", value: " г., " },
     { type: "hour", value: "09" },
     { type: "literal", value: ":" },
     { type: "minute", value: "23" },

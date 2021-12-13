@@ -3,7 +3,7 @@ import { InvalidZoneError } from "../../errors";
 import { gregorianToLocalTS } from "../calendars/gregorian";
 import { memo } from "../util/caching";
 import { Zone } from "../../types";
-import { isValidIANAZone } from "./zone";
+import { isValidIANAZone } from "../util/zoneUtils";
 
 const makeDTF = memo("ianaDtf", (zone: string) => {
   try {

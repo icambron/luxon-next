@@ -1,5 +1,5 @@
 /* global test expect */
-import { toJSDate, fromGregorian, toMillis } from "../../../src/dateTime/core";
+import { toJSDate, fromGregorian, toMillis } from "../../../src/luxon";
 
 test("toJSDate() returns a native Date equivalent", () => {
   const dt = fromGregorian({

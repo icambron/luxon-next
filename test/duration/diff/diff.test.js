@@ -1,6 +1,4 @@
-import { fromGregorian, fromJSDate, toGregorian } from "../../../src/dateTime/core";
-import { diff } from "../../../src/duration/diff";
-import { durValues, durMonths, durDays, durMilliseconds } from "../../../src/duration/core";
+import { fromGregorian, fromJSDate, diff, durValues, durMonths, durDays, durMilliseconds } from "../../../src/luxon";
 
 const diffFromObjs = (o1, o2, units) => {
   const dt1 = fromGregorian(o1);
@@ -14,7 +12,7 @@ test("diff() defaults to milliseconds", () => {
   expect(diffObjs({ year: 2017, millisecond: 12 }, { year: 2017 })).toEqual({
     milliseconds: 12,
   });
-  const dur = diffFromObjs({ year: 2017 }, { year: 2017 })
+  const dur = diffFromObjs({ year: 2017 }, { year: 2017 });
   expect(durMilliseconds(dur)).toBe(0);
 });
 

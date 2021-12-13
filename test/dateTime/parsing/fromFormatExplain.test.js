@@ -1,4 +1,4 @@
-import { fromFormatExplain } from "../../../src/dateTime/parse";
+import { fromFormatExplain } from "../../../src/luxon";
 
 const keyCount = (o) => Object.keys(o).length;
 

@@ -1,5 +1,4 @@
-import { fromISOWeek, toISOWeek } from "../../../src/dateTime/isoWeek";
-import { toGregorian } from "../../../src/dateTime/core";
+import { fromISOWeek, toISOWeek, toGregorian } from "../../../src/luxon";
 
 test("fromISOWeek() builds the right Gregorian date", () => {
   const dt = fromISOWeek({ weekYear: 2016, weekNumber: 21, weekday: 3, hour: 1, minute: 2, second: 3, millisecond: 4 });
@@ -10,7 +9,7 @@ test("fromISOWeek() builds the right Gregorian date", () => {
     hour: 1,
     minute: 2,
     second: 3,
-    millisecond: 4
+    millisecond: 4,
   });
 
   expect(toISOWeek(dt)).toEqual({

@@ -1,4 +1,4 @@
-import { durMapInputs, duration, durHours, durMinutes, durSeconds, durMilliseconds } from "../../../src/duration/core";
+import { durMapInputs, duration, durHours, durMinutes, durSeconds, durMilliseconds } from "../../../src/luxon";
 
 test("mapUnits can multiply durations", () => {
   const dur = duration({ hours: 1, minutes: 2, seconds: -3, milliseconds: -4 });

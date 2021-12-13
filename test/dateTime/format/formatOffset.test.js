@@ -1,22 +1,20 @@
-import { fromGregorian } from "../../../src/dateTime/core";
-import { formatOffset } from "../../../src/dateTime/format";
+import { fromGregorian, formatOffset } from "../../../src/luxon";
 
-const dtMaker = () =>
-  fromGregorian(
-    {
-      year: 2014,
-      month: 8,
-      day: 6,
-      hour: 9,
-      minute: 23,
-      second: 54,
-      millisecond: 123,
-    },
-    "America/New_York"
-  );
+const dt = fromGregorian(
+  {
+    year: 2014,
+    month: 8,
+    day: 6,
+    hour: 9,
+    minute: 23,
+    second: 54,
+    millisecond: 123,
+  },
+  "America/New_York"
+);
 
 test("formatOffset defaults to English", () => {
-  expect(formatOffset(dtMaker())).toEqual("EDT");
+  expect(formatOffset(dt)).toEqual("EDT");
 });
 
 // test("formatOffset accepts locales", () => {
@@ -28,9 +26,10 @@ test.each([
   ["short", "EDT"],
   ["techie", "-0400"],
   ["standard", "-04:00"],
-  ["narrow", "-4"]
-])("formatOffset accepts width argument: %p", (width, expected ) =>
-  expect(formatOffset(dtMaker(), { width })).toEqual(expected));
+  ["narrow", "-4"],
+])("formatOffset accepts width argument: %p", (width, expected) =>
+  expect(formatOffset(dt, { width })).toEqual(expected)
+);
 
 // test("formatOffset accepts locale and options", () => {
 //   expect(formatOffset("be", { width: "short" })(dtMaker())).toEqual("жні");

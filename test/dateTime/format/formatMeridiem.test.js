@@ -1,5 +1,4 @@
-import { fromGregorian } from "../../../src/dateTime/core";
-import { formatMeridiem } from "../../../src/dateTime/format";
+import { fromGregorian, formatMeridiem } from "../../../src/luxon";
 
 const dtMaker = () =>
   fromGregorian(

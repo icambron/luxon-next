@@ -18,7 +18,7 @@ type HighOrderDiff = {
 
 const dayDiff = (earlier: DateTime, later: DateTime): number => {
   const utcDayStart = (dt: DateTime) => {
-    const shifted = toUTC(dt, 0, { keepLocalTime: true });
+    const shifted = toUTC(dt, { keepLocalTime: true });
     const start = startOf(shifted, "day");
     return +start;
   };

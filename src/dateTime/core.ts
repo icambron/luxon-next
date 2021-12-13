@@ -1,13 +1,12 @@
-// rule: only depends on model and lib
 import { adjustCalendarOverflow, gregorianInstance } from "../impl/calendars/gregorian";
 import { daysInMonth, daysInYear, isLeapYear } from "../impl/util/dateMath";
-import { getNowFn } from "../settings";
-import { InvalidArgumentError } from "../errors";
 import { isDate, isDateTime as isDateTimeInternal } from "../impl/util/typeCheck";
 import { fromCalendar, fromMillis as fromMillisInternal, set } from "../impl/dateTime";
 import { utcInstance } from "../impl/zone/fixedOffset";
-import { Zone, DateTime, GregorianDate, Time, Zoneish } from "../types";
 import { normalizeZone } from "../impl/zone/normalizeZone";
+import { getNowFn } from "../settings";
+import { InvalidArgumentError } from "../errors";
+import { Zone, DateTime, GregorianDate, Time, Zoneish } from "../types";
 
 // BASICS
 // these are strictly unneeded but they make the interface more consistent
@@ -19,7 +18,7 @@ export const offset = (dt: DateTime): number => dt.offset;
 // TO/FROM A TIME
 export const fromTime = (obj: Partial<Time>, zone?: Zoneish): DateTime => fromGregorian(obj, normalizeZone(zone));
 export const toTime = (dt: DateTime): Time => ({ ...dt.time });
-export const setTime = (dt: DateTime, obj: Partial<Time>):  DateTime => setGregorian(dt, obj);
+export const setTime = (dt: DateTime, obj: Partial<Time>): DateTime => setGregorian(dt, obj);
 
 // CONVERSIONS
 export const toJSDate = (dt: DateTime): Date => new Date(dt.ts);
@@ -57,11 +56,10 @@ export const toGregorian = (dt: DateTime): Partial<GregorianDate & Time> => ({
   ...dt.time,
 });
 
-export const setGregorian =
-  (dt: DateTime, obj: Partial<GregorianDate & Time>): DateTime =>
-    set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
-      original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
-    );
+export const setGregorian = (dt: DateTime, obj: Partial<GregorianDate & Time>): DateTime =>
+  set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
+    original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
+  );
 
 // ALIASES
 // friendly aliases for Luxon users, though they won't accept week and ordinal data

@@ -1,6 +1,4 @@
-import { fromRFC2822, simpleParseOpts } from "../../../src/dateTime/parse";
-import { day, offset, toGregorian, zone } from "../../../src/dateTime/core";
-import { toUTC } from "../../../src/dateTime/zone";
+import { fromRFC2822, simpleParseOpts, day, offset, toGregorian, zone, toUTC } from "../../../src/luxon";
 
 test("fromRFC2822() accepts full format", () => {
   const dt = fromRFC2822("Tue, 01 Nov 2016 13:23:12 +0630");

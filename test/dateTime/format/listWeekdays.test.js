@@ -1,4 +1,4 @@
-import { listWeekdays } from "../../../src/dateTime/format";
+import { listWeekdays } from "../../../src/luxon";
 
 test("listWeekdays() lists all the weekdays", () => {
   expect(listWeekdays()).toEqual(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);

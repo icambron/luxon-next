@@ -1,5 +1,4 @@
-import { tryFromHTTP, tryFromISO, tryFromRFC2822 } from "../../../src/dateTime/parse";
-import { offset } from "../../../src/dateTime/core";
+import { tryFromHTTP, tryFromISO, tryFromRFC2822, offset } from "../../../src/luxon";
 
 test("tryFromISO returns a DateTime for valid values", () => {
   expect(tryFromISO("2021-11-06").isLuxonDateTime).toBe(true);

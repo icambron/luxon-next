@@ -1,8 +1,14 @@
+import {
+  fromGregorian,
+  now,
+  zone,
+  zoneName,
+  getDefaultZone,
+  setDefaultZone,
+  systemZone,
+  ianaZone,
+} from "../../../src/luxon";
 import { withDefaultZone } from "../../helpers";
-import { fromGregorian, now, zone, zoneName } from "../../../src/dateTime/core";
-import { getDefaultZone, setDefaultZone } from "../../../src/settings";
-import { systemZone } from "../../../src/impl/zone/system";
-import { ianaZone } from "../../../src/impl/zone/iana";
 
 test("Setting the default zone results in a different creation zone", () => {
   withDefaultZone(ianaZone("Asia/Tokyo"), () => {
