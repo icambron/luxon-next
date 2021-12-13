@@ -7,6 +7,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "build": "node scripts/build.mjs",
+    "types": "tsc -d --outDir build/types",
     "test": "TZ=\"America/New_York\" jest",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",
@@ -20,5 +21,16 @@
     "prettier": "latest",
     "typedoc": "latest",
     "typescript": "latest"
-  }
+  },
+
+  "types": "build/types/luxon.d.ts",
+  "main": "build/commonjs/luxon.js",
+  "files": [
+    "build/es6/luxon.js",
+    "build/es6/luxon.js.map",
+    "build/commonjs/luxon.js",
+    "build/commonjs/luxon.js.map",
+    "build/global/luxon.js",
+    "build/global/luxon.js.map"
+  ]
 }
