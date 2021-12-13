@@ -26,9 +26,9 @@ test("toFormat accepts the locale options", () => {
 
 test("toFormat('u') returns fractional seconds", () => {
   expect(toFormat(dt, "u")).toBe("123");
-  expect(toFormat( setGregorian(dt, { millisecond: 82 }), "u")).toBe("082");
-  expect(toFormat( setGregorian(dt, { millisecond: 2 }), "u")).toBe("002");
-  expect(toFormat( setGregorian(dt, { millisecond: 80 }), "u")).toBe("080"); // I think this is OK
+  expect(toFormat(setGregorian(dt, { millisecond: 82 }), "u")).toBe("082");
+  expect(toFormat(setGregorian(dt, { millisecond: 2 }), "u")).toBe("002");
+  expect(toFormat(setGregorian(dt, { millisecond: 80 }), "u")).toBe("080"); // I think this is OK
 });
 
 test("toFormat('uu') returns fractional seconds as two digits", () => {

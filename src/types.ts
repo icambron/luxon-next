@@ -193,7 +193,7 @@ export type FormatSecondArg<T extends SharedFormatOpts> = T | undefined;
 
 export type ISOFormatLength = "basic" | "extended";
 
-export type ISOTimeOptions = {
+export type ISOFormatOpts = {
   seconds: boolean,
   milliseconds: boolean
   elideZeroSeconds: boolean,

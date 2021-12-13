@@ -121,8 +121,12 @@ export const set = <TDate extends object>(
   obj: Partial<TDate & Time>,
   adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time
 ): DateTime => {
+
+  const calObj = calendar.fromObject(obj);
+  const timeObj = fromObject(obj);
+
   const current = getCalendarValue(dt, calendar);
-  let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
+  let mixed = { ...current, ...dt.time, ...calObj, ...timeObj } as TDate & Time;
 
   if (adjust) {
     mixed = adjust(obj, mixed);

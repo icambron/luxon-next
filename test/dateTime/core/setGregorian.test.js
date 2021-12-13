@@ -28,3 +28,11 @@ test("setGregorian(dt, { year }) doesn't wrap leap years", () => {
   expect(month(after)).toBe(2);
   expect(day(after)).toBe(28);
 });
+
+test("setGregorian() accepts miscased units", () => {
+  const dt = ymd(1982, 4, 25, 9, 23, 54, 123);
+  const i = setGregorian(dt, { Year: 2019, MONTH: 4, daYs: 10 });
+  expect(year(i)).toBe(2019);
+  expect(month(i)).toBe(4);
+  expect(day(i)).toBe(10);
+});
