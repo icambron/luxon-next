@@ -27,7 +27,7 @@ export const max = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) =>
 
 /**
  * Return the min of several date times, or `undefined` if the input array is empty
- * @param {Array<DateTime>} dts - the DateTimes from which to choose the minimum
+ * @param dts - the DateTimes from which to choose the minimum
  */
 export const min = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.min);
 
@@ -37,11 +37,11 @@ const normalizeStartEndUnit = buildNormalizer(startEndUnits, simplePlural);
 /**
  * Return the DateTime representing the beginning of a unit of time, relative to the input date time
  * ```js
- * ymd(2014, 3, 3) |> startOf("month") |> toISODate(); //=> "2014-03-01"
- * ymd(2014, 3, 3) |> startOf("year") |> toISODate(); //=> "2014-01-01"
- * ymd(2014, 3, 3) |> startOf("week") |> toISODate(); //=> "2014-03-03", weeks always start on Mondays
- * ymd(2014, 3, 3, 5, 30) |> startOf("day") |> toISOTime(); //=> "00:00.000-05:00"
- * ymd(2014, 3, 3, 5, 30) |> startOf("hour") |> toISOTime(); //=> "05:00:00.000-05:00"
+ * ymd(2014, 3, 3) |> startOf(%, "month") |> toISODate(%); //=> "2014-03-01"
+ * ymd(2014, 3, 3) |> startOf(%, "year") |> toISODate(%); //=> "2014-01-01"
+ * ymd(2014, 3, 3) |> startOf(%, "week") |> toISODate(%); //=> "2014-03-03", weeks always start on Mondays
+ * ymd(2014, 3, 3, 5, 30) |> startOf(%, "day") |> toISOTime(%); //=> "00:00.000-05:00"
+ * ymd(2014, 3, 3, 5, 30) |> startOf(%, "hour") |> toISOTime(%); //=> "05:00:00.000-05:00"
  * ```
  * @param unit - The unit to go to the beginning of. Can be "year", "quarter", "month", "week", "day", "hour", "minute", "second", or "millisecond".
  */
@@ -89,11 +89,11 @@ export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
 /**
  * Return the DateTime representing the end of a unit of time (meaning, the last millisecond), relative to the input date time
  * ```js
- * ymd(2014, 3, 3) |> endOf('month') |> toISO(); //=> '2014-03-31T23:59:59.999-05:00'
- * ymd(2014, 3, 3) |> endOf('year') |> toISO(); //=> '2014-12-31T23:59:59.999-05:00'
- * ymd(2014, 3, 3) |> endOf('week') |> toISO(); // => '2014-03-09T23:59:59.999-05:00', weeks start on Mondays
- * ymd(2014, 3, 3, 5, 30) |> endOf('day') |> toISO(); //=> '2014-03-03T23:59:59.999-05:00'
- * ymd(2014, 3, 3, 5, 30) |> endOf('hour') |> toISO(); //=> '2014-03-03T05:59:59.999-05:00'
+ * ymd(2014, 3, 3) |> endOf(%, 'month') |> toISO(%); //=> '2014-03-31T23:59:59.999-05:00'
+ * ymd(2014, 3, 3) |> endOf(%, 'year') |> toISO(%); //=> '2014-12-31T23:59:59.999-05:00'
+ * ymd(2014, 3, 3) |> endOf(%, 'week') |> toISO(%); // => '2014-03-09T23:59:59.999-05:00', weeks start on Mondays
+ * ymd(2014, 3, 3, 5, 30) |> endOf(%, 'day') |> toISO(%); //=> '2014-03-03T23:59:59.999-05:00'
+ * ymd(2014, 3, 3, 5, 30) |> endOf(%, 'hour') |> toISO(%); //=> '2014-03-03T05:59:59.999-05:00'
  * ```
  * @param  unit - The unit to go to the end of. Can be 'year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', or 'millisecond'.
  */
@@ -109,15 +109,15 @@ export const endOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
  *
  * Adding hours, minutes, seconds, or milliseconds increases the timestamp by the right number of milliseconds. Adding days, months, or years shifts the calendar, accounting for DSTs and leap years along the way. Thus, `plus(dt, { hours: 24 })` may result in a different time than `plus(dt, { days: 1 })` if there's a DST shift in between.
  * ```js
- * now() |> plus(123) //~> in 123 milliseconds
- * now() |> plus({ minutes: 15 }) //~> in 15 minutes
- * now() |> plus({ days: 1 }) //~> this time tomorrow
- * now() |> plus({ days: -1 }) //~> this time yesterday
- * now() |> plus({ hours: 3, minutes: 13 }) //~> in 3 hr, 13 min
- * now() |> plus(duration({ hours: 3, minutes: 13 })) //~> in 3 hr, 13 min
+ * now() |> plus(%, 123) //~> in 123 milliseconds
+ * now() |> plus(%, { minutes: 15 }) //~> in 15 minutes
+ * now() |> plus(%, { days: 1 }) //~> this time tomorrow
+ * now() |> plus(%, { days: -1 }) //~> this time yesterday
+ * now() |> plus(%, { hours: 3, minutes: 13 }) //~> in 3 hr, 13 min
+ * now() |> plus(%, duration({ hours: 3, minutes: 13 })) //~> in 3 hr, 13 min
  * ```
  * @param dt
- * @param  durOrObj - The amount to add. Either a Luxon Duration, or an object like `{ hours: 2, minutes: 6 }`
+ * @param durOrObj - The amount to add. Either a Luxon Duration, or an object like `{ hours: 2, minutes: 6 }`
  * @param conversionAccuracy - the accuracy system to use when converting fractional values. Defaults to "casual"
  */
 export const plus = (

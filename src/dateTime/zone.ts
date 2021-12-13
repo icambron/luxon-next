@@ -1,7 +1,7 @@
 import { getDefaultZone } from "../settings";
 import { gregorianToTS } from "../impl/calendars/gregorian";
 import { alter } from "../impl/dateTime";
-import { fixedOffsetZone } from "../impl/zone/fixedOffset";
+import { fixedOffsetZone, utcInstance } from "../impl/zone/fixedOffset";
 import { systemZone } from "../impl/zone/system";
 import { DateTime, Zoneish } from "../types";
 import { normalizeZone } from "../impl/zone/normalizeZone";
@@ -32,16 +32,24 @@ export const setZone = (dt: DateTime, zone: Zoneish, { keepLocalTime = false } =
  *
  * Equivalent to {@link setZone}(dt, 'utc')
 *  @param dt
- * @param [offset=0] - optionally, an offset from UTC in minutes
  * @param [opts={}] - options to pass to `setZone()`
  */
-export const toUTC = (dt: DateTime, offset: number = 0, opts: object = {}): DateTime => setZone(dt, fixedOffsetZone(offset), opts);
+export const toUTC = (dt: DateTime, opts: object = {}): DateTime => setZone(dt, utcInstance, opts);
+
+/**
+ * "Set" the DateTime's zone to a fixed-offset zone with the specified offset. Returns a newly-constructed DateTime.
+ *
+*  @param dt
+ * @param offset - an offset from UTC in minutes
+ * @param [opts={}] - options to pass to `setZone()`
+ */
+export const toFixedOffset = (dt: DateTime, offset: number, opts: object = {}) => setZone(dt, fixedOffsetZone(offset), opts);
 
 /**
  * "Set" the DateTime's zone to the system's time zone. Returns a newly-constructed DateTime.
  * The system time zone is the one set on the machine where this code gets executed.
  *
- * Equivalent to `{@link setZone}("system")`
+ * Equivalent to `{@link setZone}(dt, "system")`
  */
 export const toSystemZone = (dt: DateTime): DateTime => setZone(dt, systemZone);
 

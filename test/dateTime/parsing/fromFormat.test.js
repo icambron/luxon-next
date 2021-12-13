@@ -504,9 +504,7 @@ test.each([
   expect(hour(toUTC(dt))).toBe(13);
   expect(minute(toUTC(dt))).toBe(10);
 });
-//
-//// todo - see the "localized tokens in Luxon"
-//
+
 test("fromFormat() throws if you don't provide a format", () => {
   expect(() => fromFormat("yo")).toThrow();
 });

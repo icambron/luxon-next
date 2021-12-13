@@ -24,7 +24,7 @@ class FixedOffsetZone implements Zone {
   offset = (_ts?: number) => this._fixed;
 
   equals = (other: Zone): boolean =>
-    other.type === "fixed" && (other as FixedOffsetZone)._fixed === this._fixed;
+    other && other.type === "fixed" && (other as FixedOffsetZone)._fixed === this._fixed;
 
   isLuxonZone = true;
 }

@@ -1,4 +1,3 @@
-// todo - move to central cache
 import { isUndefined } from "../util/typeCheck";
 import { InvalidZoneError } from "../../errors";
 import { gregorianToLocalTS } from "../calendars/gregorian";
@@ -6,26 +5,22 @@ import { memo } from "../util/caching";
 import { Zone } from "../../types";
 import { isValidIANAZone } from "./zone";
 
-let dtfCache: Record<string, Intl.DateTimeFormat> = {};
-const makeDTF = (zone: string): Intl.DateTimeFormat => {
-  if (!dtfCache[zone]) {
-    try {
-      dtfCache[zone] = new Intl.DateTimeFormat("en-US", {
-        hourCycle: "h23",
-        timeZone: zone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-    } catch {
-      throw new InvalidZoneError(zone);
-    }
+const makeDTF = memo("ianaDtf", (zone: string) => {
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      hourCycle: "h23",
+      timeZone: zone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  } catch {
+    throw new InvalidZoneError(zone);
   }
-  return dtfCache[zone];
-};
+});
 
 const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   year: 0,
@@ -97,7 +92,6 @@ class IANAZone implements Zone {
 }
 
 /**
- * @param {string} name - Zone name
- * @return {IANAZone}
+ * @param name - Zone name
  */
 export const ianaZone: (zoneName: string) => Zone = memo("ianaZone", (name: string) => new IANAZone(name));

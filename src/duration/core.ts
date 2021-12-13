@@ -56,8 +56,8 @@ export const durMinus = (dur: Duration, ...durs: Duration[]) => {
  * Scale this Duration by the specified amount. Return a newly-constructed Duration.
  * ```js
  * const dur = duration({ hours: 1, minutes: 30 });
- * dur |> mapUnit( x => x * 2) |> toGregorian() //=> { hours: 2, minutes: 60 }
- * dur |> mapUnit( (x, u) => u === "hour" ? x * 2 : x) |> toGregorian() //=> { hours: 2, minutes: 30 }
+ * mapUnit(dur, x => x * 2) |> toGregorian //=> { hours: 2, minutes: 60 }
+ * mapUnit(dur, (x, u) => u === "hour" ? x * 2 : x) |> toGregorian //=> { hours: 2, minutes: 30 }
  * ```
  * @param fn - The function to apply to each unit. Arity is 1 or 2: the value of the unit and, optionally, the unit name. Must return a number.
  */

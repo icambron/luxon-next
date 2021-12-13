@@ -1,5 +1,5 @@
 import { fromGregorian, setGregorian } from "../../../src/dateTime/core";
-import { setZone, toUTC } from "../../../src/dateTime/zone";
+import { setZone, toFixedOffset, toUTC } from "../../../src/dateTime/zone";
 import { toFormat } from "../../../src/dateTime/format";
 import { setISOWeek } from "../../../src/dateTime/isoWeek";
 import { plus } from "../../../src/dateTime/math";
@@ -113,26 +113,26 @@ test("toFormat('HH') returns the padded hour (24-hour time)", () => {
 });
 
 test("toFormat('Z') returns the narrow offset", () => {
-  expect(toFormat(toUTC(dt, 360), "Z")).toBe("+6");
-  expect(toFormat(toUTC(dt, 390), "Z")).toBe("+6:30");
-  expect(toFormat(toUTC(dt, -360), "Z")).toBe("-6");
-  expect(toFormat(toUTC(dt, -390), "Z")).toBe("-6:30");
+  expect(toFormat(toFixedOffset(dt, 360), "Z")).toBe("+6");
+  expect(toFormat(toFixedOffset(dt, 390), "Z")).toBe("+6:30");
+  expect(toFormat(toFixedOffset(dt, -360), "Z")).toBe("-6");
+  expect(toFormat(toFixedOffset(dt, -390), "Z")).toBe("-6:30");
   expect(toFormat(toUTC(dt), "Z")).toBe("+0");
 });
 
 test("toFormat('ZZ') returns the padded offset", () => {
-  expect(toFormat(toUTC(dt, 360), "ZZ")).toBe("+06:00");
-  expect(toFormat(toUTC(dt, 390), "ZZ")).toBe("+06:30");
-  expect(toFormat(toUTC(dt, -360), "ZZ")).toBe("-06:00");
-  expect(toFormat(toUTC(dt, -390), "ZZ")).toBe("-06:30");
+  expect(toFormat(toFixedOffset(dt, 360), "ZZ")).toBe("+06:00");
+  expect(toFormat(toFixedOffset(dt, 390), "ZZ")).toBe("+06:30");
+  expect(toFormat(toFixedOffset(dt, -360), "ZZ")).toBe("-06:00");
+  expect(toFormat(toFixedOffset(dt, -390), "ZZ")).toBe("-06:30");
   expect(toFormat(toUTC(dt), "ZZ")).toBe("+00:00");
 });
 
 test("toFormat('ZZZ') returns a numerical offset", () => {
-  expect(toFormat(toUTC(dt, 360), "ZZZ")).toBe("+0600");
-  expect(toFormat(toUTC(dt, 390), "ZZZ")).toBe("+0630");
-  expect(toFormat(toUTC(dt, -360), "ZZZ")).toBe("-0600");
-  expect(toFormat(toUTC(dt, -390), "ZZZ")).toBe("-0630");
+  expect(toFormat(toFixedOffset(dt, 360), "ZZZ")).toBe("+0600");
+  expect(toFormat(toFixedOffset(dt, 390), "ZZZ")).toBe("+0630");
+  expect(toFormat(toFixedOffset(dt, -360), "ZZZ")).toBe("-0600");
+  expect(toFormat(toFixedOffset(dt, -390), "ZZZ")).toBe("-0630");
   expect(toFormat(toUTC(dt), "ZZZ")).toBe("+0000");
 });
 
