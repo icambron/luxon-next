@@ -191,6 +191,17 @@ export interface FormatToken {
 export type FormatFirstArg<T extends SharedFormatOpts> = T | string | undefined;
 export type FormatSecondArg<T extends SharedFormatOpts> = T | undefined;
 
+export type ISOFormatLength = "basic" | "extended";
+
+export type ISOTimeOptions = {
+  seconds: boolean,
+  milliseconds: boolean
+  elideZeroSeconds: boolean,
+  elideZeroMilliseconds: boolean,
+  format: ISOFormatLength,
+  includeOffset: boolean
+};
+
 // PARSING
 
 export interface ParseOpts {

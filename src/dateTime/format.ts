@@ -6,13 +6,12 @@ import { formatWeekday as formatWeekdayInternal, listWeekdays as listWeekdaysInt
 import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
 import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
 import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
-import { DateTime } from "../types";
+import { DateTime, ISOFormatLength, ISOFormatOpts } from "../types";
 
 import { makeCombinedItemFormatter, makeDirectFormatter} from "../impl/formatting/combinators";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
-import { year } from "./core";
 
 export const toLocaleString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
 export const toLocaleDateString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
@@ -27,18 +26,42 @@ export const toFormat = toFormatInternal;
 export const toRFC2822 = (dt: DateTime) => toFormat(dt, "EEE, dd LLL yyyy HH:mm:ss ZZZ", "en-US");
 export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH:mm:ss [GMT]");
 
-// todo - type options
-export const toISODate = (dt: DateTime, format: string = "extended"):string => {
-  let fmt = format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
+export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
+  `${toISODate(dt, opts)}T${toISOTime(dt, opts)}`;
 
-  if (year(dt) > 9999) {
+export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}):string => {
+  let realOpts = {format: "extended", ...opts }
+  let fmt = realOpts.format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
+
+  if (dt.gregorian.year > 9999) {
     fmt = "+" + fmt;
   }
   return toFormatInternal(dt, fmt);
 }
 
 export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
-// todo - toIsoTime()
+
+export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> =  {}) => {
+  let realOpts = {seconds: true, milliseconds: true, elideZeroSeconds: false, elideZeroMilliseconds: false, format: "extended", includeOffset: true, ...opts}
+  let fmt = realOpts.format === "basic" ? "HHmm" : "HH:mm";
+
+  const shouldElideMilliseconds = !realOpts.milliseconds || (realOpts.elideZeroMilliseconds && dt.time.millisecond === 0);
+  const shouldElideSeconds = !realOpts.seconds || (realOpts.elideZeroSeconds && dt.time.second === 0 && dt.time.millisecond == 0);
+
+  if (!shouldElideSeconds) {
+    fmt += realOpts.format === "basic" ? "ss" : ":ss";
+
+    if (!shouldElideMilliseconds) {
+      fmt += ".SSS";
+    }
+  }
+
+  if (realOpts.includeOffset) {
+    fmt += realOpts.format === "basic" ? "ZZZ" : "ZZ";
+  }
+
+  return toFormatInternal(dt, fmt, { allowZ: true });
+}
 
 export const formatEra = formatEraInternal;
 export const listEras = listErasInternal;

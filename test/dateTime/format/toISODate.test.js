@@ -21,7 +21,7 @@ test("toISODate() is local to the zone", () => {
 });
 
 test("toISODate() can output the basic format", () => {
-  expect(toISODate(dt, "basic")).toBe("19820525");
+  expect(toISODate(dt, { format: "basic" })).toBe("19820525");
 });
 
 test("toISODate() returns ISO 8601 date in format [±YYYYY]", () => {
