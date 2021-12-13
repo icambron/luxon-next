@@ -94,9 +94,8 @@ class DurationImpl implements Duration {
     this._values = normalizeUnitBundle(values, normalizeDurationUnit);
   }
 
-  // todo - immutability
   get values(): Partial<DurationValues> {
-    return this._values;
+    return { ...this._values };
   }
 
   toJson = (): string => toIso(this);
