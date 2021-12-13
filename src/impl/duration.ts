@@ -21,19 +21,19 @@ export const normalizeDurationUnit = buildNormalizer<DurationUnit>(durationUnits
 
 export const toIso = (dur: Duration): string => {
   let s = "P";
-  if (dur.values.years !== 0) s += dur.values.years + "Y";
-  if (dur.values.months !== 0 || dur.values.quarters !== 0)
-    s += (dur.values.months || 0) + (dur.values.quarters || 0) * 3 + "M";
-  if (dur.values.weeks !== 0) s += dur.values.weeks + "W";
-  if (dur.values.days !== 0) s += dur.values.days + "D";
-  if (dur.values.hours !== 0 || dur.values.minutes !== 0 || dur.values.seconds !== 0 || dur.values.milliseconds !== 0)
+  if (dur._values.years !== 0) s += dur._values.years + "Y";
+  if (dur._values.months !== 0 || dur._values.quarters !== 0)
+    s += (dur._values.months || 0) + (dur._values.quarters || 0) * 3 + "M";
+  if (dur._values.weeks !== 0) s += dur._values.weeks + "W";
+  if (dur._values.days !== 0) s += dur._values.days + "D";
+  if (dur._values.hours !== 0 || dur._values.minutes !== 0 || dur._values.seconds !== 0 || dur._values.milliseconds !== 0)
     s += "T";
-  if (dur.values.hours !== 0) s += dur.values.hours + "H";
-  if (dur.values.minutes !== 0) s += dur.values.minutes + "M";
-  if (dur.values.seconds !== 0 || dur.values.milliseconds !== 0)
+  if (dur._values.hours !== 0) s += dur._values.hours + "H";
+  if (dur._values.minutes !== 0) s += dur._values.minutes + "M";
+  if (dur._values.seconds !== 0 || dur._values.milliseconds !== 0)
     // this will handle "floating point madness" by removing extra decimal places
     // https://stackoverflow.com/questions/588004/is-floating-point-math-broken
-    s += roundTo((dur.values.seconds || 0) + (dur.values.milliseconds || 0) / 1000, 3) + "S";
+    s += roundTo((dur._values.seconds || 0) + (dur._values.milliseconds || 0) / 1000, 3) + "S";
   if (s === "P") s += "T0S";
   return s;
 };
@@ -72,7 +72,7 @@ export const defaultEmpties = (values: Partial<DurationValues>): DurationValues 
 export const alter =
   (values: Partial<DurationValues>): ((dur: Duration) => Duration) =>
   (dur) =>
-    fromValues({ ...dur.values, ...values });
+    fromValues({ ...dur._values, ...values });
 
 const durationZeroes: DurationValues = {
   years: 0,
