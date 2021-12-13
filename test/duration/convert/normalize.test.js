@@ -1,18 +1,18 @@
 import { durNormalize } from "../../../src/duration/convert";
-import { durFromValues, durValues } from "../../../src/duration/core";
+import { duration, durValues } from "../../../src/duration/core";
 
 test("normalize() rebalances negative convert", () => {
-  const dur = durNormalize(durFromValues({ years: 2, days: -2 }));
+  const dur = durNormalize(duration({ years: 2, days: -2 }));
   expect(durValues(dur)).toEqual({ years: 1, days: 363 });
 });
 
 test("normalize() de-overflows", () => {
-  const dur = durNormalize(durFromValues({ years: 2, days: 5000 }));
+  const dur = durNormalize(duration({ years: 2, days: 5000 }));
   expect(durValues(dur)).toEqual({ years: 15, days: 255 });
 });
 
 test("normalize() handles fully negative durations", () => {
-  const dur = durNormalize(durFromValues({ years: -2, days: -5000 }));
+  const dur = durNormalize(duration({ years: -2, days: -5000 }));
   expect(durValues(dur)).toEqual({ years: -15, days: -255 });
 });
 
@@ -66,7 +66,7 @@ test.each([
     { months: 0, days: -28 },
   ],
 ])("normalize() handles %p", (input, expected) => {
-  const dur = durNormalize(durFromValues(input));
+  const dur = durNormalize(duration(input));
   expect(durValues(dur)).toEqual(expected);
 });
 
@@ -75,7 +75,7 @@ test("normalize can convert all unit pairs", () => {
 
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
-      const dur = durFromValues({ [units[i]]: 1, [units[j]]: 2 });
+      const dur = duration({ [units[i]]: 1, [units[j]]: 2 });
       const normalizedDuration = durValues(durNormalize(dur));
       expect(normalizedDuration[units[i]]).not.toBe(NaN);
       expect(normalizedDuration[units[j]]).not.toBe(NaN);

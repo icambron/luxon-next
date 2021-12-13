@@ -2,6 +2,7 @@ import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, WeekdayFormatOpts } from "../../types";
+import { makeItemFormatter, makeOptReader } from "./combinators";
 
 const weekdayDtf = (formatOpts: WeekdayFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const mode = formatOpts.mode || "standalone";
@@ -11,14 +12,14 @@ const weekdayDtf = (formatOpts: WeekdayFormatOpts, zone: Zone): Intl.DateTimeFor
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const extractWeekday =
+const extractWeekday =
   (formatOpts: WeekdayFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = weekdayDtf(formatOpts, zone);
     return extract(d, dtf, "weekday");
   };
 
-export const listWeekdays = memo("weekdayList", (formatOpts: WeekdayFormatOpts) => {
+const listWeekdaysInternal = memo("weekdayList", (formatOpts: WeekdayFormatOpts) => {
   const dtf = weekdayDtf(formatOpts, utcInstance);
 
   const d = new Date(Date.UTC(2016, 10, 14, 12));
@@ -27,3 +28,6 @@ export const listWeekdays = memo("weekdayList", (formatOpts: WeekdayFormatOpts) 
     return extract(d, dtf, "weekday");
   });
 });
+
+export const formatWeekday = makeItemFormatter(extractWeekday);
+export const listWeekdays = makeOptReader(listWeekdaysInternal);

@@ -2,15 +2,16 @@ import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, EraFormatOpts} from "../../types";
+import { makeItemFormatter, makeOptReader } from "./combinators";
 
-export const extractEra =
+const extractEra =
   (formatOpts: EraFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = eraDtf(formatOpts, zone);
     return extract(d, dtf, "era");
   };
 
-export const listEras = memo("eraList", (formatOpts: EraFormatOpts) => {
+const listErasInternal = memo("eraList", (formatOpts: EraFormatOpts) => {
   const dtf = eraDtf(formatOpts, utcInstance);
 
   // @ts-ignore
@@ -27,3 +28,7 @@ const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const options: Intl.DateTimeFormatOptions = { year: "numeric", era: width };
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
+
+export const formatEra = makeItemFormatter(extractEra);
+// note this doesn't support Japanese eras
+export const listEras = makeOptReader(listErasInternal);

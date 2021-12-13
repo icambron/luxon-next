@@ -61,6 +61,10 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
+// () -> ?
+// ("fr") -> { locale: "fr" }
+// ("fr", { width: "short" }) => { locale: "fr", width: "short" }
+// ({ width: short } => { width: "short" }
 export const getFormattingOpts = <T extends SharedFormatOpts>(
   firstArg: FormatFirstArg<T>,
   secondArg: FormatSecondArg<T>

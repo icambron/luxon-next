@@ -15,8 +15,6 @@ export const durNegate = (dur: Duration): Duration => {
   return fromValues(negated as Partial<DurationValues>);
 };
 
-export const durFromValues = (values: Partial<DurationValues>): Duration => fromValues(values);
-
 export const durToMillis = (dur: Duration): number => dur.valueOf();
 export const durToISO = (dur: Duration): string => toIsoInternal(dur);
 export const durAlter = alter;

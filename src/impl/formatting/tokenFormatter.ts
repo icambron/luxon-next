@@ -1,4 +1,3 @@
-import { formatEra, formatMeridiem, formatMonth, formatOffset, formatWeekday } from "../../dateTime/format";
 import {
   dateTimeFormat,
   extract,
@@ -24,6 +23,11 @@ import { getCalendarValue } from "../dateTime";
 import { ordinalInstance } from "../calendars/ordinal";
 import { gregorianInstance } from "../calendars/gregorian";
 import { isoWeekCalendarInstance } from "../calendars/isoWeek";
+import { formatWeekday } from "./weekdays";
+import { formatMeridiem } from "./meridiems";
+import { formatMonth } from "./months";
+import { formatEra } from "./eras";
+import { formatOffset } from "./namedOffset";
 
 interface ExtendedNumberFormatOpts extends NumberFormatOpts {
   forceSimple?: boolean

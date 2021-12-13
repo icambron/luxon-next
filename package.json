@@ -12,11 +12,6 @@
     "circular": "dpdm --exit-code=circular:1 src/**/*.ts"
   },
   "devDependencies": {
-    "@babel/cli": "latest",
-    "@babel/core": "latest",
-    "@babel/plugin-proposal-pipeline-operator": "latest",
-    "@babel/preset-env": "latest",
-    "@babel/preset-typescript": "latest",
     "@swc/core": "^1.2.119",
     "@swc/jest": "^0.2.12",
     "dpdm": "latest",

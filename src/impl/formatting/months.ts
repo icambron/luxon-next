@@ -2,15 +2,16 @@ import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, MonthFormatOpts } from "../../types";
+import { makeItemFormatter, makeOptReader } from "./combinators";
 
-export const extractMonth =
+const extractMonth =
   (formatOpts: MonthFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = monthDtf(formatOpts, zone);
     return extract(d, dtf, "month");
   };
 
-export const listMonths = memo("monthList", (formatOpts: MonthFormatOpts) => {
+const listMonthsInternal = memo("monthList", (formatOpts: MonthFormatOpts) => {
   const dtf = monthDtf(formatOpts, utcInstance);
 
   // @ts-ignore
@@ -27,3 +28,6 @@ const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat 
   const options: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
+
+export const formatMonth = makeItemFormatter(extractMonth);
+export const listMonths = makeOptReader(listMonthsInternal);

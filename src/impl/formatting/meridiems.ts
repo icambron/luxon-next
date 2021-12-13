@@ -2,15 +2,16 @@ import { dateTimeFormat, extract} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, MeridiemFormatOpts } from "../../types";
+import { makeItemFormatter, makeOptReader } from "./combinators";
 
-export const extractMeridiem =
+const extractMeridiem =
   (formatOpts: MeridiemFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
   (d, zone) => {
     const dtf = meridiemDtf(formatOpts, zone);
     return extract(d, dtf, "dayperiod");
   };
 
-export const listMeridiems = memo("meridiemList", (formatOpts: MeridiemFormatOpts) => {
+const listMeridiemsInternal = memo("meridiemList", (formatOpts: MeridiemFormatOpts) => {
   const dtf = meridiemDtf(formatOpts, utcInstance);
 
   // @ts-ignore
@@ -35,3 +36,7 @@ const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeF
       : { hour: "numeric", hourCycle: "h12", dayPeriod: width };
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
+
+export const formatMeridiem = makeItemFormatter(extractMeridiem);
+export const listMeridiems = makeOptReader(listMeridiemsInternal);
+

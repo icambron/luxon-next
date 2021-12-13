@@ -1,4 +1,4 @@
-import { durFromMillis, durFromValues, durPlus as durationPlus } from "./core";
+import { durFromMillis, duration, durPlus as durationPlus } from "./core";
 import { as, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
@@ -87,13 +87,13 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
     }
   }
 
-  const duration = durFromValues(results);
+  const dur = duration(results);
 
   if (lowerOrderUnits.length > 0) {
     const simple = durFromMillis(remainingMillis);
     const shiftedToUnits = durShiftTo(simple, lowerOrderUnits);
-    return durationPlus(duration, shiftedToUnits);
+    return durationPlus(dur, shiftedToUnits);
   } else {
-    return duration;
+    return dur;
   }
 };

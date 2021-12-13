@@ -3,15 +3,15 @@ import { toGregorian } from "../../../src/dateTime/core";
 
 test("fromISOWeek() builds the right Gregorian date", () => {
   const dt = fromISOWeek({ weekYear: 2016, weekNumber: 21, weekday: 3, hour: 1, minute: 2, second: 3, millisecond: 4 });
-  // expect(toGregorian(dt)).toEqual({
-  //   year: 2016,
-  //   month: 5,
-  //   day: 25,
-  //   hour: 1,
-  //   minute: 2,
-  //   second: 3,
-  //   millisecond: 4
-  // });
+  expect(toGregorian(dt)).toEqual({
+    year: 2016,
+    month: 5,
+    day: 25,
+    hour: 1,
+    minute: 2,
+    second: 3,
+    millisecond: 4
+  });
 
   expect(toISOWeek(dt)).toEqual({
     weekYear: 2016,

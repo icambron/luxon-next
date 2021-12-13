@@ -1,21 +1,14 @@
 import { dateTimeFormat } from "../impl/util/formatUtil";
 import * as presets from "../impl/formatting/presets";
-import { extractMonth, listMonths as listMonthsInternal } from "../impl/formatting/months";
-import { extractMeridiem, listMeridiems as listMeridiemsInternal } from "../impl/formatting/meridiems";
-import { extractWeekday, listWeekdays as listWeekdaysInternal } from "../impl/formatting/weekdays";
-import { extractEra, listEras as listErasInternal } from "../impl/formatting/eras";
-import { formatNumericOffset } from "../impl/zone/zone";
+import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
+import { formatMeridiem as formatMeridiemInternal, listMeridiems as listMeridiemsInternal } from "../impl/formatting/meridiems";
+import { formatWeekday as formatWeekdayInternal, listWeekdays as listWeekdaysInternal } from "../impl/formatting/weekdays";
+import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
 import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
-import { extractNamedOffset } from "../impl/formatting/namedOffset";
-import { DateTime, NamedOffsetFormatOpts, NumericOffsetFormatWidth, OffsetFormatOpts } from "../types";
+import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
+import { DateTime } from "../types";
 
-import {
-  makeCombinedItemFormatter,
-  makeDirectFormatter,
-  makeItemFormatter,
-  makeOptReader,
-  makeDtOptReader,
-  toJs} from "../impl/formatting/combinators";
+import { makeCombinedItemFormatter, makeDirectFormatter} from "../impl/formatting/combinators";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
@@ -45,26 +38,21 @@ export const toISODate = (dt: DateTime, format: string = "extended"):string => {
 }
 
 export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
-
 // todo - toIsoTime()
 
-export const formatMonth = makeItemFormatter(extractMonth);
-export const formatWeekday = makeItemFormatter(extractWeekday);
-export const formatMeridiem = makeItemFormatter(extractMeridiem);
-export const formatEra = makeItemFormatter(extractEra);
+export const formatEra = formatEraInternal;
+export const listEras = listErasInternal;
 
-export const formatOffset = makeDtOptReader<OffsetFormatOpts, string>((dt, opts) => {
-  const width = opts.width || "short";
-  return width === "short" || width === "long"
-    ? toJs(dt, extractNamedOffset(opts as NamedOffsetFormatOpts))
-    : formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth)
-  });
+export const formatMonth = formatMonthInternal;
+export const listMonths = listMonthsInternal;
 
-export const listMonths = makeOptReader(listMonthsInternal);
-export const listWeekdays = makeOptReader(listWeekdaysInternal);
-export const listMeridiems = makeOptReader(listMeridiemsInternal);
-// note this doesn't support Japanese eras
-export const listEras = makeOptReader(listErasInternal);
+export const formatWeekday = formatWeekdayInternal;
+export const listWeekdays = listWeekdaysInternal;
+
+export const formatMeridiem = formatMeridiemInternal;
+export const listMeridiems = listMeridiemsInternal;
+
+export const formatOffset = formatOffsetInternal;
 
 // todo - revisit these
 export const DATE_SHORT = presets.DATE_SHORT;
