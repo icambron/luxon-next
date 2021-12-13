@@ -3,7 +3,7 @@
 const { fromGregorian, year, month, day, hour, minute, second, millisecond } = require("../../../src/dateTime/core");
 const { startOf, endOf } = require("../../../src/dateTime/math");
 
-function createDateTime() {
+function makeDt() {
   return fromGregorian({
     year: 2010,
     month: 2,
@@ -16,21 +16,21 @@ function createDateTime() {
 }
 
 test("startOf('year') goes to the start of the year", () => {
-  const dt = createDateTime() |> startOf("year");
+  const dt = startOf(makeDt(), "year");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(1);
-  expect(dt |> day).toBe(1);
-  expect(dt |> hour).toBe(0);
-  expect(dt |> minute).toBe(0);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(1);
+  expect(day(dt)).toBe(1);
+  expect(hour(dt)).toBe(0);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('quarter') goes to the start of the quarter", () => {
   const monthToQuarterStart = (m, quarterStart) => {
     const dt =
-      fromGregorian({
+      startOf(fromGregorian({
         year: 2017,
         month: m,
         day: 10,
@@ -38,15 +38,15 @@ test("startOf('quarter') goes to the start of the quarter", () => {
         minute: 5,
         second: 6,
         millisecond: 7,
-      }) |> startOf("quarter");
+      }), "quarter");
 
-    expect(dt |> year).toBe(2017);
-    expect(dt |> month).toBe(quarterStart);
-    expect(dt |> day).toBe(1);
-    expect(dt |> hour).toBe(0);
-    expect(dt |> minute).toBe(0);
-    expect(dt |> second).toBe(0);
-    expect(dt |> millisecond).toBe(0);
+    expect(year(dt)).toBe(2017);
+    expect(month(dt)).toBe(quarterStart);
+    expect(day(dt)).toBe(1);
+    expect(hour(dt)).toBe(0);
+    expect(minute(dt)).toBe(0);
+    expect(second(dt)).toBe(0);
+    expect(millisecond(dt)).toBe(0);
   };
 
   monthToQuarterStart(1, 1);
@@ -64,114 +64,114 @@ test("startOf('quarter') goes to the start of the quarter", () => {
 });
 
 test("startOf('month') goes to the start of the month", () => {
-  const dt = createDateTime() |> startOf("month");
+  const dt = startOf(makeDt(), "month");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(1);
-  expect(dt |> hour).toBe(0);
-  expect(dt |> minute).toBe(0);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(1);
+  expect(hour(dt)).toBe(0);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('day') goes to the start of the day", () => {
-  const dt = createDateTime() |> startOf("day");
+  const dt = startOf(makeDt(), "day");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(0);
-  expect(dt |> minute).toBe(0);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(0);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('hour') goes to the start of the hour", () => {
-  const dt = createDateTime() |> startOf("hour");
+  const dt = startOf(makeDt(), "hour");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(0);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('minute') goes to the start of the minute", () => {
-  const dt = createDateTime() |> startOf("minute");
+  const dt = startOf(makeDt(), "minute");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(5);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(5);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('second') goes to the start of the second", () => {
-  const dt = createDateTime() |> startOf("second");
+  const dt = startOf(makeDt(), "second");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(5);
-  expect(dt |> second).toBe(6);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(5);
+  expect(second(dt)).toBe(6);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('week') goes to the start of the week", () => {
   // using a different day so that it doesn't end up as the first of the month
-  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }) |> startOf("week");
+  const dt = startOf(fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }), "week");
 
-  expect(dt |> year).toBe(2016);
-  expect(dt |> month).toBe(3);
-  expect(dt |> day).toBe(7);
-  expect(dt |> hour).toBe(0);
-  expect(dt |> minute).toBe(0);
-  expect(dt |> second).toBe(0);
-  expect(dt |> millisecond).toBe(0);
+  expect(year(dt)).toBe(2016);
+  expect(month(dt)).toBe(3);
+  expect(day(dt)).toBe(7);
+  expect(hour(dt)).toBe(0);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf throws on invalid convert", () => {
-  expect(() => createDateTime() |> startOf("splork")).toThrow();
-  expect(() => createDateTime() |> startOf("")).toThrow();
+  expect(() => startOf(makeDt(), "splork")).toThrow();
+  expect(() => startOf(makeDt(), "")).toThrow();
 });
 
 //------
 // #endOf()
 //------
 test("endOf('year') goes to the start of the year", () => {
-  const dt = createDateTime() |> endOf("year");
+  const dt = endOf(makeDt(), "year");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(12);
-  expect(dt |> day).toBe(31);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(12);
+  expect(day(dt)).toBe(31);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('quarter') goes to the end of the quarter", () => {
-  const dt = createDateTime() |> endOf("quarter");
+  const dt = endOf(makeDt(), "quarter");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(3);
-  expect(dt |> day).toBe(31);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(3);
+  expect(day(dt)).toBe(31);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('quarter') goes to the end of the quarter in December", () => {
   const monthToQuarterEnd = (m, endMonth) => {
     const dt =
-      fromGregorian({
+      endOf(fromGregorian({
         year: 2017,
         month: m,
         day: 10,
@@ -179,15 +179,15 @@ test("endOf('quarter') goes to the end of the quarter in December", () => {
         minute: 5,
         second: 6,
         millisecond: 7,
-      }) |> endOf("quarter");
+      }), "quarter");
 
-    expect(dt |> year).toBe(2017);
-    expect(dt |> month).toBe(endMonth);
-    expect(dt |> day).toBe(dt |> endOf("month") |> day);
-    expect(dt |> hour).toBe(23);
-    expect(dt |> minute).toBe(59);
-    expect(dt |> second).toBe(59);
-    expect(dt |> millisecond).toBe(999);
+    expect(year(dt)).toBe(2017);
+    expect(month(dt)).toBe(endMonth);
+    expect(day(dt)).toBe(day(endOf(dt, "month")));
+    expect(hour(dt)).toBe(23);
+    expect(minute(dt)).toBe(59);
+    expect(second(dt)).toBe(59);
+    expect(millisecond(dt)).toBe(999);
   };
 
   monthToQuarterEnd(1, 3);
@@ -205,90 +205,90 @@ test("endOf('quarter') goes to the end of the quarter in December", () => {
 });
 
 test("endOf('month') goes to the start of the month", () => {
-  const dt = createDateTime() |> endOf("month");
+  const dt = endOf(makeDt(), "month");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(28);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(28);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('day') goes to the start of the day", () => {
-  const dt = createDateTime() |> endOf("day");
+  const dt = endOf(makeDt(), "day");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('hour') goes to the start of the hour", () => {
-  const dt = createDateTime() |> endOf("hour");
+  const dt = endOf(makeDt(), "hour");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('minute') goes to the start of the minute", () => {
-  const dt = createDateTime() |> endOf("minute");
+  const dt = endOf(makeDt(), "minute");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(5);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(5);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('second') goes to the start of the second", () => {
-  const dt = createDateTime() |> endOf("second");
+  const dt = endOf(makeDt(), "second");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(2);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(4);
-  expect(dt |> minute).toBe(5);
-  expect(dt |> second).toBe(6);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(2);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(4);
+  expect(minute(dt)).toBe(5);
+  expect(second(dt)).toBe(6);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('week') goes to the end of the week", () => {
   // using a different day so that it doesn't end up as the first of the month
-  const dt = fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }) |> endOf("week");
+  const dt = endOf(fromGregorian({ year: 2016, month: 3, day: 12, hour: 10 }), "week");
 
-  expect(dt |> year).toBe(2016);
-  expect(dt |> month).toBe(3);
-  expect(dt |> day).toBe(13);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2016);
+  expect(month(dt)).toBe(3);
+  expect(day(dt)).toBe(13);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf throws on invalid convert", () => {
-  expect(() => createDateTime() |> endOf("splork")).toThrow();
+  expect(() => endOf(makeDt(), "splork")).toThrow();
 });
 
 test("endOf accepts plural convert", () => {
-  const dt = createDateTime() |> endOf("years");
+  const dt = endOf(makeDt(), "years");
 
-  expect(dt |> year).toBe(2010);
-  expect(dt |> month).toBe(12);
-  expect(dt |> day).toBe(31);
-  expect(dt |> hour).toBe(23);
-  expect(dt |> minute).toBe(59);
-  expect(dt |> second).toBe(59);
-  expect(dt |> millisecond).toBe(999);
+  expect(year(dt)).toBe(2010);
+  expect(month(dt)).toBe(12);
+  expect(day(dt)).toBe(31);
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });

@@ -3,7 +3,7 @@ import { fromOrdinal, toOrdinal } from "../../../src/dateTime/ordinal";
 
 test("fromOrdinal() builds the right Gregorian date", () => {
   const dt = fromOrdinal({ year: 2016, ordinal: 146, hour: 1, minute: 2, second: 3, millisecond: 4 });
-  expect(dt |> toGregorian()).toEqual({
+  expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 5,
     day: 25,
@@ -13,7 +13,7 @@ test("fromOrdinal() builds the right Gregorian date", () => {
     millisecond: 4,
   });
 
-  expect(dt |> toOrdinal()).toEqual({
+  expect(toOrdinal(dt)).toEqual({
     year: 2016,
     ordinal: 146,
     hour: 1,
@@ -25,7 +25,7 @@ test("fromOrdinal() builds the right Gregorian date", () => {
 
 test("fromOrdinal() defaults the ordinal", () => {
   const dt = fromOrdinal({ year: 2016 });
-  expect(dt |> toGregorian()).toEqual({
+  expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 1,
     day: 1,

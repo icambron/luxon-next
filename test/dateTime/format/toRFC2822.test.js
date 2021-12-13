@@ -2,8 +2,7 @@ import { fromGregorian, setTime } from "../../../src/dateTime/core";
 import { toRFC2822 } from "../../../src/dateTime/format";
 import { setZone, toUTC } from "../../../src/dateTime/zone";
 
-const dtMaker = () =>
-  fromGregorian(
+const dt = fromGregorian(
     {
       year: 1982,
       month: 5,
@@ -15,10 +14,9 @@ const dtMaker = () =>
     },
     "utc"
   );
-const dt = dtMaker();
 
 test("toRFC2822() returns an RFC 2822 date", () => {
-  expect(dt |> toUTC() |> toRFC2822()).toBe("Tue, 25 May 1982 09:23:54 +0000");
-  expect(dt |> setZone("America/New_York") |> toRFC2822()).toBe("Tue, 25 May 1982 05:23:54 -0400");
-  expect(dt |> setTime({ hour: 15 }) |> toRFC2822()).toBe("Tue, 25 May 1982 15:23:54 +0000");
+  expect(toRFC2822(toUTC(dt))).toBe("Tue, 25 May 1982 09:23:54 +0000");
+  expect(toRFC2822(setZone(dt, "America/New_York"))).toBe("Tue, 25 May 1982 05:23:54 -0400");
+  expect(toRFC2822(setTime(dt, { hour: 15 }))).toBe("Tue, 25 May 1982 15:23:54 +0000");
 });

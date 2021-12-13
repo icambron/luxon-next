@@ -42,12 +42,10 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
   return s;
 };
 
-export const toFormat = (format: string, firstArg?: FormatFirstArg<TokenFormatOpts>, secondArg?: FormatSecondArg<TokenFormatOpts>): (dt: DateTime) => string => {
+export const toFormat = (dt: DateTime, format: string, firstArg?: FormatFirstArg<TokenFormatOpts>, secondArg?: FormatSecondArg<TokenFormatOpts>): string => {
   const formatOpts = getFormattingOpts<TokenFormatOpts>(firstArg, secondArg);
-  return (dt: DateTime) => {
-    const tokens = parseFormat(format);
-    return stringifyTokens(tokens, token => tokenToString(dt, token, formatOpts));
-  };
+  const tokens = parseFormat(format);
+  return stringifyTokens(tokens, token => tokenToString(dt, token, formatOpts));
 }
 
 const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: TokenFormatOpts = {}): string => {
@@ -68,15 +66,15 @@ const tokenToString = (dt: DateTime, token: FormatToken, formatOpts: TokenFormat
     return opts.forceSimple ? padStart(n, opts.minimumIntegerDigits || 1) : numberFormat(opts).format(n);
   }
 
-  const formatField = <T extends FormatOpts>(formatter: ((opts: T) => (dt: DateTime) => string), opts: T): string =>
-    formatter({...formatOpts, ...opts})(dt);
+  const formatField = <T extends FormatOpts>(formatter: ((dt: DateTime, opts: T)  => string), opts: T): string =>
+    formatter(dt, {...formatOpts, ...opts});
 
   const fWeekday = (opt: WeekdayFormatOpts) => formatField(formatWeekday, opt);
   const fMonth = (opt: MonthFormatOpts) => formatField(formatMonth, opt);
   const fEra = (opt: EraFormatOpts) => formatField(formatEra, opt);
 
   const fOffset = (width: OffsetFormatWidth): string =>
-    formatOpts.allowZ && dt.zone.isUniversal && dt.offset == 0 ? "Z" : formatOffset({...formatOpts, width })(dt);
+    formatOpts.allowZ && dt.zone.isUniversal && dt.offset == 0 ? "Z" : formatOffset(dt, {...formatOpts, width });
 
   const useDateTimeFormatter = formatOpts.calendar && formatOpts.calendar !== "gregory";
   const string = (opts: Intl.DateTimeFormatOptions, field: string) => {

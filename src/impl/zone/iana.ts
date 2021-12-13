@@ -26,6 +26,7 @@ const makeDTF = (zone: string): Intl.DateTimeFormat => {
   }
   return dtfCache[zone];
 };
+
 const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   year: 0,
   month: 1,
@@ -34,6 +35,7 @@ const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   minute: 4,
   second: 5
 };
+
 const partsOffset = (dtf: Intl.DateTimeFormat, date: Date) => {
   const formatted = dtf.formatToParts(date);
   const filled = new Array<number>();

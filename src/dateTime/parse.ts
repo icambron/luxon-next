@@ -46,7 +46,7 @@ const fromRegexParse = (extracted: ExtractedResult, opts: ParseOpts): DateTime =
   const { interpretationZone, targetZone } = pickZone(extracted.zone, opts);
   const calendar = extracted.calendar || gregorianInstance;
   const dt = fromCalendar(calendar, { ...extracted.calendarUnits, ...extracted.timeUnits }, interpretationZone);
-  return setZone(targetZone)(dt);
+  return setZone(dt, targetZone);
 };
 
 const wrapError =
@@ -83,7 +83,7 @@ const dateTimeFromParsedValues = (parsed: TokenParseValue, opts: ParseOpts): Dat
   }
 
   const dt = fromCalendar(calendar, { ...obj, ...parsed.time }, interpretationZone, parsed.knownOffset);
-  return setZone(targetZone)(dt);
+  return setZone(dt, targetZone);
 };
 
 export const fromISO = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);

@@ -8,14 +8,11 @@ export type Formatter<TOpt, TReturn> = (formatOpts: TOpt) => WithDateAndZone<TRe
 
 export type DirectFormatter<TReturn> = (locale: string | undefined, opts: Intl.DateTimeFormatOptions | undefined) => WithDateAndZone<TReturn>;
 
-export type WithDt<TReturn> = (dt: DateTime) => TReturn;
+export type WithDtAndOpts<TOpt, TReturn> = (dt: DateTime, firstArg?: FormatFirstArg<TOpt>, secondArg?: FormatSecondArg<TOpt>) => TReturn
 
 export type WithOpts<TOpt, TReturn> = (firstArg?: FormatFirstArg<TOpt>, secondArg?: FormatSecondArg<TOpt>) => TReturn
 
-export type WithOptsForDt<TOpt, TReturn> = WithOpts<TOpt, WithDt<TReturn>>;
-
-export const toJs =
-  <T>(f: WithDateAndZone<T>): WithDt<T> => (dt) => f(new Date(+dt), dt.zone);
+export const toJs = <T>(dt: DateTime, f: WithDateAndZone<T>): T => f(new Date(+dt), dt.zone);
 
 export const makeOptReader = <TOpt extends FormatOpts, TReturn>(f: (opts: TOpt) => TReturn): WithOpts<TOpt, TReturn> =>
   (firstArg, secondArg) => {
@@ -23,16 +20,22 @@ export const makeOptReader = <TOpt extends FormatOpts, TReturn>(f: (opts: TOpt) 
     return f(opts as TOpt);
   };
 
-export const makeItemFormatter = <TOpt extends FormatOpts, TReturn>(f: Formatter<TOpt, TReturn>): WithOptsForDt<TOpt, TReturn> =>
-  makeOptReader((opts) => toJs(f(opts as TOpt)));
+export const makeDtOptReader = <TOpt extends FormatOpts, TReturn>(f: (dt: DateTime, opts: TOpt) => TReturn): WithDtAndOpts<TOpt, TReturn> =>
+  (dt, firstArg, secondArg) => {
+    const opts = getFormattingOpts<TOpt>(firstArg, secondArg);
+    return f(dt, opts as TOpt);
+  };
 
-export const makeCombinedItemFormatter = <TOpt extends FormatOpts, TReturn>(f: Formatter<TOpt, TReturn>): WithOptsForDt<TOpt, TReturn> =>
+export const makeItemFormatter = <TOpt extends FormatOpts, TReturn>(f: Formatter<TOpt, TReturn>): WithDtAndOpts<TOpt, TReturn> =>
+  makeDtOptReader((dt, opts) => toJs(dt, f(opts as TOpt)));
+
+export const makeCombinedItemFormatter = <TOpt extends FormatOpts, TReturn>(f: Formatter<TOpt, TReturn>): WithDtAndOpts<TOpt, TReturn> =>
   makeItemFormatter((opts) => {
     const combinedOpts = combineWithDefaultFormat(opts);
     return f(combinedOpts as TOpt);
   })
 
-export const makeDirectFormatter = <TOpt extends FormatOpts, TReturn>(f: DirectFormatter<TReturn>): WithOptsForDt<TOpt, TReturn> =>
+export const makeDirectFormatter = <TOpt extends FormatOpts, TReturn>(f: DirectFormatter<TReturn>): WithDtAndOpts<TOpt, TReturn> =>
   makeCombinedItemFormatter(opts => f(opts.locale, opts));
 
 const combineWithDefaultFormat = (formatOpts: FormatOpts): FormatOpts => {
@@ -40,4 +43,3 @@ const combineWithDefaultFormat = (formatOpts: FormatOpts): FormatOpts => {
   return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultFormat() } : formatOpts;
 };
 
-export const withoutArgs = <T>(f: (dt: DateTime) => T): () => (dt: DateTime) => T  => () => (dt) => f(dt);

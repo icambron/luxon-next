@@ -7,20 +7,18 @@ import { isDuration as isDurationInternal } from "../impl/util/typeCheck";
 export const duration = fromValues;
 export const durFromMillis = (milliseconds: number) => duration({ milliseconds });
 
-export const durNegate = (): ((dur: Duration) => Duration) => {
+export const durNegate = (dur: Duration): Duration => {
   const negated = {} as Record<keyof DurationValues, number>;
-  return (dur) => {
-    for (const k of Object.keys(dur.values) as Array<keyof DurationValues>) {
-      negated[k] = -(dur.values[k] as number);
-    }
-    return fromValues(negated as Partial<DurationValues>);
-  };
+  for (const k of Object.keys(dur.values) as Array<keyof DurationValues>) {
+    negated[k] = -(dur.values[k] as number);
+  }
+  return fromValues(negated as Partial<DurationValues>);
 };
 
 export const durFromValues = (values: Partial<DurationValues>): Duration => fromValues(values);
 
-export const durToMillis = (): ((dur: Duration) => number) => (dur) => dur.valueOf();
-export const durToISO = (): ((dur: Duration) => string) => (dur) => toIsoInternal(dur);
+export const durToMillis = (dur: Duration): number => dur.valueOf();
+export const durToISO = (dur: Duration): string => toIsoInternal(dur);
 export const durAlter = alter;
 export const isDuration = isDurationInternal;
 export const durValues = (dur: Duration): Partial<DurationValues> => ({ ...dur.values });
@@ -34,7 +32,7 @@ export const durPlus = (...durs: Duration[]): Duration => {
 
   durationUnits.reduce((acc, unit) => {
     const [sum, found] = durs.reduce(
-      (lilAcc, dur) => [lilAcc[0] + durGet(unit)(dur), lilAcc[1] || dur.values[unit] !== undefined],
+      (lilAcc, dur) => [lilAcc[0] + durGet(dur, unit), lilAcc[1] || dur.values[unit] !== undefined],
       [0, false]
     );
     if (found) {
@@ -52,7 +50,7 @@ export const durPlus = (...durs: Duration[]): Duration => {
  * @param durs - The durations to subtract.
  */
 export const durMinus = (dur: Duration, ...durs: Duration[]) => {
-  const negated = durs.map(durNegate());
+  const negated = durs.map(durNegate);
   return durPlus(dur, ...negated);
 };
 
@@ -65,18 +63,15 @@ export const durMinus = (dur: Duration, ...durs: Duration[]) => {
  * ```
  * @param fn - The function to apply to each unit. Arity is 1 or 2: the value of the unit and, optionally, the unit name. Must return a number.
  */
-export const durMapInputs = (fn: (val: number, unit: DurationUnit) => number): ((dur: Duration) => Duration) => {
-  const result: Partial<DurationValues> = {};
-  return (dur) => {
-    durationUnits.reduce((acc, k) => {
-      const v = dur.values[k];
-      if (v !== undefined) {
-        acc[k] = asNumber(fn(v, k));
-      }
-      return acc;
-    }, result);
-    return duration(result);
-  };
+export const durMapInputs = (dur: Duration, fn: (val: number, unit: DurationUnit) => number): Duration => {
+  const result = durationUnits.reduce((acc, k) => {
+    const v = dur.values[k];
+    if (v !== undefined) {
+      acc[k] = asNumber(fn(v, k));
+    }
+    return acc;
+  }, {} as Partial<DurationValues>);
+  return duration(result);
 };
 
 /**
@@ -86,66 +81,56 @@ export const durMapInputs = (fn: (val: number, unit: DurationUnit) => number): (
  * dur |> get('years') //=> 2
  * dur |> get('months') //=> 0
  * dur |> get('days') //=> 3
- * @param unit
  */
-export const durGet = (unit: DurationUnit): ((dur: Duration) => number) => {
+export const durGet = (dur: Duration, unit: DurationUnit): number => {
   const normalized = normalizeDurationUnit(unit);
   if (normalized == null) {
     throw new InvalidUnitError(unit);
   }
-  return (dur) => dur.values[normalized] || 0;
+  return dur.values[normalized] || 0;
 };
 
 /**
  * Gets the years in this duration
- * @param dur
  */
 export const durYears = (dur: Duration): number => dur.values.years || 0;
 
 /**
  * Gets the quarters in this duration
- * @param dur
  */
 export const durQuarters = (dur: Duration): number => dur.values.quarters || 0;
 
 /**
  * Gets the months in this duration
- * @param dur
  */
 export const durMonths = (dur: Duration): number => dur.values.months || 0;
 
 /**
  * Gets the weeks in this duration
- * @param dur
  */
 export const durWeeks = (dur: Duration): number => dur.values.weeks || 0;
 
 /**
  * Gets the days in this duration
- * @param dur
  */
 export const durDays = (dur: Duration): number => dur.values.days || 0;
 
 /**
  * Gets the hours in this duration
- * @param dur
  */
 export const durHours = (dur: Duration): number => dur.values.hours || 0;
 
 /**
  * Gets the minutes in this duration
- * @param dur
  */
 export const durMinutes = (dur: Duration): number => dur.values.minutes || 0;
 
 /**
  * Gets the seconds in this duration
- * @param dur
  */
 export const durSeconds = (dur: Duration): number => dur.values.seconds || 0;
 
 /**
  * Gets the milliseconds in this duration
- * @param dur
  */
 export const durMilliseconds = (dur: Duration): number => dur.values.milliseconds || 0;

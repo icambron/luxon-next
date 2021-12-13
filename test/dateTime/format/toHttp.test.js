@@ -19,7 +19,7 @@ const dtMaker = () =>
 const dt = dtMaker();
 
 test("toHTTP() returns an RFC 1123 date", () => {
-  expect(dt |> toUTC() |> toHTTP()).toBe("Tue, 25 May 1982 09:23:54 GMT");
-  expect(dt |> setZone("America/New_York") |> toHTTP()).toBe("Tue, 25 May 1982 09:23:54 GMT");
-  expect(dt |> plus({ hours: 10 }) |> toHTTP()).toBe("Tue, 25 May 1982 19:23:54 GMT");
+  expect(toHTTP(toUTC(dt))).toBe("Tue, 25 May 1982 09:23:54 GMT");
+  expect(toHTTP(setZone(dt, "America/New_York"))).toBe("Tue, 25 May 1982 09:23:54 GMT");
+  expect(toHTTP(plus(dt, { hours: 10 }))).toBe("Tue, 25 May 1982 19:23:54 GMT");
 });

@@ -18,12 +18,12 @@ type HighOrderDiff = {
 
 const dayDiff = (earlier: DateTime, later: DateTime): number => {
   const utcDayStart = (dt: DateTime) => {
-    const shifted = toUTC(0, { keepLocalTime: true })(dt);
-    const start = startOf("day")(shifted);
+    const shifted = toUTC(dt, 0, { keepLocalTime: true });
+    const start = startOf(shifted, "day");
     return +start;
   };
   const ms = utcDayStart(later) - utcDayStart(earlier);
-  return Math.floor(as("days")(durFromMillis(ms)));
+  return Math.floor(as(durFromMillis(ms), "days"));
 };
 
 const differs: [DurationUnit, Differ][] = [
@@ -50,10 +50,10 @@ const highOrderDiffs = (cursor: DateTime, later: DateTime, units: DurationUnit[]
       lowestOrder = unit;
 
       let delta = differ(cursor, later);
-      highWater = plus({ [unit]: delta })(cursor);
+      highWater = plus(cursor, { [unit]: delta });
 
       if (highWater > later) {
-        cursor = plus({ [unit]: delta - 1 })(cursor);
+        cursor = plus(cursor, { [unit]: delta - 1 });
         delta -= 1;
       } else {
         cursor = highWater;
@@ -79,7 +79,7 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
 
   if (lowerOrderUnits.length === 0 && highWater && lowestOrder) {
     if (+highWater < +later) {
-      highWater = plus({ [lowestOrder]: 1 })(cursor);
+      highWater = plus(cursor, { [lowestOrder]: 1 });
     }
 
     if (highWater !== cursor) {
@@ -91,7 +91,7 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
 
   if (lowerOrderUnits.length > 0) {
     const simple = durFromMillis(remainingMillis);
-    const shiftedToUnits = durShiftTo(lowerOrderUnits)(simple);
+    const shiftedToUnits = durShiftTo(simple, lowerOrderUnits);
     return durationPlus(duration, shiftedToUnits);
   } else {
     return duration;

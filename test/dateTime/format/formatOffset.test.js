@@ -16,11 +16,11 @@ const dtMaker = () =>
   );
 
 test("formatOffset defaults to English", () => {
-  expect(formatOffset()(dtMaker())).toEqual("EDT");
+  expect(formatOffset(dtMaker())).toEqual("EDT");
 });
 
 // test("formatOffset accepts locales", () => {
-//   expect(formatOffset("be")(dtMaker())).toEqual("жнівень");
+//   expect(formatOffset(dtMaker(), "be")).toEqual("жнівень");
 // });
 
 test.each([
@@ -30,16 +30,16 @@ test.each([
   ["standard", "-04:00"],
   ["narrow", "-4"]
 ])("formatOffset accepts width argument: %p", (width, expected ) =>
-  expect(formatOffset({ width })(dtMaker())).toEqual(expected));
+  expect(formatOffset(dtMaker(), { width })).toEqual(expected));
 
 // test("formatOffset accepts locale and options", () => {
 //   expect(formatOffset("be", { width: "short" })(dtMaker())).toEqual("жні");
 // });
 //
 // test("formatOffset accepts dtf options", () => {
-//   expect(formatOffset({ calendar: "coptic" })(dtMaker())).toEqual("Epep");
-//   expect(formatOffset("fr", { numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
-//   expect(formatOffset({ locale: "fr", numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
-//   expect(formatOffset({ numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
+//   expect(formatOffset(dtMaker(), { calendar: "coptic" })).toEqual("Epep");
+//   expect(formatOffset(dtMaker(), "fr", { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
+//   expect(formatOffset(dtMaker(), { locale: "fr", numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
+//   expect(formatOffset(dtMaker(), { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
 // });
 //

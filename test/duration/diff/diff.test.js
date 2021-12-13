@@ -8,13 +8,14 @@ const diffFromObjs = (o1, o2, units) => {
   return diff(dt1, dt2, units);
 };
 
-const diffObjs = (o1, o2, units) => diffFromObjs(o1, o2, units) |> durValues;
+const diffObjs = (o1, o2, units) => durValues(diffFromObjs(o1, o2, units));
 
 test("diff() defaults to milliseconds", () => {
   expect(diffObjs({ year: 2017, millisecond: 12 }, { year: 2017 })).toEqual({
     milliseconds: 12,
   });
-  expect(diffFromObjs({ year: 2017 }, { year: 2017 }) |> durMilliseconds).toBe(0);
+  const dur = diffFromObjs({ year: 2017 }, { year: 2017 })
+  expect(durMilliseconds(dur)).toBe(0);
 });
 
 test("diff() makes simple diffs", () => {
@@ -101,9 +102,9 @@ test("diff() handles unmatched units", () => {
 
 test("diff() sets all its units to 0 if the duration is empty", () => {
   const t = fromGregorian({ year: 2018, month: 11, day: 5, hour: 0 });
-  expect(diff(t, t) |> durValues).toEqual({ milliseconds: 0 });
-  expect(diff(t, t, "hours") |> durValues).toEqual({ hours: 0 });
-  expect(diff(t, t, "days") |> durValues).toEqual({ days: 0 });
+  expect(durValues(diff(t, t))).toEqual({ milliseconds: 0 });
+  expect(durValues(diff(t, t, "hours"))).toEqual({ hours: 0 });
+  expect(durValues(diff(t, t, "days"))).toEqual({ days: 0 });
 });
 
 test("diff() puts fractional parts in the lowest order unit", () => {
@@ -176,6 +177,6 @@ test("diff() results works when needing to backtrack months", () => {
   const right = fromJSDate(new Date(1554122527128));
 
   const d = diff(right, left, ["months", "days", "hours"]);
-  expect(d |> durMonths).toBe(0);
-  expect(d |> durDays).toBe(1);
+  expect(durMonths(d)).toBe(0);
+  expect(durDays(d)).toBe(1);
 });

@@ -14,12 +14,12 @@ import { toUTC } from "../../../src/dateTime/zone";
 
 test("fromMillis results in the right timestamp", () => {
   const bigValue = 391147200000;
-  expect(fromMillis(bigValue) |> toMillis).toBe(bigValue);
+  expect(toMillis(fromMillis(bigValue))).toBe(bigValue);
   expect(fromMillis(0).valueOf()).toBe(0);
 });
 
 test("fromMillis translates to the right gregorian value", () => {
-  const dt = fromMillis(1615082936814) |> toUTC();
+  const dt = toUTC(fromMillis(1615082936814));
 
   expect(toMillis(dt)).toBe(1615082936814);
 

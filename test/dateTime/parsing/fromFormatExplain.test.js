@@ -2,7 +2,7 @@ import { fromFormatExplain } from "../../../src/dateTime/parse";
 
 const keyCount = (o) => Object.keys(o).length;
 
-test("DateTime.fromFormatExplain() explains success", () => {
+test("fromFormatExplain() explains success", () => {
   const ex = fromFormatExplain("May 25, 1982 09:10:12.445", "MMMM dd, yyyy HH:mm:ss.SSS");
   expect(ex.tokens).toBeInstanceOf(Array);
   expect(ex.matches).toBeInstanceOf(Array);
@@ -10,14 +10,14 @@ test("DateTime.fromFormatExplain() explains success", () => {
   expect(keyCount(ex.fields)).toBe(7);
 });
 
-test("DateTime.fromFormatExplain() explains a bad match", () => {
+test("fromFormatExplain() explains a bad match", () => {
   const ex = fromFormatExplain("May 25, 1982 09:10:12.445", "MMMM dd, yyyy mmmm");
   expect(ex.tokens).toBeInstanceOf(Array);
   expect(ex.matches).toBeNull();
   expect(ex.fields).toBeNull();
 });
 
-test("DateTime.fromFormatExplain() parses zone correctly", () => {
+test("fromFormatExplain() parses zone correctly", () => {
   const ex = fromFormatExplain("America/New_York 1-April-2019 04:10:48 PM Mon", "z d-MMMM-yyyy hh:mm:ss a EEE");
   expect(ex.fields).toEqual({
     E: 1,
@@ -32,7 +32,7 @@ test("DateTime.fromFormatExplain() parses zone correctly", () => {
   });
 });
 
-test("DateTime.fromFormatExplain() takes the same options as fromFormat", () => {
+test("fromFormatExplain() takes the same options as fromFormat", () => {
   const ex = fromFormatExplain("Janv. 25 1982", "LLL dd yyyy", { locale: "fr" });
   expect(keyCount(ex.fields)).toBe(3);
 });

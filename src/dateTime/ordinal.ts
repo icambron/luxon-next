@@ -5,7 +5,7 @@ import { Zone, DateTime, OrdinalDate, Time } from "../types";
 export const fromOrdinal = (obj: Partial<OrdinalDate & Time>, zone?: Zone): DateTime =>
   fromCalendar(ordinalInstance, obj, zone);
 
-export const toOrdinal = (): ((dt: DateTime) => Partial<OrdinalDate & Time>) => (dt) => ({
+export const toOrdinal = (dt: DateTime): Partial<OrdinalDate & Time> => ({
   ...getCalendarValue(dt, ordinalInstance),
   ...dt.time,
 });

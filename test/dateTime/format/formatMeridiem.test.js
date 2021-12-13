@@ -16,17 +16,17 @@ const dtMaker = () =>
   );
 
 test("formatMeridiem defaults to English", () => {
-  expect(formatMeridiem()(dtMaker())).toEqual("AM");
+  expect(formatMeridiem(dtMaker())).toEqual("AM");
 });
 
 test("formatMeridiem accepts a locale", () => {
-  expect(formatMeridiem("en-GB")(dtMaker())).toEqual("am");
+  expect(formatMeridiem(dtMaker(), "en-GB")).toEqual("am");
 });
 
 test("formatMeridiem accepts a width option", () => {
-  expect(formatMeridiem({ width: "long" })(dtMaker())).toEqual("in the morning");
+  expect(formatMeridiem(dtMaker(), { width: "long" })).toEqual("in the morning");
 });
 
 test("formatMeridiem accepts both a locale and a width", () => {
-  expect(formatMeridiem({ locale: "fr", width: "long" })(dtMaker())).toEqual("du matin");
+  expect(formatMeridiem(dtMaker(), { locale: "fr", width: "long" })).toEqual("du matin");
 });

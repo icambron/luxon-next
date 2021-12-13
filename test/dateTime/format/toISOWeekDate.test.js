@@ -17,5 +17,5 @@ const dtMaker = () =>
 const dt = dtMaker();
 
 test("toISOWeekDate() returns ISO 8601 date", () => {
-  expect(dt |> toISOWeekDate()).toBe("1982-W21-2");
+  expect(toISOWeekDate(dt)).toBe("1982-W21-2");
 });

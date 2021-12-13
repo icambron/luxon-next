@@ -116,22 +116,22 @@ export const getCalendarValue = <TDate extends object>(dt: DateTime, calendar: C
 };
 
 export const set = <TDate extends object>(
+  dt: DateTime,
   calendar: Calendar<TDate>,
   obj: Partial<TDate & Time>,
   adjust?: (original: Partial<TDate & Time>, unadjusted: TDate & Time) => TDate & Time
-): (dt: DateTime) => DateTime =>
-  (dt) => {
-    const current = getCalendarValue(dt, calendar);
-    let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
+): DateTime => {
+  const current = getCalendarValue(dt, calendar);
+  let mixed = { ...current, ...dt.time, ...obj } as TDate & Time;
 
-    if (adjust) {
-      mixed = adjust(obj, mixed);
-    }
+  if (adjust) {
+    mixed = adjust(obj, mixed);
+  }
 
-    const gregorian = calendar.toGregorian(mixed);
+  const gregorian = calendar.toGregorian(mixed);
 
-    const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
-    return alter(ts, dt.zone, o)(dt);
+  const [ts, o] = gregorianToTS(gregorian, mixed, dt.offset, dt.zone);
+  return alter(ts, dt.zone, o)(dt);
 };
 
 export const MAX_DATE = 8.64e15;

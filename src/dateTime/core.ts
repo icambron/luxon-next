@@ -19,7 +19,7 @@ export const offset = (dt: DateTime): number => dt.offset;
 // TO/FROM A TIME
 export const fromTime = (obj: Partial<Time>, zone?: Zoneish): DateTime => fromGregorian(obj, normalizeZone(zone));
 export const toTime = (dt: DateTime): Time => ({ ...dt.time });
-export const setTime = (obj: Partial<Time>): ((dt: DateTime) => DateTime) => setGregorian(obj);
+export const setTime = (dt: DateTime, obj: Partial<Time>):  DateTime => setGregorian(dt, obj);
 
 // CONVERSIONS
 export const toJSDate = (dt: DateTime): Date => new Date(dt.ts);
@@ -52,14 +52,14 @@ export const ymd = (
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
   fromCalendar(gregorianInstance, obj, normalizeZone(zone));
 
-export const toGregorian = (): ((dt: DateTime) => Partial<GregorianDate & Time>) => (dt) => ({
+export const toGregorian = (dt: DateTime): Partial<GregorianDate & Time> => ({
   ...dt.gregorian,
   ...dt.time,
 });
 
 export const setGregorian =
-  (obj: Partial<GregorianDate & Time>): ((dt: DateTime) => DateTime) =>
-    set<GregorianDate>(gregorianInstance, obj, (original, unadjusted) =>
+  (dt: DateTime, obj: Partial<GregorianDate & Time>): DateTime =>
+    set<GregorianDate>(dt, gregorianInstance, obj, (original, unadjusted) =>
       original.day === undefined ? adjustCalendarOverflow(unadjusted) : unadjusted
     );
 

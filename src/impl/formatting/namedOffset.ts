@@ -1,9 +1,8 @@
 import {
-  FormatFirstArg,
-  FormatSecondArg, NamedOffsetFormatOpts,
+  NamedOffsetFormatOpts,
   Zone
 } from "../../types";
-import { dateTimeFormat, extract, getFormattingOpts } from "../util/formatUtil";
+import { dateTimeFormat, extract } from "../util/formatUtil";
 
 export const extractNamedOffset =
   (formatOpts: NamedOffsetFormatOpts): ((jsDate: Date, zone: Zone) => string) =>

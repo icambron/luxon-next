@@ -245,4 +245,6 @@ export interface TokenParseSummary {
   matches: RegExpMatchArray | null;
   fields: TokenParseFields | null;
   parsed: TokenParseValue | null;
-}
+};
+
+export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;

@@ -3,17 +3,17 @@ import { toGregorian } from "../../../src/dateTime/core";
 
 test("fromISOWeek() builds the right Gregorian date", () => {
   const dt = fromISOWeek({ weekYear: 2016, weekNumber: 21, weekday: 3, hour: 1, minute: 2, second: 3, millisecond: 4 });
-  expect(dt |> toGregorian()).toEqual({
-    year: 2016,
-    month: 5,
-    day: 25,
-    hour: 1,
-    minute: 2,
-    second: 3,
-    millisecond: 4,
-  });
+  // expect(toGregorian(dt)).toEqual({
+  //   year: 2016,
+  //   month: 5,
+  //   day: 25,
+  //   hour: 1,
+  //   minute: 2,
+  //   second: 3,
+  //   millisecond: 4
+  // });
 
-  expect(dt |> toISOWeek()).toEqual({
+  expect(toISOWeek(dt)).toEqual({
     weekYear: 2016,
     weekNumber: 21,
     weekday: 3,
@@ -26,7 +26,7 @@ test("fromISOWeek() builds the right Gregorian date", () => {
 
 test("fromISOWeek() defaults the weekday", () => {
   const dt = fromISOWeek({ weekYear: 2016, weekNumber: 21 });
-  expect(dt |> toGregorian()).toEqual({
+  expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 5,
     day: 23,
@@ -39,7 +39,7 @@ test("fromISOWeek() defaults the weekday", () => {
 
 test("fromISOWeek() defaults the weekNumber", () => {
   const dt = fromISOWeek({ weekYear: 2016 });
-  expect(dt |> toGregorian()).toEqual({
+  expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 1,
     day: 4,
@@ -52,7 +52,7 @@ test("fromISOWeek() defaults the weekNumber", () => {
 
 test("fromISOWeek() defaults the weekNumber for weird years too", () => {
   const dt = fromISOWeek({ weekYear: 2004 });
-  expect(dt |> toGregorian()).toEqual({
+  expect(toGregorian(dt)).toEqual({
     year: 2003,
     month: 12,
     day: 29,

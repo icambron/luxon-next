@@ -14,9 +14,8 @@ import {
   makeDirectFormatter,
   makeItemFormatter,
   makeOptReader,
-  toJs,
-  WithDt, withoutArgs
-} from "../impl/formatting/combinators";
+  makeDtOptReader,
+  toJs} from "../impl/formatting/combinators";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
@@ -32,22 +31,20 @@ export const toLocaleParts = makeCombinedItemFormatter(
 
 export const toFormat = toFormatInternal;
 
-export const toRFC2822 = withoutArgs(toFormat("EEE, dd LLL yyyy HH:mm:ss ZZZ", "en-US"))
-export const toHTTP = withoutArgs((dt) => toFormat("EEE, dd LLL yyyy HH:mm:ss [GMT]")(toUTC()(dt)));
+export const toRFC2822 = (dt: DateTime) => toFormat(dt, "EEE, dd LLL yyyy HH:mm:ss ZZZ", "en-US");
+export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH:mm:ss [GMT]");
 
 // todo - type options
-export const toISODate = (format: string = "extended"): (dt: DateTime) => string => {
+export const toISODate = (dt: DateTime, format: string = "extended"):string => {
   let fmt = format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
 
-  return (dt) => {
-    if (year(dt) > 9999) {
-      fmt = "+" + fmt;
-    }
-    return toFormatInternal(fmt)(dt);
+  if (year(dt) > 9999) {
+    fmt = "+" + fmt;
   }
+  return toFormatInternal(dt, fmt);
 }
 
-export const toISOWeekDate = withoutArgs(toFormat("kkkk-[W]W-c"));
+export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
 
 // todo - toIsoTime()
 
@@ -56,11 +53,11 @@ export const formatWeekday = makeItemFormatter(extractWeekday);
 export const formatMeridiem = makeItemFormatter(extractMeridiem);
 export const formatEra = makeItemFormatter(extractEra);
 
-export const formatOffset = makeOptReader<OffsetFormatOpts, WithDt<string>>((opts) => {
+export const formatOffset = makeDtOptReader<OffsetFormatOpts, string>((dt, opts) => {
   const width = opts.width || "short";
   return width === "short" || width === "long"
-    ? toJs(extractNamedOffset(opts as NamedOffsetFormatOpts))
-    : (dt) => formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth)
+    ? toJs(dt, extractNamedOffset(opts as NamedOffsetFormatOpts))
+    : formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth)
   });
 
 export const listMonths = makeOptReader(listMonthsInternal);

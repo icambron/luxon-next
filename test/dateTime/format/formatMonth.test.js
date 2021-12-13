@@ -1,8 +1,7 @@
 import { fromGregorian } from "../../../src/dateTime/core";
 import { formatMonth } from "../../../src/dateTime/format";
 
-const dtMaker = () =>
-  fromGregorian(
+const dt = fromGregorian(
     {
       year: 2014,
       month: 8,
@@ -16,24 +15,24 @@ const dtMaker = () =>
   );
 
 test("formatMonth defaults to English", () => {
-  expect(formatMonth()(dtMaker())).toEqual("August");
+  expect(formatMonth(dt)).toEqual("August");
 });
 
 test("formatMonth accepts locales", () => {
-  expect(formatMonth("be")(dtMaker())).toEqual("жнівень");
+  expect(formatMonth(dt, "be")).toEqual("жнівень");
 });
 
 test("formatMonth accepts format options", () => {
-  expect(formatMonth({ width: "2-digit" })(dtMaker())).toEqual("08");
+  expect(formatMonth(dt, { width: "2-digit" })).toEqual("08");
 });
 
 test("formatMonth accepts locale and options", () => {
-  expect(formatMonth("be", { width: "short" })(dtMaker())).toEqual("жні");
+  expect(formatMonth(dt, "be", { width: "short" })).toEqual("жні");
 });
 
 test("formatMonth accepts dtf options", () => {
-  expect(formatMonth({ calendar: "coptic" })(dtMaker())).toEqual("Epep");
-  expect(formatMonth("fr", { numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
-  expect(formatMonth({ locale: "fr", numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
-  expect(formatMonth({ numberingSystem: "mong", width: "2-digit" })(dtMaker())).toEqual("᠐᠘");
+  expect(formatMonth(dt, { calendar: "coptic" })).toEqual("Epep");
+  expect(formatMonth(dt, "fr", { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
+  expect(formatMonth(dt, { locale: "fr", numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
+  expect(formatMonth(dt, { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
 });

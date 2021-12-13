@@ -63,9 +63,8 @@ const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, numbe
 };
 
 export const as =
-  (unit: DurationUnit): ((dur: Duration) => number) =>
-  (dur) => {
-    const shifted = durShiftTo([unit])(dur);
+  (dur: Duration, unit: DurationUnit): number => {
+    const shifted = durShiftTo(dur, [unit]);
     return shifted.values[unit] || 0;
   };
 
@@ -76,19 +75,17 @@ export const as =
  * @return {Duration}
  */
 export const durNormalize =
-  (conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): ((dur: Duration) => Duration) =>
-  (dur) => {
+  (dur: Duration, conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()): Duration => {
     const map = durToMap(dur);
     normalizeValues(pickMatrix(conversionAccuracy), map);
     return fromValues(Object.fromEntries(map));
   };
 
 export const durShiftTo =
-  (
+  (dur: Duration,
     units: DurationUnit[],
     conversionAccuracy: ConversionAccuracy = getDefaultConversionAccuracy()
-  ): ((dur: Duration) => Duration) =>
-  (dur) => {
+  ): Duration => {
     if (units.length === 0) {
       return dur;
     }
@@ -120,7 +117,7 @@ export const durShiftTo =
 
         const i = Math.trunc(own);
         built.set(k, i);
-        accumulated.set(k, own - i); // we'd like to absorb these fractions in another unit
+        accumulated.set(k, (1000 * own - 1000 * i) / 1000); // we'd like to absorb these fractions in another unit
 
         // plus anything further down the chain that should be rolled up in to this
         for (const down of valueMap.keys()) {

@@ -1,8 +1,7 @@
 import { fromGregorian } from "../../../src/dateTime/core";
 import { formatWeekday } from "../../../src/dateTime/format";
 
-const dtMaker = () =>
-  fromGregorian(
+const dt = fromGregorian(
     {
       year: 2014,
       month: 8,
@@ -16,17 +15,17 @@ const dtMaker = () =>
   );
 
 test("formatWeekday defaults to English", () => {
-  expect(formatWeekday()(dtMaker())).toEqual("Wednesday");
+  expect(formatWeekday(dt)).toEqual("Wednesday");
 });
 
 test("formatWeekday accepts a locale", () => {
-  expect(formatWeekday("fr")(dtMaker())).toEqual("mercredi");
+  expect(formatWeekday(dt, "fr")).toEqual("mercredi");
 });
 
 test("formatWeekday accepts a width option", () => {
-  expect(formatWeekday({ width: "short" })(dtMaker())).toEqual("Wed");
+  expect(formatWeekday(dt,  { width: "short" })).toEqual("Wed");
 });
 
 test("formatWeekday accepts both a locale and a width", () => {
-  expect(formatWeekday("fr", { width: "short" })(dtMaker())).toEqual("mer.");
+  expect(formatWeekday(dt, "fr", { width: "short" })).toEqual("mer.");
 });

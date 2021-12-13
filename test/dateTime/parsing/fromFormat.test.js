@@ -11,7 +11,6 @@ import {
   now,
   zoneName,
   offset,
-  fromMillis,
 } from "../../../src/dateTime/core";
 import { ConflictingSpecificationError } from "../../../src/errors";
 import { weekday, weekNumber, weekYear } from "../../../src/dateTime/isoWeek";
@@ -21,13 +20,13 @@ import { withDefaultLocale } from "../../helpers";
 
 test("fromFormat() parses basic times", () => {
   const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(9);
-  expect(dt |> minute).toBe(10);
-  expect(dt |> second).toBe(11);
-  expect(dt |> millisecond).toBe(445);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(9);
+  expect(minute(dt)).toBe(10);
+  expect(second(dt)).toBe(11);
+  expect(millisecond(dt)).toBe(445);
 });
 
 test("fromFormat() throws on invalid formats", () => {
@@ -36,48 +35,48 @@ test("fromFormat() throws on invalid formats", () => {
 
 test("fromFormat() parses with variable-length input", () => {
   let dt = fromFormat("1982/05/03 09:07:05.004", "y/M/d H:m:s.S");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(9);
-  expect(dt |> minute).toBe(7);
-  expect(dt |> second).toBe(5);
-  expect(dt |> millisecond).toBe(4);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(9);
+  expect(minute(dt)).toBe(7);
+  expect(second(dt)).toBe(5);
+  expect(millisecond(dt)).toBe(4);
 
   dt = fromFormat("82/5/3 9:7:5.4", "yy/M/d H:m:s.S");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(3);
-  expect(dt |> hour).toBe(9);
-  expect(dt |> minute).toBe(7);
-  expect(dt |> second).toBe(5);
-  expect(dt |> millisecond).toBe(4);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(3);
+  expect(hour(dt)).toBe(9);
+  expect(minute(dt)).toBe(7);
+  expect(second(dt)).toBe(5);
+  expect(millisecond(dt)).toBe(4);
 });
 
 test("fromFormat() parses meridiems", () => {
   let dt = fromFormat("1982/05/25 9 PM", "yyyy/MM/dd h a");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(21);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(21);
 
   dt = fromFormat("1982/05/25 9 AM", "yyyy/MM/dd h a");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(9);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(9);
 
   dt = fromFormat("1982/05/25 12 AM", "yyyy/MM/dd h a");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(0);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(0);
 
   dt = fromFormat("1982/05/25 12 PM", "yyyy/MM/dd h a");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(12);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(12);
 });
 
 test("fromFormat() throws if you specify meridiem with 24-hour time", () => {
@@ -105,50 +104,50 @@ test.each([
 ])("fromFormat() makes dots optional and handles non breakable spaces: %p", (input, isAM) => {
   withDefaultLocale("es-ES", () => {
     const dt = fromFormat(input, "hh:mm a");
-    expect(dt |> hour).toBe(isAM ? 10 : 22);
-    expect(dt |> minute).toBe(45);
-    expect(dt |> second).toBe(0);
+    expect(hour(dt)).toBe(isAM ? 10 : 22);
+    expect(minute(dt)).toBe(45);
+    expect(second(dt)).toBe(0);
   });
 });
 
 test("fromFormat() parses variable-digit years", () => {
-  expect(fromFormat("2", "y") |> year).toBe(2);
-  expect(fromFormat("22", "y") |> year).toBe(22);
-  expect(fromFormat("222", "y") |> year).toBe(222);
-  expect(fromFormat("2222", "y") |> year).toBe(2222);
-  expect(fromFormat("22222", "y") |> year).toBe(22222);
-  expect(fromFormat("222222", "y") |> year).toBe(222222);
+  expect(year(fromFormat("2", "y"))).toBe(2);
+  expect(year(fromFormat("22", "y"))).toBe(22);
+  expect(year(fromFormat("222", "y"))).toBe(222);
+  expect(year(fromFormat("2222", "y"))).toBe(2222);
+  expect(year(fromFormat("22222", "y"))).toBe(22222);
+  expect(year(fromFormat("222222", "y"))).toBe(222222);
 });
 
 test("fromFormat() with yyyyy optionally parses extended years", () => {
   expect(() => fromFormat("222", "yyyyy")).toThrow();
-  expect(fromFormat("2222", "yyyyy") |> year).toBe(2222);
-  expect(fromFormat("22222", "yyyyy") |> year).toBe(22222);
-  expect(fromFormat("222222", "yyyyy") |> year).toBe(222222);
+  expect(year(fromFormat("2222", "yyyyy"))).toBe(2222);
+  expect(year(fromFormat("22222", "yyyyy"))).toBe(22222);
+  expect(year(fromFormat("222222", "yyyyy"))).toBe(222222);
 });
 
 test("fromFormat() with yyyyyy strictly parses extended years", () => {
   expect(() => fromFormat("2222", "yyyyyy")).toThrow();
-  expect(fromFormat("222222", "yyyyyy") |> year).toBe(222222);
-  expect(fromFormat("022222", "yyyyyy") |> year).toBe(22222);
+  expect(year(fromFormat("222222", "yyyyyy"))).toBe(222222);
+  expect(year(fromFormat("022222", "yyyyyy"))).toBe(22222);
   expect(() => fromFormat("2222222", "yyyyyy")).toThrow();
 });
 
 test("fromFormat() defaults yy to the right century", () => {
-  expect(fromFormat("55", "yy") |> year).toBe(2055);
-  expect(fromFormat("70", "yy") |> year).toBe(1970);
-  expect(fromFormat("1970", "yy") |> year).toBe(1970);
+  expect(year(fromFormat("55", "yy"))).toBe(2055);
+  expect(year(fromFormat("70", "yy"))).toBe(1970);
+  expect(year(fromFormat("1970", "yy"))).toBe(1970);
 });
 
 test("fromFormat() parses hours", () => {
-  expect(fromFormat("5", "h") |> hour).toBe(5);
-  expect(fromFormat("12", "h") |> hour).toBe(12);
-  expect(fromFormat("05", "hh") |> hour).toBe(5);
-  expect(fromFormat("12", "hh") |> hour).toBe(12);
-  expect(fromFormat("5", "H") |> hour).toBe(5);
-  expect(fromFormat("13", "H") |> hour).toBe(13);
-  expect(fromFormat("05", "HH") |> hour).toBe(5);
-  expect(fromFormat("13", "HH") |> hour).toBe(13);
+  expect(hour(fromFormat("5", "h"))).toBe(5);
+  expect(hour(fromFormat("12", "h"))).toBe(12);
+  expect(hour(fromFormat("05", "hh"))).toBe(5);
+  expect(hour(fromFormat("12", "hh"))).toBe(12);
+  expect(hour(fromFormat("5", "H"))).toBe(5);
+  expect(hour(fromFormat("13", "H"))).toBe(13);
+  expect(hour(fromFormat("05", "HH"))).toBe(5);
+  expect(hour(fromFormat("13", "HH"))).toBe(13);
 });
 
 test.each([
@@ -161,7 +160,7 @@ test.each([
   ["123", "SSS", 123],
   ["023", "SSS", 23],
 ])("fromFormat() parses milliseconds: %p with %p", (ms, token, expected) => {
-  expect(fromFormat(ms, token) |> millisecond).toBe(expected);
+  expect(millisecond(fromFormat(ms, token))).toBe(expected);
 });
 
 test.each([
@@ -174,148 +173,148 @@ test.each([
 });
 
 test("fromFormat() parses fractional seconds", () => {
-  expect(fromFormat("1", "u") |> millisecond).toBe(100);
-  expect(fromFormat("12", "u") |> millisecond).toBe(120);
-  expect(fromFormat("123", "u") |> millisecond).toBe(123);
-  expect(fromFormat("023", "u") |> millisecond).toBe(23);
-  expect(fromFormat("003", "u") |> millisecond).toBe(3);
-  expect(fromFormat("1234", "u") |> millisecond).toBe(123);
-  expect(fromFormat("1235", "u") |> millisecond).toBe(123);
+  expect(millisecond(fromFormat("1", "u"))).toBe(100);
+  expect(millisecond(fromFormat("12", "u"))).toBe(120);
+  expect(millisecond(fromFormat("123", "u"))).toBe(123);
+  expect(millisecond(fromFormat("023", "u"))).toBe(23);
+  expect(millisecond(fromFormat("003", "u"))).toBe(3);
+  expect(millisecond(fromFormat("1234", "u"))).toBe(123);
+  expect(millisecond(fromFormat("1235", "u"))).toBe(123);
 
-  expect(fromFormat("1", "uu") |> millisecond).toBe(100);
-  expect(fromFormat("12", "uu") |> millisecond).toBe(120);
-  expect(fromFormat("02", "uu") |> millisecond).toBe(20);
+  expect(millisecond(fromFormat("1", "uu"))).toBe(100);
+  expect(millisecond(fromFormat("12", "uu"))).toBe(120);
+  expect(millisecond(fromFormat("02", "uu"))).toBe(20);
 
-  expect(fromFormat("1", "uuu") |> millisecond).toBe(100);
+  expect(millisecond(fromFormat("1", "uuu"))).toBe(100);
 
   expect(() => fromFormat("-33", "uu")).toThrow();
   expect(() => fromFormat("-2", "uuu")).toThrow();
 });
 
 test("fromFormat() parses weekdays", () => {
-  expect(fromFormat("5", "E") |> weekday).toBe(5);
-  expect(fromFormat("5", "c") |> weekday).toBe(5);
+  expect(weekday(fromFormat("5", "E"))).toBe(5);
+  expect(weekday(fromFormat("5", "c"))).toBe(5);
 
-  expect(fromFormat("Fri", "EEE") |> weekday).toBe(5);
-  expect(fromFormat("Fri", "ccc") |> weekday).toBe(5);
+  expect(weekday(fromFormat("Fri", "EEE"))).toBe(5);
+  expect(weekday(fromFormat("Fri", "ccc"))).toBe(5);
 
-  expect(fromFormat("Friday", "EEEE") |> weekday).toBe(5);
-  expect(fromFormat("Friday", "cccc") |> weekday).toBe(5);
+  expect(weekday(fromFormat("Friday", "EEEE"))).toBe(5);
+  expect(weekday(fromFormat("Friday", "cccc"))).toBe(5);
 });
 
 test("fromFormat() parses eras", () => {
   let dt = fromFormat("0206 AD", "yyyy G");
-  expect(dt |> year).toEqual(206);
+  expect(year(dt)).toEqual(206);
 
   dt = fromFormat("0206 BC", "yyyy G");
-  expect(dt |> year).toEqual(-206);
+  expect(year(dt)).toEqual(-206);
 
   dt = fromFormat("0206 Before Christ", "yyyy GG");
-  expect(dt |> year).toEqual(-206);
+  expect(year(dt)).toEqual(-206);
 });
 
 test("fromFormat() parses variable-length days", () => {
   let dt = fromFormat("Mar 3, 2020", "MMM d, yyyy");
-  expect(dt |> day).toBe(3);
+  expect(day(dt)).toBe(3);
 
   dt = fromFormat("Mar 13, 2020", "MMM d, yyyy");
-  expect(dt |> day).toBe(13);
+  expect(day(dt)).toBe(13);
 });
 
 test("fromFormat() parses fixed-length days", () => {
   let i = fromFormat("Mar 03, 2020", "MMM dd, yyyy");
-  expect(i |> day).toBe(3);
+  expect(day(i)).toBe(3);
 
   i = fromFormat("Mar 13, 2020", "MMM dd, yyyy");
-  expect(i |> day).toBe(13);
+  expect(day(i)).toBe(13);
 });
 
 test("fromFormat() parses standalone month names", () => {
   let dt = fromFormat("May 25 1982", "LLLL dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("Sep 25 1982", "LLL dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(9);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(9);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("5 25 1982", "L dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("05 25 1982", "LL dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("mai 25 1982", "LLLL dd yyyy", { locale: "fr" });
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("janv. 25 1982", "LLL dd yyyy", { locale: "fr" });
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(1);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(1);
+  expect(day(dt)).toBe(25);
 });
 
 test("fromFormat() parses format month names", () => {
   let dt = fromFormat("May 25 1982", "MMMM dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("Sep 25 1982", "MMM dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(9);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(9);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("5 25 1982", "M dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("05 25 1982", "MM dd yyyy");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("mai 25 1982", "MMMM dd yyyy", { locale: "fr" });
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
 
   dt = fromFormat("janv. 25 1982", "MMM dd yyyy", { locale: "fr" });
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(1);
-  expect(dt |> day).toBe(25);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(1);
+  expect(day(dt)).toBe(25);
 });
 
 test("fromFormat() parses quarters", () => {
   const i = fromFormat("1982Q2", "yyyy[Q]q");
-  expect(i |> year).toBe(1982);
-  expect(i |> month).toBe(4);
-  expect(i |> quarter).toBe(2);
-  expect(fromFormat("2019Q1", "yyyy[Q]q") |> month).toBe(1);
-  expect(fromFormat("2019Q2", "yyyy[Q]q") |> month).toBe(4);
-  expect(fromFormat("2019Q3", "yyyy[Q]q") |> month).toBe(7);
-  expect(fromFormat("2019Q4", "yyyy[Q]q") |> month).toBe(10);
-  expect(fromFormat("2019Q01", "yyyy[Q]qq") |> month).toBe(1);
-  expect(fromFormat("2019Q02", "yyyy[Q]qq") |> month).toBe(4);
-  expect(fromFormat("2019Q03", "yyyy[Q]qq") |> month).toBe(7);
-  expect(fromFormat("2019Q04", "yyyy[Q]qq") |> month).toBe(10);
+  expect(year(i)).toBe(1982);
+  expect(month(i)).toBe(4);
+  expect(quarter(i)).toBe(2);
+  expect(month(fromFormat("2019Q1", "yyyy[Q]q"))).toBe(1);
+  expect(month(fromFormat("2019Q2", "yyyy[Q]q"))).toBe(4);
+  expect(month(fromFormat("2019Q3", "yyyy[Q]q"))).toBe(7);
+  expect(month(fromFormat("2019Q4", "yyyy[Q]q"))).toBe(10);
+  expect(month(fromFormat("2019Q01", "yyyy[Q]qq"))).toBe(1);
+  expect(month(fromFormat("2019Q02", "yyyy[Q]qq"))).toBe(4);
+  expect(month(fromFormat("2019Q03", "yyyy[Q]qq"))).toBe(7);
+  expect(month(fromFormat("2019Q04", "yyyy[Q]qq"))).toBe(10);
 });
 
 test("fromFormat() makes trailing periods in month names optional", () => {
   const i = fromFormat("janv 25 1982", "LLL dd yyyy", {
     locale: "fr",
   });
-  expect(i |> year).toBe(1982);
-  expect(i |> month).toBe(1);
-  expect(i |> day).toBe(25);
+  expect(year(i)).toBe(1982);
+  expect(month(i)).toBe(1);
+  expect(day(i)).toBe(25);
 });
 
 test("fromFormat() does not match arbitrary stuff with those periods", () => {
@@ -326,9 +325,9 @@ test("fromFormat() uses case-insensitive matching", () => {
   const i = fromFormat("Janv. 25 1982", "LLL dd yyyy", {
     locale: "fr",
   });
-  expect(i |> year).toBe(1982);
-  expect(i |> month).toBe(1);
-  expect(i |> day).toBe(25);
+  expect(year(i)).toBe(1982);
+  expect(month(i)).toBe(1);
+  expect(day(i)).toBe(25);
 });
 
 test("fromFormat() parses offsets", () => {});
@@ -336,36 +335,36 @@ test("fromFormat() parses offsets", () => {});
 test("fromFormat() defaults weekday to this week", () => {
   const d = fromFormat("Monday", "EEEE");
   const dt = now();
-  expect(d |> weekYear).toBe(dt |> weekYear);
-  expect(d |> weekNumber).toBe(dt |> weekNumber);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(weekYear(dt));
+  expect(weekNumber(d)).toBe(weekNumber(dt));
+  expect(weekday(d)).toBe(1);
 
   const d2 = fromFormat("3", "E");
-  expect(d2 |> weekYear).toBe(dt |> weekYear);
-  expect(d2 |> weekNumber).toBe(dt |> weekNumber);
-  expect(d2 |> weekday).toBe(3);
+  expect(weekYear(d2)).toBe(weekYear(dt));
+  expect(weekNumber(d2)).toBe(weekNumber(dt));
+  expect(weekday(d2)).toBe(3);
 });
 
 test("DateTime.fromFormat() parses ordinals", () => {
   let d = fromFormat("2016 200", "yyyy ooo");
-  expect(d |> year).toBe(2016);
-  expect(d |> ordinal).toBe(200);
+  expect(year(d)).toBe(2016);
+  expect(ordinal(d)).toBe(200);
 
   d = fromFormat("2016 200", "yyyy ooo");
-  expect(d |> year).toBe(2016);
-  expect(d |> ordinal).toBe(200);
+  expect(year(d)).toBe(2016);
+  expect(ordinal(d)).toBe(200);
 
   d = fromFormat("2016 016", "yyyy ooo");
-  expect(d |> year).toBe(2016);
-  expect(d |> ordinal).toBe(16);
+  expect(year(d)).toBe(2016);
+  expect(ordinal(d)).toBe(16);
 
   d = fromFormat("2016 200", "yyyy o");
-  expect(d |> year).toBe(2016);
-  expect(d |> ordinal).toBe(200);
+  expect(year(d)).toBe(2016);
+  expect(ordinal(d)).toBe(200);
 
   d = fromFormat("2016 16", "yyyy o");
-  expect(d |> year).toBe(2016);
-  expect(d |> ordinal).toBe(16);
+  expect(year(d)).toBe(2016);
+  expect(ordinal(d)).toBe(16);
 });
 
 // todo - consider doing this
@@ -376,54 +375,54 @@ test("DateTime.fromFormat() parses ordinals", () => {
 
 test("fromFormat() accepts weekYear by itself", () => {
   let d = fromFormat("2004", "kkkk");
-  expect(d |> weekYear).toBe(2004);
-  expect(d |> weekNumber).toBe(1);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(2004);
+  expect(weekNumber(d)).toBe(1);
+  expect(weekday(d)).toBe(1);
 
   d = fromFormat("04", "kk");
-  expect(d |> weekYear).toBe(2004);
-  expect(d |> weekNumber).toBe(1);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(2004);
+  expect(weekNumber(d)).toBe(1);
+  expect(weekday(d)).toBe(1);
 });
 
 test("fromFormat() accepts weekNumber by itself", () => {
   const n = now();
 
   let d = fromFormat("17", "WW");
-  expect(d |> weekYear).toBe(n |> weekYear);
-  expect(d |> weekNumber).toBe(17);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(weekYear(n));
+  expect(weekNumber(d)).toBe(17);
+  expect(weekday(d)).toBe(1);
 
   d = fromFormat("17", "W");
-  expect(d |> weekYear).toBe(n |> weekYear);
-  expect(d |> weekNumber).toBe(17);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(weekYear(n));
+  expect(weekNumber(d)).toBe(17);
+  expect(weekday(d)).toBe(1);
 });
 
 test("fromFormat() accepts weekYear/weekNumber/weekday", () => {
   const d = fromFormat("2004 17 2", "kkkk WW E");
-  expect(d |> weekYear).toBe(2004);
-  expect(d |> weekNumber).toBe(17);
-  expect(d |> weekday).toBe(2);
+  expect(weekYear(d)).toBe(2004);
+  expect(weekNumber(d)).toBe(17);
+  expect(weekday(d)).toBe(2);
 });
 
 test("fromFormat() allows regex content", () => {
   const d = fromFormat("Monday", "EEEE");
   const dt = now();
-  expect(d |> weekYear).toBe(dt |> weekYear);
-  expect(d |> weekNumber).toBe(dt |> weekNumber);
-  expect(d |> weekday).toBe(1);
+  expect(weekYear(d)).toBe(weekYear(dt));
+  expect(weekNumber(d)).toBe(weekNumber(dt));
+  expect(weekday(d)).toBe(1);
 });
 
 test("fromFormat() allows literals", () => {
   const dt = fromFormat("1982/05/25 hello 09:10:11.445", "yyyy/MM/dd [hello] HH:mm:ss.SSS");
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(9);
-  expect(dt |> minute).toBe(10);
-  expect(dt |> second).toBe(11);
-  expect(dt |> millisecond).toBe(445);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(9);
+  expect(minute(dt)).toBe(10);
+  expect(second(dt)).toBe(11);
+  expect(millisecond(dt)).toBe(445);
 });
 
 test("fromFormat() throws when it can't parse", () => {
@@ -450,37 +449,37 @@ test.each([
 
 test("fromFormat() accepts a zone arguments", () => {
   const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", simpleParseOpts("Asia/Tokyo"));
-  expect(dt |> zoneName).toBe("Asia/Tokyo");
-  expect(dt |> offset).toBe(9 * 60);
-  expect(dt |> year).toBe(1982);
-  expect(dt |> month).toBe(5);
-  expect(dt |> day).toBe(25);
-  expect(dt |> hour).toBe(9);
-  expect(dt |> minute).toBe(10);
-  expect(dt |> second).toBe(11);
-  expect(dt |> millisecond).toBe(445);
+  expect(zoneName(dt)).toBe("Asia/Tokyo");
+  expect(offset(dt)).toBe(9 * 60);
+  expect(year(dt)).toBe(1982);
+  expect(month(dt)).toBe(5);
+  expect(day(dt)).toBe(25);
+  expect(hour(dt)).toBe(9);
+  expect(minute(dt)).toBe(10);
+  expect(second(dt)).toBe(11);
+  expect(millisecond(dt)).toBe(445);
 });
 
 test("fromFormat() parses IANA zones", () => {
-  let d = fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z") |> toUTC();
-  expect(d |> offset).toBe(0);
-  expect(d |> hour).toBe(0);
-  expect(d |> minute).toBe(10);
+  let d = toUTC(fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z"));
+  expect(offset(d)).toBe(0);
+  expect(hour(d)).toBe(0);
+  expect(minute(d)).toBe(10);
 
-  d = fromFormat("1982/05/25 09:10:11.445 UTC", "yyyy/MM/dd HH:mm:ss.SSS z") |> toUTC();
-  expect(d |> offset).toBe(0);
-  expect(d |> hour).toBe(9);
-  expect(d |> minute).toBe(10);
+  d = toUTC(fromFormat("1982/05/25 09:10:11.445 UTC", "yyyy/MM/dd HH:mm:ss.SSS z"));
+  expect(offset(d)).toBe(0);
+  expect(hour(d)).toBe(9);
+  expect(minute(d)).toBe(10);
 });
 
 test("fromFormat() with setZone parses IANA zones and sets it", () => {
   const d = fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z", {
     useTargetZoneFromInput: true,
   });
-  expect(d |> zoneName).toBe("Asia/Tokyo");
-  expect(d |> offset).toBe(9 * 60);
-  expect(d |> hour).toBe(9);
-  expect(d |> minute).toBe(10);
+  expect(zoneName(d)).toBe("Asia/Tokyo");
+  expect(offset(d)).toBe(9 * 60);
+  expect(hour(d)).toBe(9);
+  expect(minute(d)).toBe(10);
 });
 
 test.each([
@@ -489,8 +488,8 @@ test.each([
   ["ZZZ", "-0400"],
 ])("fromFormat() uses %p to parse fixed offsets like %p", (format, example) => {
   const dt = fromFormat(`1982/05/25 09:10:11.445 ${example}`, `yyyy/MM/dd HH:mm:ss.SSS ${format}`);
-  expect(dt |> toUTC() |> hour).toBe(13);
-  expect(dt |> toUTC() |> minute).toBe(10);
+  expect(hour(toUTC(dt))).toBe(13);
+  expect(minute(toUTC(dt))).toBe(10);
 });
 
 test.each([
@@ -501,9 +500,9 @@ test.each([
   const dt = fromFormat(`1982/05/25 09:10:11.445 ${example}`, `yyyy/MM/dd HH:mm:ss.SSS ${format}`, {
     useTargetZoneFromInput: true,
   });
-  expect(dt |> offset).toBe(-4 * 60);
-  expect(dt |> toUTC() |> hour).toBe(13);
-  expect(dt |> toUTC() |> minute).toBe(10);
+  expect(offset(dt)).toBe(-4 * 60);
+  expect(hour(toUTC(dt))).toBe(13);
+  expect(minute(toUTC(dt))).toBe(10);
 });
 //
 //// todo - see the "localized tokens in Luxon"
@@ -527,7 +526,7 @@ test("fromFormat validates weekdays", () => {
 test("fromFormat containing special regex token", () => {
   const ianaFormat = "yyyy-MM-dd[T]HH-mm\\[z\\]";
   const dt = fromFormat("2019-01-14T11-30[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
-  expect(dt |> zoneName).toBe("Indian/Maldives");
+  expect(zoneName(dt)).toBe("Indian/Maldives");
 
   expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
   expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd[T]HH-mm[t]z[t]")).not.toThrow();
@@ -537,7 +536,7 @@ test("fromFormat containing special regex token", () => {
 test("fromFormat prefers z over ZZ", () => {
   const ianaFormat = "yyyy-MM-dd[T]HH-mmZZ\\[z\\]";
   const dt = fromFormat("2019-01-14T11-30+1:00[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
-  expect(dt |> zoneName).toBe("Indian/Maldives");
+  expect(zoneName(dt)).toBe("Indian/Maldives");
 
   expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
   expect(() => fromFormat("2019-01-14T11-30tIndian/Maldivest", "yyyy-MM-dd[T]HH-mm[t]z[t]")).not.toThrow();
@@ -552,15 +551,15 @@ test("fromFormat() ignores numerical offsets when they conflict with the zone", 
     "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
     { useTargetZoneFromInput: true }
   );
-  expect(i |> year).toBe(2021);
-  expect(i |> month).toBe(11);
-  expect(i |> day).toBe(12);
-  expect(i |> hour).toBe(9);
-  expect(i |> minute).toBe(7);
-  expect(i |> second).toBe(13);
-  expect(i |> millisecond).toBe(0);
-  expect(i |> offset).toBe(480); //+08:00
-  expect(i |> zoneName).toBe("Australia/Perth");
+  expect(year(i)).toBe(2021);
+  expect(month(i)).toBe(11);
+  expect(day(i)).toBe(12);
+  expect(hour(i)).toBe(9);
+  expect(minute(i)).toBe(7);
+  expect(second(i)).toBe(13);
+  expect(millisecond(i)).toBe(0);
+  expect(offset(i)).toBe(480); //+08:00
+  expect(zoneName(i)).toBe("Australia/Perth");
 });
 
 test("fromFormat() ignores numerical offsets when they are are wrong right now", () => {
@@ -570,15 +569,15 @@ test("fromFormat() ignores numerical offsets when they are are wrong right now",
     "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
     { useTargetZoneFromInput: true }
   );
-  expect(i |> year).toBe(2021);
-  expect(i |> month).toBe(10);
-  expect(i |> day).toBe(3);
-  expect(i |> hour).toBe(1);
-  expect(i |> minute).toBe(30);
-  expect(i |> second).toBe(0);
-  expect(i |> millisecond).toBe(0);
-  expect(i |> offset).toBe(600); //+10:00
-  expect(i |> zoneName).toBe("Australia/Sydney");
+  expect(year(i)).toBe(2021);
+  expect(month(i)).toBe(10);
+  expect(day(i)).toBe(3);
+  expect(hour(i)).toBe(1);
+  expect(minute(i)).toBe(30);
+  expect(second(i)).toBe(0);
+  expect(millisecond(i)).toBe(0);
+  expect(offset(i)).toBe(600); //+10:00
+  expect(zoneName(i)).toBe("Australia/Sydney");
 });
 
 test("fromFormat() maintains offset that belongs to time zone during overlap", () => {
@@ -588,28 +587,28 @@ test("fromFormat() maintains offset that belongs to time zone during overlap", (
     "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
     { useTargetZoneFromInput: true }
   );
-  expect(i |> year).toBe(2021);
-  expect(i |> month).toBe(4);
-  expect(i |> day).toBe(4);
-  expect(i |> hour).toBe(2);
-  expect(i |> minute).toBe(30);
-  expect(i |> second).toBe(0);
-  expect(i |> millisecond).toBe(0);
-  expect(i |> offset).toBe(660); //+11:00
-  expect(i |> zoneName).toBe("Australia/Sydney");
+  expect(year(i)).toBe(2021);
+  expect(month(i)).toBe(4);
+  expect(day(i)).toBe(4);
+  expect(hour(i)).toBe(2);
+  expect(minute(i)).toBe(30);
+  expect(second(i)).toBe(0);
+  expect(millisecond(i)).toBe(0);
+  expect(offset(i)).toBe(660); //+11:00
+  expect(zoneName(i)).toBe("Australia/Sydney");
 
   i = fromFormat(
     "2021-04-04T02:30:00.000+10:00[Australia/Sydney]",
     "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]",
     { useTargetZoneFromInput: true }
   );
-  expect(i |> year).toBe(2021);
-  expect(i |> month).toBe(4);
-  expect(i |> day).toBe(4);
-  expect(i |> hour).toBe(2);
-  expect(i |> minute).toBe(30);
-  expect(i |> second).toBe(0);
-  expect(i |> millisecond).toBe(0);
-  expect(i |> offset).toBe(600); //+10:00
-  expect(i |> zoneName).toBe("Australia/Sydney");
+  expect(year(i)).toBe(2021);
+  expect(month(i)).toBe(4);
+  expect(day(i)).toBe(4);
+  expect(hour(i)).toBe(2);
+  expect(minute(i)).toBe(30);
+  expect(second(i)).toBe(0);
+  expect(millisecond(i)).toBe(0);
+  expect(offset(i)).toBe(600); //+10:00
+  expect(zoneName(i)).toBe("Australia/Sydney");
 });

@@ -16,17 +16,17 @@ const dtMaker = () =>
   );
 
 test("formatEra defaults to English", () => {
-  expect(formatEra()(dtMaker())).toEqual("AD");
+  expect(formatEra(dtMaker())).toEqual("AD");
 });
 
 test("formatEra accepts locales", () => {
-  expect(formatEra("be")(dtMaker())).toEqual("н.э.");
+  expect(formatEra(dtMaker(), "be")).toEqual("н.э.");
 });
 
 test("formatEra accepts options", () => {
-  expect(formatEra({ width: "long" })(dtMaker())).toEqual("Anno Domini");
+  expect(formatEra(dtMaker(), { width: "long" })).toEqual("Anno Domini");
 });
 
 test("formatEra accepts locale and options", () => {
-  expect(formatEra("be", { width: "long" })(dtMaker())).toEqual("ад нараджэння Хрыстова");
+  expect(formatEra(dtMaker(), "be", { width: "long" })).toEqual("ад нараджэння Хрыстова");
 });

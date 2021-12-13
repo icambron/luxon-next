@@ -17,534 +17,518 @@ const dt = fromGregorian(
   "utc"
 );
 
-const ny = dt |> setZone("America/New_York", { keepLocalTime: true });
+const ny = setZone(dt, "America/New_York", { keepLocalTime: true });
 
 test("toFormat accepts the locale options", () => {
-  expect(dt |> toFormat("LLLL", "fr")).toBe("mai");
-  expect(dt |> toFormat("LLLL", { locale: "fr" })).toBe("mai");
+  expect(toFormat(dt, "LLLL", "fr")).toBe("mai");
+  expect(toFormat(dt, "LLLL", { locale: "fr" })).toBe("mai");
 });
 
 test("toFormat('u') returns fractional seconds", () => {
-  expect(dt |> toFormat("u")).toBe("123");
-  expect(dt |> setGregorian({ millisecond: 82 }) |> toFormat("u")).toBe("082");
-  expect(dt |> setGregorian({ millisecond: 2 }) |> toFormat("u")).toBe("002");
-  expect(dt |> setGregorian({ millisecond: 80 }) |> toFormat("u")).toBe("080"); // I think this is OK
+  expect(toFormat(dt, "u")).toBe("123");
+  expect(toFormat( setGregorian(dt, { millisecond: 82 }), "u")).toBe("082");
+  expect(toFormat( setGregorian(dt, { millisecond: 2 }), "u")).toBe("002");
+  expect(toFormat( setGregorian(dt, { millisecond: 80 }), "u")).toBe("080"); // I think this is OK
 });
 
 test("toFormat('uu') returns fractional seconds as two digits", () => {
-  expect(dt |> toFormat("uu")).toBe("12");
-  expect(dt |> setGregorian({ millisecond: 82 }) |> toFormat("uu")).toBe("08");
-  expect(dt |> setGregorian({ millisecond: 789 }) |> toFormat("uu")).toBe("78");
+  expect(toFormat(dt, "uu")).toBe("12");
+  expect(toFormat(setGregorian(dt, { millisecond: 82 }), "uu")).toBe("08");
+  expect(toFormat(setGregorian(dt, { millisecond: 789 }), "uu")).toBe("78");
 });
 
 test("toFormat('uuu') returns fractional seconds as one digit", () => {
-  expect(dt |> toFormat("uuu")).toBe("1");
-  expect(dt |> setGregorian({ millisecond: 82 }) |> toFormat("uuu")).toBe("0");
-  expect(dt |> setGregorian({ millisecond: 789 }) |> toFormat("uuu")).toBe("7");
+  expect(toFormat(dt, "uuu")).toBe("1");
+  expect(toFormat(setGregorian(dt, { millisecond: 82 }), "uuu")).toBe("0");
+  expect(toFormat(setGregorian(dt, { millisecond: 789 }), "uuu")).toBe("7");
 });
 
 test("toFormat('S') returns the millisecond", () => {
-  expect(dt |> toFormat("S")).toBe("123");
-  expect(dt |> toFormat("S", { locale: "bn" })).toBe("১২৩");
-  expect(dt |> toFormat("S")).toBe("123");
-  expect(dt |> setGregorian({ millisecond: 82 }) |> toFormat("S")).toBe("82");
+  expect(toFormat(dt, "S")).toBe("123");
+  expect(toFormat(dt, "S", { locale: "bn" })).toBe("১২৩");
+  expect(toFormat(dt, "S")).toBe("123");
+  expect(toFormat(setGregorian(dt, { millisecond: 82 }), "S")).toBe("82");
 });
 
 test("toFormat('SSS') returns padded the millisecond", () => {
-  expect(dt |> toFormat("SSS")).toBe("123");
-  expect(dt |> toFormat("SSS", { locale: "bn" })).toBe("১২৩");
-  expect(dt |> setGregorian({ millisecond: 82 }) |> toFormat("SSS")).toBe("082");
+  expect(toFormat(dt, "SSS")).toBe("123");
+  expect(toFormat(dt, "SSS", { locale: "bn" })).toBe("১২৩");
+  expect(toFormat(setGregorian(dt, { millisecond: 82 }), "SSS")).toBe("082");
 });
 
 test("toFormat('s') returns the second", () => {
-  expect(dt |> toFormat("s")).toBe("54");
-  expect(dt |> toFormat("s", { locale: "bn" })).toBe("৫৪");
-  expect(dt |> setGregorian({ second: 6 }) |> toFormat("s")).toBe("6");
+  expect(toFormat(dt, "s")).toBe("54");
+  expect(toFormat(dt, "s", { locale: "bn" })).toBe("৫৪");
+  expect(toFormat(setGregorian(dt, { second: 6 }), "s")).toBe("6");
 });
 
 test("toFormat('ss') returns the padded second", () => {
-  expect(dt |> toFormat("ss")).toBe("54");
-  expect(dt |> toFormat("ss", { locale: "bn" })).toBe("৫৪");
-  expect(dt |> setGregorian({ second: 6 }) |> toFormat("ss")).toBe("06");
+  expect(toFormat(dt, "ss")).toBe("54");
+  expect(toFormat(dt, "ss", { locale: "bn" })).toBe("৫৪");
+  expect(toFormat(setGregorian(dt, { second: 6 }), "ss")).toBe("06");
 });
 
 test("toFormat('m') returns the minute", () => {
-  expect(dt |> toFormat("m")).toBe("23");
-  expect(dt |> toFormat("m", { locale: "bn" })).toBe("২৩");
-  expect(dt |> setGregorian({ minute: 6 }) |> toFormat("m")).toBe("6");
+  expect(toFormat(dt, "m")).toBe("23");
+  expect(toFormat(dt, "m", { locale: "bn" })).toBe("২৩");
+  expect(toFormat(setGregorian(dt, { minute: 6 }), "m")).toBe("6");
 });
 
 test("toFormat('mm') returns the padded minute", () => {
-  expect(dt |> toFormat("mm")).toBe("23");
-  expect(dt |> toFormat("mm", { locale: "bn" })).toBe("২৩");
-  expect(dt |> setGregorian({ minute: 6 }) |> toFormat("mm")).toBe("06");
+  expect(toFormat(dt, "mm")).toBe("23");
+  expect(toFormat(dt, "mm", { locale: "bn" })).toBe("২৩");
+  expect(toFormat(setGregorian(dt, { minute: 6 }), "mm")).toBe("06");
 });
 
 test("toFormat('h') returns the hours", () => {
-  expect(dt |> toFormat("h")).toBe("9");
-  expect(dt |> toFormat("h", { locale: "bn" })).toBe("৯");
-  expect(dt |> setGregorian({ hour: 0 }) |> toFormat("h")).toBe("12");
-  expect(dt |> setGregorian({ hour: 24 }) |> toFormat("h")).toBe("12");
-  expect(dt |> setGregorian({ hour: 12 }) |> toFormat("h")).toBe("12");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("h")).toBe("1");
+  expect(toFormat(dt, "h")).toBe("9");
+  expect(toFormat(dt, "h", { locale: "bn" })).toBe("৯");
+  expect(toFormat(setGregorian(dt, { hour: 0 }), "h")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 24 }), "h")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 12 }), "h")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "h")).toBe("1");
 });
 
 test("toFormat('hh') returns the padded hour (12-hour time)", () => {
-  expect(dt |> toFormat("hh")).toBe("09");
-  expect(dt |> toFormat("hh", { locale: "bn" })).toBe("০৯");
-  expect(dt |> setGregorian({ hour: 0 }) |> toFormat("h")).toBe("12");
-  expect(dt |> setGregorian({ hour: 24 }) |> toFormat("h")).toBe("12");
-  expect(dt |> setGregorian({ hour: 12 }) |> toFormat("hh")).toBe("12");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("hh")).toBe("01");
+  expect(toFormat(dt, "hh")).toBe("09");
+  expect(toFormat(dt, "hh", { locale: "bn" })).toBe("০৯");
+  expect(toFormat(setGregorian(dt, { hour: 0 }), "h")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 24 }), "h")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 12 }), "hh")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "hh")).toBe("01");
 });
 
 test("toFormat('H') returns the hour (24-hour time)", () => {
-  expect(dt |> toFormat("H")).toBe("9");
-  expect(dt |> toFormat("H", { locale: "bn" })).toBe("৯");
-  expect(dt |> setGregorian({ hour: 12 }) |> toFormat("H")).toBe("12");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("H")).toBe("13");
+  expect(toFormat(dt, "H")).toBe("9");
+  expect(toFormat(dt, "H", { locale: "bn" })).toBe("৯");
+  expect(toFormat(setGregorian(dt, { hour: 12 }), "H")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "H")).toBe("13");
 });
 //
 test("toFormat('HH') returns the padded hour (24-hour time)", () => {
-  expect(dt |> toFormat("HH")).toBe("09");
-  expect(dt |> toFormat("HH", { locale: "bn" })).toBe("০৯");
-  expect(dt |> setGregorian({ hour: 12 }) |> toFormat("HH")).toBe("12");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("HH")).toBe("13");
+  expect(toFormat(dt, "HH")).toBe("09");
+  expect(toFormat(dt, "HH", { locale: "bn" })).toBe("০৯");
+  expect(toFormat(setGregorian(dt, { hour: 12 }), "HH")).toBe("12");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "HH")).toBe("13");
 });
 
 test("toFormat('Z') returns the narrow offset", () => {
-  expect(dt |> toUTC(360) |> toFormat("Z")).toBe("+6");
-  expect(dt |> toUTC(390) |> toFormat("Z")).toBe("+6:30");
-  expect(dt |> toUTC(-360) |> toFormat("Z")).toBe("-6");
-  expect(dt |> toUTC(-390) |> toFormat("Z")).toBe("-6:30");
-  expect(dt |> toUTC() |> toFormat("Z")).toBe("+0");
+  expect(toFormat(toUTC(dt, 360), "Z")).toBe("+6");
+  expect(toFormat(toUTC(dt, 390), "Z")).toBe("+6:30");
+  expect(toFormat(toUTC(dt, -360), "Z")).toBe("-6");
+  expect(toFormat(toUTC(dt, -390), "Z")).toBe("-6:30");
+  expect(toFormat(toUTC(dt), "Z")).toBe("+0");
 });
 
 test("toFormat('ZZ') returns the padded offset", () => {
-  expect(dt |> toUTC(360) |> toFormat("ZZ")).toBe("+06:00");
-  expect(dt |> toUTC(390) |> toFormat("ZZ")).toBe("+06:30");
-  expect(dt |> toUTC(-360) |> toFormat("ZZ")).toBe("-06:00");
-  expect(dt |> toUTC(-390) |> toFormat("ZZ")).toBe("-06:30");
-  expect(dt |> toUTC() |> toFormat("ZZ")).toBe("+00:00");
+  expect(toFormat(toUTC(dt, 360), "ZZ")).toBe("+06:00");
+  expect(toFormat(toUTC(dt, 390), "ZZ")).toBe("+06:30");
+  expect(toFormat(toUTC(dt, -360), "ZZ")).toBe("-06:00");
+  expect(toFormat(toUTC(dt, -390), "ZZ")).toBe("-06:30");
+  expect(toFormat(toUTC(dt), "ZZ")).toBe("+00:00");
 });
 
 test("toFormat('ZZZ') returns a numerical offset", () => {
-  expect(dt |> toUTC(360) |> toFormat("ZZZ")).toBe("+0600");
-  expect(dt |> toUTC(390) |> toFormat("ZZZ")).toBe("+0630");
-  expect(dt |> toUTC(-360) |> toFormat("ZZZ")).toBe("-0600");
-  expect(dt |> toUTC(-390) |> toFormat("ZZZ")).toBe("-0630");
-  expect(dt |> toUTC() |> toFormat("ZZZ")).toBe("+0000");
+  expect(toFormat(toUTC(dt, 360), "ZZZ")).toBe("+0600");
+  expect(toFormat(toUTC(dt, 390), "ZZZ")).toBe("+0630");
+  expect(toFormat(toUTC(dt, -360), "ZZZ")).toBe("-0600");
+  expect(toFormat(toUTC(dt, -390), "ZZZ")).toBe("-0630");
+  expect(toFormat(toUTC(dt), "ZZZ")).toBe("+0000");
 });
 
 test("toFormat('ZZZZ') returns the short offset name", () => {
-  const zoned = setZone("America/Los_Angeles")(dt);
-  expect(zoned |> toFormat("ZZZZ")).toBe("PDT");
-  expect(dt |> toUTC() |> toFormat("ZZZZ")).toBe("UTC");
+  expect(toFormat(setZone(dt, "America/Los_Angeles"), "ZZZZ")).toBe("PDT");
+  expect(toFormat(toUTC(dt), "ZZZZ")).toBe("UTC");
 });
 
 test("toFormat('ZZZZZ') returns the full offset name", () => {
-  const zoned = dt |> setZone("America/Los_Angeles");
-  expect(zoned |> toFormat("ZZZZZ")).toBe("Pacific Daylight Time");
-  expect(dt |> toUTC() |> toFormat("ZZZZZ")).toBe("Coordinated Universal Time");
+  const zoned = setZone(dt, "America/Los_Angeles");
+  expect(toFormat(zoned, "ZZZZZ")).toBe("Pacific Daylight Time");
+  expect(toFormat(toUTC(zoned), "ZZZZZ")).toBe("Coordinated Universal Time");
 });
 
 test("toFormat('z') returns the zone name", () => {
-  const zoned = dt |> setZone("America/Los_Angeles");
-  expect(zoned |> toFormat("z")).toBe("America/Los_Angeles");
+  const zoned = setZone(dt, "America/Los_Angeles");
+  expect(toFormat(zoned, "z")).toBe("America/Los_Angeles");
 
-  const utc = dt |> toUTC();
-  expect(utc |> toFormat("z")).toBe("UTC");
+  const utc = toUTC(dt);
+  expect(toFormat(utc, "z")).toBe("UTC");
 });
 
 test("toFormat('a') returns the meridiem", () => {
-  expect(dt |> toFormat("a")).toBe("AM");
-  expect(dt |> toFormat("a", { locale: "my" })).toBe("နံနက်");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("a")).toBe("PM");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("a", { locale: "my" })).toBe("ညနေ");
+  expect(toFormat(dt, "a")).toBe("AM");
+  expect(toFormat(dt, "a", { locale: "my" })).toBe("နံနက်");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "a")).toBe("PM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "a", { locale: "my" })).toBe("ညနေ");
 });
 
 test("toFormat('d') returns the day", () => {
-  expect(dt |> toFormat("d")).toBe("25");
-  expect(dt |> setGregorian({ day: 1 }) |> toFormat("d")).toBe("1");
+  expect(toFormat(dt, "d")).toBe("25");
+  expect(toFormat(setGregorian(dt, { day: 1 }), "d")).toBe("1");
 });
 
 test("toFormat('dd') returns the padded day", () => {
-  expect(dt |> toFormat("dd")).toBe("25");
-  expect(dt |> setGregorian({ day: 1 }) |> toFormat("dd")).toBe("01");
+  expect(toFormat(dt, "dd")).toBe("25");
+  expect(toFormat(setGregorian(dt, { day: 1 }), "dd")).toBe("01");
 });
 
 test("toFormat('E' || 'c') returns weekday number", () => {
-  expect(dt |> toFormat("E")).toBe("2");
-  expect(dt |> toFormat("c")).toBe("2");
+  expect(toFormat(dt, "E")).toBe("2");
+  expect(toFormat(dt, "c")).toBe("2");
 });
 
 test("toFormat('EEE') returns short format weekday name", () => {
-  expect(dt |> toFormat("EEE")).toBe("Tue");
-  expect(dt |> toFormat("EEE", { locale: "de" })).toBe("Di.");
+  expect(toFormat(dt, "EEE")).toBe("Tue");
+  expect(toFormat(dt, "EEE", { locale: "de" })).toBe("Di.");
 });
 
 test("toFormat('ccc') returns short standalone weekday name", () => {
-  expect(dt |> toFormat("ccc")).toBe("Tue");
-  expect(dt |> toFormat("ccc", { locale: "de" })).toBe("Di");
+  expect(toFormat(dt, "ccc")).toBe("Tue");
+  expect(toFormat(dt, "ccc", { locale: "de" })).toBe("Di");
 });
 
 test("toFormat('EEEE') returns the full format weekday name", () => {
-  expect(dt |> toFormat("EEEE")).toBe("Tuesday");
+  expect(toFormat(dt, "EEEE")).toBe("Tuesday");
 });
 
 test("toFormat('cccc') returns the full standalone weekday name", () => {
-  expect(dt |> toFormat("cccc")).toBe("Tuesday");
+  expect(toFormat(dt, "cccc")).toBe("Tuesday");
 });
 
 test("toFormat('EEEEE' || 'ccccc') returns narrow weekday name", () => {
-  expect(dt |> toFormat("EEEEE")).toBe("T");
-  expect(dt |> toFormat("ccccc")).toBe("T");
+  expect(toFormat(dt, "EEEEE")).toBe("T");
+  expect(toFormat(dt, "ccccc")).toBe("T");
 });
 
 test("toFormat('M' || 'L') return the month number", () => {
-  expect(dt |> toFormat("M")).toBe("5");
-  expect(dt |> toFormat("L")).toBe("5");
+  expect(toFormat(dt, "M")).toBe("5");
+  expect(toFormat(dt, "L")).toBe("5");
 });
 
 test("toFormat('MM' || 'LL') return the padded month number", () => {
-  expect(dt |> toFormat("MM")).toBe("05");
+  expect(toFormat(dt, "MM")).toBe("05");
 });
 
 test("toFormat('MMM') returns the short format month name", () => {
-  expect(dt |> toFormat("MMM")).toBe("May");
-  expect(dt |> toFormat("MMM", { locale: "de"})).toBe("Mai");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("MMM")).toBe("Aug");
+  expect(toFormat(dt, "MMM")).toBe("May");
+  expect(toFormat(dt, "MMM", { locale: "de"})).toBe("Mai");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "MMM")).toBe("Aug");
 });
 
 test("toFormat('LLL') returns the short standalone month name", () => {
-  expect(dt |> toFormat("LLL")).toBe("May");
-  expect(dt |> toFormat("LLL", { locale: "de" })).toBe("Mai");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("LLL")).toBe("Aug");
+  expect(toFormat(dt, "LLL")).toBe("May");
+  expect(toFormat(dt, "LLL", { locale: "de" })).toBe("Mai");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "LLL")).toBe("Aug");
 });
 
 test("toFormat('MMMM') returns the full format month name", () => {
-  expect(dt |> toFormat("MMMM")).toBe("May");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("MMMM")).toBe("August");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("MMMM", { locale: "ru" })).toBe("августа");
+  expect(toFormat(dt, "MMMM")).toBe("May");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "MMMM")).toBe("August");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "MMMM", { locale: "ru" })).toBe("августа");
 });
 
 test("toFormat('LLLL') returns the full standalone month name", () => {
-  expect(dt |> toFormat("LLLL")).toBe("May");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("LLLL")).toBe("August");
+  expect(toFormat(dt, "LLLL")).toBe("May");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "LLLL")).toBe("August");
 });
 
 test("toFormat('MMMMM' || 'LLLLL') returns the narrow month name", () => {
-  expect(dt |> toFormat("MMMMM")).toBe("M");
-  expect(dt |> toFormat("LLLLL")).toBe("M");
+  expect(toFormat(dt, "MMMMM")).toBe("M");
+  expect(toFormat(dt, "LLLLL")).toBe("M");
 });
 
 test("toFormat('y') returns the full year", () => {
-  expect(dt |> toFormat("y")).toBe("1982");
-  expect(dt |> toFormat("y", { locale: "bn" })).toBe("১৯৮২");
-  expect(dt |> setGregorian({ year: 3 }) |> toFormat("y")).toBe("3");
+  expect(toFormat(dt, "y")).toBe("1982");
+  expect(toFormat(dt, "y", { locale: "bn" })).toBe("১৯৮২");
+  expect(toFormat(setGregorian(dt, { year: 3 }), "y")).toBe("3");
 });
 
 test("toFormat('yy') returns the two-digit year", () => {
-  expect(dt |> toFormat("yy")).toBe("82");
-  expect(dt |> toFormat("yy", { locale: "bn" })).toBe("৮২");
-  expect(dt |> setGregorian({ year: 3 }) |> toFormat("yy")).toBe("03");
+  expect(toFormat(dt, "yy")).toBe("82");
+  expect(toFormat(dt, "yy", { locale: "bn" })).toBe("৮২");
+  expect(toFormat(setGregorian(dt, { year: 3 }), "yy")).toBe("03");
 });
 
 test("toFormat('yyyy') returns the padded full year", () => {
-  expect(dt |> toFormat("yyyy")).toBe("1982");
-  expect(dt |> toFormat("yyyy", { locale: "bn" })).toBe("১৯৮২");
-  expect(dt |> setGregorian({ year: 3 }) |> toFormat("yyyy")).toBe("0003");
-  expect(dt |> setGregorian({ year: 3 }) |> toFormat("yyyy", { locale: "bn" })).toBe("০০০৩");
+  expect(toFormat(dt, "yyyy")).toBe("1982");
+  expect(toFormat(dt, "yyyy", { locale: "bn" })).toBe("১৯৮২");
+  expect(toFormat(setGregorian(dt, { year: 3 }), "yyyy")).toBe("0003");
+  expect(toFormat(setGregorian(dt, { year: 3 }), "yyyy", { locale: "bn" })).toBe("০০০৩");
 });
 
 test("toFormat('yyyy') returns the padded full year", () => {
   const bigDt = fromGregorian({ year: 36000 });
-  expect(bigDt |> toFormat("yyyy")).toBe("36000");
+  expect(toFormat(bigDt, "yyyy")).toBe("36000");
 
   const lilDt = fromGregorian({ year: 17 });
-  expect(lilDt |> toFormat("yyyy")).toBe("0017");
+  expect(toFormat(lilDt, "yyyy")).toBe("0017");
 });
 
 test("toFormat('yyyyyy') returns the padded extended year", () => {
   const hugeDt = fromGregorian({ year: 136000 });
-  expect(hugeDt |> toFormat("yyyyyy")).toBe("136000");
+  expect(toFormat(hugeDt, "yyyyyy")).toBe("136000");
 
   const bigDt = fromGregorian({ year: 36000 });
-  expect(bigDt |> toFormat("yyyyyy")).toBe("036000");
+  expect(toFormat(bigDt, "yyyyyy")).toBe("036000");
 
-  expect(dt |> toFormat("yyyyyy")).toBe("001982");
+  expect(toFormat(dt, "yyyyyy")).toBe("001982");
 
   const lilDt = fromGregorian({ year: 17 });
-  expect(lilDt |> toFormat("yyyyyy")).toBe("000017");
+  expect(toFormat(lilDt, "yyyyyy")).toBe("000017");
 });
 
 test("toFormat('G') returns the short era", () => {
-  expect(dt |> toFormat("G")).toBe("AD");
-  expect(dt |> toFormat("G", { locale: "de" })).toBe("n. Chr.");
-  expect(dt |> setGregorian({ year: -21 }) |> toFormat("G")).toBe("BC");
-  expect(dt |> setGregorian({ year: -21 }) |> toFormat("G", { locale: "de" })).toBe("v. Chr.");
+  expect(toFormat(dt, "G")).toBe("AD");
+  expect(toFormat(dt, "G", { locale: "de" })).toBe("n. Chr.");
+  expect(toFormat(setGregorian(dt, { year: -21 }), "G")).toBe("BC");
+  expect(toFormat(setGregorian(dt, { year: -21 }), "G", { locale: "de" })).toBe("v. Chr.");
 });
 
 test("toFormat('GG') returns the full era", () => {
-  expect(dt |> toFormat("GG")).toBe("Anno Domini");
-  expect(dt |> setGregorian({ year: -21 }) |> toFormat("GG")).toBe("Before Christ");
+  expect(toFormat(dt, "GG")).toBe("Anno Domini");
+  expect(toFormat(setGregorian(dt, { year: -21 }), "GG")).toBe("Before Christ");
 });
 
 test("toFormat('GGGGG') returns the narrow era", () => {
-  expect(dt |> toFormat("GGGGG")).toBe("A");
-  expect(dt |> setGregorian({ year: -21 }) |> toFormat("GGGGG")).toBe("B");
+  expect(toFormat(dt, "GGGGG")).toBe("A");
+  expect(toFormat(setGregorian(dt, { year: -21 }), "GGGGG")).toBe("B");
 });
 
 test("toFormat('W') returns the week number", () => {
-  expect(dt |> toFormat("W")).toBe("21");
-  expect(dt |> setISOWeek({ weekNumber: 5 }) |> toFormat("W")).toBe("5");
+  expect(toFormat(dt, "W")).toBe("21");
+  expect(toFormat(setISOWeek(dt, { weekNumber: 5 }), "W")).toBe("5");
 });
 
 test("toFormat('WW') returns the padded week number", () => {
-  expect(dt |> toFormat("WW")).toBe("21");
-  expect(dt |> setISOWeek({ weekNumber: 5 }) |> toFormat("WW")).toBe("05");
+  expect(toFormat(dt, "WW")).toBe("21");
+  expect(toFormat(setISOWeek(dt, { weekNumber: 5 }), "WW")).toBe("05");
 });
 
 test("toFormat('kk') returns the abbreviated week year", () => {
-  expect(dt |> toFormat("kk")).toBe("82");
+  expect(toFormat(dt, "kk")).toBe("82");
 });
 
 test("toFormat('kkkk') returns the full week year", () => {
-  expect(dt |> toFormat("kkkk")).toBe("1982");
+  expect(toFormat(dt, "kkkk")).toBe("1982");
 });
 
 test("toFormat('o') returns an unpadded ordinal", () => {
-  expect(dt |> toFormat("o")).toBe("145");
-  expect(dt |> setGregorian({ month: 1, day: 13 }) |> toFormat("o")).toBe("13");
-  expect(dt |> setGregorian({ month: 1, day: 8 }) |> toFormat("o")).toBe("8");
+  expect(toFormat(dt, "o")).toBe("145");
+  expect(toFormat(setGregorian(dt, { month: 1, day: 13 }), "o")).toBe("13");
+  expect(toFormat(setGregorian(dt, { month: 1, day: 8 }), "o")).toBe("8");
 });
 
 test("toFormat('ooo') returns an unpadded ordinal", () => {
-  expect(dt |> toFormat("ooo")).toBe("145");
-  expect(dt |> setGregorian({ month: 1, day: 13 }) |> toFormat("ooo")).toBe("013");
-  expect(dt |> setGregorian({ month: 1, day: 8 }) |> toFormat("ooo")).toBe("008");
+  expect(toFormat(dt, "ooo")).toBe("145");
+  expect(toFormat(setGregorian(dt, { month: 1, day: 13 }), "ooo")).toBe("013");
+  expect(toFormat(setGregorian(dt, { month: 1, day: 8 }), "ooo")).toBe("008");
 });
 
 test("toFormat('q') returns an unpadded quarter", () => {
-  expect(dt |> toFormat("q")).toBe("2");
-  expect(dt |> setGregorian({ month: 2 }) |> toFormat("q")).toBe("1");
+  expect(toFormat(dt, "q")).toBe("2");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "q")).toBe("1");
 });
 
 test("toFormat('qq') returns a padded quarter", () => {
-  expect(dt |> toFormat("qq")).toBe("02");
-  expect(dt |> setGregorian({ month: 2 }) |> toFormat("qq")).toBe("01");
+  expect(toFormat(dt, "qq")).toBe("02");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "qq")).toBe("01");
 });
 
  test("toFormat('D') returns a short date representation", () => {
-   expect(dt |> toFormat("D")).toBe("5/25/1982");
-   expect(dt |> toFormat("D", { locale: "fr" })).toBe("25/05/1982");
+   expect(toFormat(dt, "D")).toBe("5/25/1982");
+   expect(toFormat(dt, "D", { locale: "fr" })).toBe("25/05/1982");
  });
 
  test("toFormat('DD') returns a medium date representation", () => {
-   expect(dt |> toFormat("DD")).toBe("May 25, 1982");
-   expect(dt |> setGregorian({ month: 8 }) |> toFormat("DD")).toBe("Aug 25, 1982");
-   expect(dt |> toFormat("DD", { locale: "fr" })).toBe("25 mai 1982");
-   expect(dt |> setGregorian({ month: 2 }) |> toFormat("DD", { locale: "fr" })).toBe("25 févr. 1982");
+   expect(toFormat(dt, "DD")).toBe("May 25, 1982");
+   expect(toFormat(setGregorian(dt, { month: 8 }), "DD")).toBe("Aug 25, 1982");
+   expect(toFormat(dt, "DD", { locale: "fr" })).toBe("25 mai 1982");
+   expect(toFormat(setGregorian(dt, { month: 2 }), "DD", { locale: "fr" })).toBe("25 févr. 1982");
  });
 
  test("toFormat('DDD') returns a long date representation", () => {
-   expect(dt |> toFormat("DDD")).toBe("May 25, 1982");
-   expect(dt |> setGregorian({ month: 8 }) |> toFormat("DDD")).toBe("August 25, 1982");
-   expect(dt |> toFormat("DDD", { locale: "fr" })).toBe("25 mai 1982");
-   expect(dt |> setGregorian({ month: 2 }) |> toFormat("DDD", { locale: "fr" })).toBe(
+   expect(toFormat(dt, "DDD")).toBe("May 25, 1982");
+   expect(toFormat(setGregorian(dt, { month: 8 }), "DDD")).toBe("August 25, 1982");
+   expect(toFormat(dt, "DDD", { locale: "fr" })).toBe("25 mai 1982");
+   expect(toFormat(setGregorian(dt, { month: 2 }), "DDD", { locale: "fr" })).toBe(
      "25 février 1982"
    );
  });
 
  test("toFormat('DDDD') returns a long date representation", () => {
-   expect(dt |> toFormat("DDDD")).toBe("Tuesday, May 25, 1982");
-   expect(dt |> setGregorian({ month: 8 }) |> toFormat("DDDD")).toBe("Wednesday, August 25, 1982");
-   expect(dt |> toFormat("DDDD", { locale: "fr" })).toBe("mardi 25 mai 1982");
-   expect(dt |> setGregorian({ month: 2 }) |> toFormat("DDDD", { locale: "fr" })).toBe(
+   expect(toFormat(dt, "DDDD")).toBe("Tuesday, May 25, 1982");
+   expect(toFormat(setGregorian(dt, { month: 8 }), "DDDD")).toBe("Wednesday, August 25, 1982");
+   expect(toFormat(dt, "DDDD", { locale: "fr" })).toBe("mardi 25 mai 1982");
+   expect(toFormat(setGregorian(dt, { month: 2 }), "DDDD", { locale: "fr" })).toBe(
      "jeudi 25 février 1982"
    );
  });
 
  test("toFormat('t') returns a short time representation", () => {
-   expect(dt |> toFormat("t")).toBe("9:23 AM");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("t")).toBe("1:23 PM");
-   expect(dt |> toFormat("t", { locale: "fr" })).toBe("09:23");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("t", { locale: "fr" })).toBe("13:23");
+   expect(toFormat(dt, "t")).toBe("9:23 AM");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "t")).toBe("1:23 PM");
+   expect(toFormat(dt, "t", { locale: "fr" })).toBe("09:23");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "t", { locale: "fr" })).toBe("13:23");
  });
 
  test("toFormat('T') returns a short 24-hour time representation", () => {
-   expect(dt |> toFormat("T")).toBe("09:23");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("T")).toBe("13:23");
-   expect(dt |> toFormat("T", { locale: "fr" })).toBe("09:23");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("T", { locale: "fr" })).toBe("13:23");
+   expect(toFormat(dt, "T")).toBe("09:23");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "T")).toBe("13:23");
+   expect(toFormat(dt, "T", { locale: "fr" })).toBe("09:23");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "T", { locale: "fr" })).toBe("13:23");
  });
 
  test("toFormat('tt') returns a medium time representation", () => {
-   expect(dt |> toFormat("tt")).toBe("9:23:54 AM");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("tt")).toBe("1:23:54 PM");
-   expect(dt |> toFormat("tt", { locale: "fr" })).toBe("09:23:54");
-   expect(dt |> setGregorian({ hour: 13 }) |> toFormat("tt", { locale: "fr" })).toBe("13:23:54");
+   expect(toFormat(dt, "tt")).toBe("9:23:54 AM");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "tt")).toBe("1:23:54 PM");
+   expect(toFormat(dt, "tt", { locale: "fr" })).toBe("09:23:54");
+   expect(toFormat(setGregorian(dt, { hour: 13 }), "tt", { locale: "fr" })).toBe("13:23:54");
  });
 
 test("toFormat('TT') returns a medium 24-hour time representation", () => {
-  expect(dt |> toFormat("TT")).toBe("09:23:54");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("TT")).toBe("13:23:54");
-  expect(dt |> toFormat("TT", { locale: "fr" })).toBe("09:23:54");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("TT", { locale: "fr" })).toBe("13:23:54");
+  expect(toFormat(dt, "TT")).toBe("09:23:54");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "TT")).toBe("13:23:54");
+  expect(toFormat(dt, "TT", { locale: "fr" })).toBe("09:23:54");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "TT", { locale: "fr" })).toBe("13:23:54");
 });
 
 test("toFormat('ttt') returns a medium time representation", () => {
   // these seem to fail on Travis
-  expect(dt |> toFormat('ttt')).toBe('9:23:54 AM UTC');
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('ttt')).toBe('1:23:54 PM UTC');
-  expect(dt |> toFormat('ttt', { locale: 'fr' })).toBe('9:23:54 UTC');
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('ttt', { locale: 'fr' })).toBe('13:23:54 UTC');
+  expect(toFormat(dt, 'ttt')).toBe('9:23:54 AM UTC');
+  expect(toFormat(setGregorian(dt, { hour: 13 }), 'ttt')).toBe('1:23:54 PM UTC');
+  expect(toFormat(dt, 'ttt', { locale: 'fr' })).toBe('9:23:54 UTC');
+  expect(toFormat(setGregorian(dt, { hour: 13 }), 'ttt', { locale: 'fr' })).toBe('13:23:54 UTC');
 });
 
 test("toFormat('TTT') returns a medium time representation", () => {
   // these seem to fail on Travis
-  expect(dt |> toFormat('TTT')).toBe('09:23:54 UTC');
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat('TTT')).toBe('13:23:54 UTC');
-  expect(dt |> toFormat('TTT', {locale: 'fr' })).toBe('9:23:54 UTC');
-  expect(dt |> setGregorian({hour: 13 }) |> toFormat('TTT', { locale: 'fr' })).toBe('13:23:54 UTC');
+  expect(toFormat(dt, 'TTT')).toBe('09:23:54 UTC');
+  expect(toFormat(setGregorian(dt, { hour: 13 }), 'TTT')).toBe('13:23:54 UTC');
+  expect(toFormat(dt, 'TTT', {locale: 'fr' })).toBe('9:23:54 UTC');
+  expect(toFormat(setGregorian(dt, {hour: 13 }), 'TTT', { locale: 'fr' })).toBe('13:23:54 UTC');
 });
 
 test("toFormat('f') returns a short date/time representation without seconds", () => {
-  expect(dt |> toFormat("f")).toBe("5/25/1982, 9:23 AM");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("f")).toBe("5/25/1982, 1:23 PM");
-  expect(dt |> toFormat("f", { locale: "fr" })).toBe("25/05/1982, 09:23");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("f", { locale: "fr" })).toBe(
+  expect(toFormat(dt, "f")).toBe("5/25/1982, 9:23 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "f")).toBe("5/25/1982, 1:23 PM");
+  expect(toFormat(dt, "f", { locale: "fr" })).toBe("25/05/1982, 09:23");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "f", { locale: "fr" })).toBe(
     "25/05/1982, 13:23"
   );
 });
 
 test("toFormat('ff') returns a medium date/time representation without seconds", () => {
-  expect(dt |> toFormat("ff")).toBe("May 25, 1982, 9:23 AM");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("ff")).toBe("May 25, 1982, 1:23 PM");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("ff")).toBe("Aug 25, 1982, 9:23 AM");
-  expect(dt |> toFormat("ff", { locale: "fr" })).toBe("25 mai 1982, 09:23");
-  expect(dt |> setGregorian({ month: 2 }) |> toFormat("ff", { locale: "fr" })).toBe(
+  expect(toFormat(dt, "ff")).toBe("May 25, 1982, 9:23 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "ff")).toBe("May 25, 1982, 1:23 PM");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "ff")).toBe("Aug 25, 1982, 9:23 AM");
+  expect(toFormat(dt, "ff", { locale: "fr" })).toBe("25 mai 1982, 09:23");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "ff", { locale: "fr" })).toBe(
     "25 févr. 1982, 09:23"
   );
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("ff", { locale: "fr" })).toBe(
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "ff", { locale: "fr" })).toBe(
     "25 mai 1982, 13:23"
   );
 });
 
 test("toFormat('fff') returns a medium date/time representation without seconds", () => {
-  expect(ny |> toFormat("fff")).toBe("May 25, 1982, 9:23 AM EDT");
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("fff")).toBe("May 25, 1982, 1:23 PM EDT");
-  expect(ny |> setGregorian({ month: 8 }) |> toFormat("fff")).toBe("August 25, 1982, 9:23 AM EDT");
-  expect(ny |> toFormat("fff", { locale: "fr" })).toBe("25 mai 1982, 09:23 UTC−4");
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("fff", { locale: "fr" })).toBe(
-    "25 février 1982, 09:23 UTC−5"
-  );
-  expect(ny |>  setGregorian({ hour: 13 }) |> toFormat("fff", { locale: "fr" })).toBe(
-    "25 mai 1982, 13:23 UTC−4"
-  );
+  expect(toFormat(ny, "fff")).toBe("May 25, 1982, 9:23 AM EDT");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "fff")).toBe("May 25, 1982, 1:23 PM EDT");
+  expect(toFormat(setGregorian(ny, { month: 8 }), "fff")).toBe("August 25, 1982, 9:23 AM EDT");
+  expect(toFormat(ny, "fff", { locale: "fr" })).toBe("25 mai 1982, 09:23 UTC−4");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "fff", { locale: "fr" })).toBe( "25 février 1982, 09:23 UTC−5");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "fff", { locale: "fr" })).toBe( "25 mai 1982, 13:23 UTC−4");
 });
 
 test("toFormat('ffff') returns a long date/time representation without seconds", () => {
-  expect(ny |> toFormat("ffff")).toBe("Tuesday, May 25, 1982, 9:23 AM Eastern Daylight Time");
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("ffff")).toBe(
-    "Tuesday, May 25, 1982, 1:23 PM Eastern Daylight Time"
-  );
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("ffff")).toBe(
-    "Thursday, February 25, 1982, 9:23 AM Eastern Standard Time"
-  );
-  expect(ny |> toFormat("ffff", { locale: "fr" })).toBe(
-    "mardi 25 mai 1982, 09:23 heure d’été de l’Est"
-  );
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("ffff", { locale: "fr" })).toBe(
-    "jeudi 25 février 1982, 09:23 heure normale de l’Est nord-américain"
-  );
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("ffff", { locale: "fr" })).toBe(
-    "mardi 25 mai 1982, 13:23 heure d’été de l’Est"
-  );
-});
+  expect(toFormat(ny, "ffff")).toBe("Tuesday, May 25, 1982, 9:23 AM Eastern Daylight Time");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff")).toBe( "Tuesday, May 25, 1982, 1:23 PM Eastern Daylight Time");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff")).toBe( "Thursday, February 25, 1982, 9:23 AM Eastern Standard Time");
+  expect(toFormat(ny, "ffff", { locale: "fr" })).toBe( "mardi 25 mai 1982, 09:23 heure d’été de l’Est");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "ffff", { locale: "fr" })).toBe( "jeudi 25 février 1982, 09:23 heure normale de l’Est nord-américain");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff", { locale: "fr" })).toBe( "mardi 25 mai 1982, 13:23 heure d’été de l’Est"); });
 
 test("toFormat('F') returns a short date/time representation with seconds", () => {
-  expect(dt |> toFormat("F")).toBe("5/25/1982, 9:23:54 AM");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("F")).toBe("5/25/1982, 1:23:54 PM");
-  expect(dt |> toFormat("F", { locale: "fr" })).toBe("25/05/1982, 09:23:54");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("F", { locale: "fr" })).toBe(
+  expect(toFormat(dt, "F")).toBe("5/25/1982, 9:23:54 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "F")).toBe("5/25/1982, 1:23:54 PM");
+  expect(toFormat(dt, "F", { locale: "fr" })).toBe("25/05/1982, 09:23:54");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "F", { locale: "fr" })).toBe(
     "25/05/1982, 13:23:54"
   );
 });
 
 test("toFormat('FF') returns a medium date/time representation with seconds", () => {
-  expect(dt |> toFormat("FF")).toBe("May 25, 1982, 9:23:54 AM");
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("FF")).toBe("May 25, 1982, 1:23:54 PM");
-  expect(dt |> setGregorian({ month: 8 }) |> toFormat("FF")).toBe("Aug 25, 1982, 9:23:54 AM");
-  expect(dt |> toFormat("FF", { locale: "fr" })).toBe("25 mai 1982, 09:23:54");
-  expect(dt |> setGregorian({ month: 2 }) |> toFormat("FF", { locale: "fr" })).toBe(
+  expect(toFormat(dt, "FF")).toBe("May 25, 1982, 9:23:54 AM");
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "FF")).toBe("May 25, 1982, 1:23:54 PM");
+  expect(toFormat(setGregorian(dt, { month: 8 }), "FF")).toBe("Aug 25, 1982, 9:23:54 AM");
+  expect(toFormat(dt, "FF", { locale: "fr" })).toBe("25 mai 1982, 09:23:54");
+  expect(toFormat(setGregorian(dt, { month: 2 }), "FF", { locale: "fr" })).toBe(
     "25 févr. 1982, 09:23:54"
   );
-  expect(dt |> setGregorian({ hour: 13 }) |> toFormat("FF", { locale: "fr" })).toBe(
+  expect(toFormat(setGregorian(dt, { hour: 13 }), "FF", { locale: "fr" })).toBe(
     "25 mai 1982, 13:23:54"
   );
 });
 
 test("toFormat('FFF') returns a medium date/time representation without seconds", () => {
-  expect(ny |> toFormat("FFF")).toBe("May 25, 1982, 9:23:54 AM EDT");
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("FFF")).toBe("May 25, 1982, 1:23:54 PM EDT");
-  expect(ny |> setGregorian({ month: 8 }) |> toFormat("FFF")).toBe("August 25, 1982, 9:23:54 AM EDT");
-  expect(ny |> toFormat("FFF", { locale: "fr" })).toBe("25 mai 1982, 9:23:54 UTC−4");
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("FFF", { locale: "fr" })).toBe(
+  expect(toFormat(ny, "FFF")).toBe("May 25, 1982, 9:23:54 AM EDT");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFF")).toBe("May 25, 1982, 1:23:54 PM EDT");
+  expect(toFormat(setGregorian(ny, { month: 8 }), "FFF")).toBe("August 25, 1982, 9:23:54 AM EDT");
+  expect(toFormat(ny, "FFF", { locale: "fr" })).toBe("25 mai 1982, 9:23:54 UTC−4");
+  expect(toFormat(setGregorian(ny, { month: 2 }), "FFF", { locale: "fr" })).toBe(
     "25 février 1982, 9:23:54 UTC−5"
   );
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("FFF", { locale: "fr" })).toBe(
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFF", { locale: "fr" })).toBe(
     "25 mai 1982, 13:23:54 UTC−4"
   );
 });
 
 test("toFormat('FFFF') returns a long date/time representation without seconds", () => {
-  expect(ny |> toFormat("FFFF")).toBe("Tuesday, May 25, 1982, 9:23:54 AM Eastern Daylight Time");
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("FFFF")).toBe(
+  expect(toFormat(ny, "FFFF")).toBe("Tuesday, May 25, 1982, 9:23:54 AM Eastern Daylight Time");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFFF")).toBe(
     "Tuesday, May 25, 1982, 1:23:54 PM Eastern Daylight Time"
   );
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("FFFF")).toBe(
+  expect(toFormat(setGregorian(ny, { month: 2 }), "FFFF")).toBe(
     "Thursday, February 25, 1982, 9:23:54 AM Eastern Standard Time"
   );
-  expect(ny |> toFormat("FFFF", { locale: "fr" })).toBe(
+  expect(toFormat(ny, "FFFF", { locale: "fr" })).toBe(
     "mardi 25 mai 1982, 9:23:54 heure d’été de l’Est"
   );
-  expect(ny |> setGregorian({ month: 2 }) |> toFormat("FFFF", { locale: "fr" })).toBe(
+  expect(toFormat(setGregorian(ny, { month: 2 }), "FFFF", { locale: "fr" })).toBe(
     "jeudi 25 février 1982, 9:23:54 heure normale de l’Est nord-américain"
   );
-  expect(ny |> setGregorian({ hour: 13 }) |> toFormat("FFFF", { locale: "fr" })).toBe(
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "FFFF", { locale: "fr" })).toBe(
     "mardi 25 mai 1982, 13:23:54 heure d’été de l’Est"
   );
 });
 
 test("toFormat returns a full formatted string", () => {
-  expect(dt |> toFormat("MM/yyyy GG")).toBe("05/1982 Anno Domini");
+  expect(toFormat(dt, "MM/yyyy GG")).toBe("05/1982 Anno Domini");
 });
 
 test("toFormat() accepts literals in brackets", () => {
-  expect(dt |> toFormat("dd/MM/yyyy [at] hh:mm")).toBe("25/05/1982 at 09:23");
-  expect(dt |> toFormat("MMdd[T]hh")).toBe("0525T09");
+  expect(toFormat(dt, "dd/MM/yyyy [at] hh:mm")).toBe("25/05/1982 at 09:23");
+  expect(toFormat(dt, "MMdd[T]hh")).toBe("0525T09");
 });
 
 test("toFormat() uses the numbering system", () => {
-  expect(dt |> toFormat("S", { numberingSystem: "beng" })).toBe("১২৩");
-  expect(dt |> toFormat("S", { numberingSystem: "beng" })).toBe("১২৩");
+  expect(toFormat(dt, "S", { numberingSystem: "beng" })).toBe("১২৩");
+  expect(toFormat(dt, "S", { numberingSystem: "beng" })).toBe("১২৩");
 });
 
 test("toFormat() uses the output calendar", () => {
-  expect(dt |> toFormat("MMMM yyyy", { calendar: "islamic" })).toBe("Shaʻban 1402");
-  expect(dt |> toFormat("MMMM yyyy", { calendar: "islamic" })).toBe("Shaʻban 1402");
-  expect(dt |> toFormat("MMMM yyyy", "ar-YE", { calendar: "islamic" })).toBe("شعبان ١٤٠٢");
+  expect(toFormat(dt, "MMMM yyyy", { calendar: "islamic" })).toBe("Shaʻban 1402");
+  expect(toFormat(dt, "MMMM yyyy", { calendar: "islamic" })).toBe("Shaʻban 1402");
+  expect(toFormat(dt, "MMMM yyyy", "ar-YE", { calendar: "islamic" })).toBe("شعبان ١٤٠٢");
 });
 
 test("toFormat('X') returns a Unix timestamp in seconds", () => {
-  expect(dt |> toFormat("X")).toBe("391166634");
+  expect(toFormat(dt, "X")).toBe("391166634");
 });
 
 test("toFormat('X') rounds down", () => {
-  expect(dt |> plus({ milliseconds: 500 }) |> toFormat("X")).toBe("391166634");
+  expect(toFormat(plus(dt, { milliseconds: 500 }), "X")).toBe("391166634");
 });
 
 test("toFormat('x') returns a Unix timestamp in milliseconds", () => {
-  expect(dt |> toFormat("x")).toBe("391166634123");
+  expect(toFormat(dt, "x")).toBe("391166634123");
 });
