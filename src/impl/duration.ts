@@ -92,11 +92,12 @@ const durationZeroes: DurationValues = {
 
 export class DurationImpl implements Duration {
   readonly _values: Partial<DurationValues>;
-  readonly isLuxonDuration = true;
 
   constructor(values: Partial<DurationValues>) {
     this._values = normalizeUnitBundle(values, normalizeDurationUnit);
   }
+
+  get isLuxonDuration(): boolean { return true }
 
   get values(): Partial<DurationValues> {
     return { ...this._values };

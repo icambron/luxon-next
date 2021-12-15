@@ -87,7 +87,7 @@ class IANAZone implements Zone {
 
   equals = (other: Zone) => other.type === "iana" && other.name === this.name;
 
-  isLuxonZone = true;
+  get isLuxonZone() { return true; };
 }
 
 /**

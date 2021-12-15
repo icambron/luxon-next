@@ -99,10 +99,10 @@ export type Zoneish = Zone | number | string | null | undefined;
 // DATETIME
 
 export interface DateTime {
-  zone: Zone;
-  ts: number;
-  offset: number;
-  isLuxonDateTime: boolean;
+  readonly zone: Zone;
+  readonly ts: number;
+  readonly offset: number;
+  readonly isLuxonDateTime: boolean;
   readonly gregorian: GregorianDate;
   readonly time: Time;
   readonly calendarDates: Map<string, any>;

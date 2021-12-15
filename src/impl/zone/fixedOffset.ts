@@ -26,7 +26,7 @@ class FixedOffsetZone implements Zone {
   equals = (other: Zone): boolean =>
     other && other.type === "fixed" && (other as FixedOffsetZone)._fixed === this._fixed;
 
-  isLuxonZone = true;
+  get isLuxonZone() { return true; };
 }
 /**
  * Get a singleton instance of UTC

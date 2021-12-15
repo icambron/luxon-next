@@ -21,7 +21,7 @@ class SystemZone implements Zone {
 
   equals = (other: Zone) => other !== undefined && other.type === "system";
 
-  isLuxonZone = true;
+  get isLuxonZone() { return true; };
 }
 /**
  * Get a singleton instance of the system's local zone

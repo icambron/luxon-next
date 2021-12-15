@@ -7,12 +7,14 @@
   "type": "module",
   "scripts": {
     "check": "tsc --noEmit",
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.js",
     "types": "tsc --emitDeclarationOnly",
-    "test": "TZ=\"America/New_York\" jest",
+    "test": "TZ=\"America/New_York\" LANG=en_US.utf8 jest",
+    "coverage": "TZ=\"America/New_York\" LANG=en_US.utf8 jest --coverage",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",
-    "circular": "dpdm --exit-code=circular:1 src/**/*.ts"
+    "circular": "dpdm --exit-code=circular:1 src/**/*.ts",
+    "repl": "LANG=en-US.utf8 node -i -r \"./scripts/bootstrap.cjs\""
   },
   "devDependencies": {
     "@swc/core": "^1.2.119",

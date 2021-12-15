@@ -144,15 +144,20 @@ const assertValidTs = (ts: number) => {
 };
 
 class DateTimeImpl implements DateTime {
-  readonly zone: Zone;
-  readonly ts: number;
-  readonly offset: number;
-  readonly isLuxonDateTime: boolean = true;
+  private readonly _zone: Zone;
+  private readonly _ts: number;
+  private readonly _offset: number;
 
   private readonly _gregorian: GregorianDate;
   private readonly _time: Time;
   private readonly _calendarDates: Map<string, any>;
   private _date: Date | undefined;
+
+  get zone(): Zone { return this._zone };
+
+  get ts(): number { return this._ts };
+  get offset(): number { return this._offset };
+  get isLuxonDateTime(): boolean { return true };
 
   get gregorian(): GregorianDate {
     return { ...this._gregorian };
@@ -210,11 +215,11 @@ class DateTimeImpl implements DateTime {
   ) {
     assertValidTs(ts);
 
-    this.zone = zone;
-    this.ts = ts;
+    this._zone = zone;
+    this._ts = ts;
     this._gregorian = gregorian;
     this._time = time;
-    this.offset = offset;
+    this._offset = offset;
     this._calendarDates = otherCalendarDates;
     this._calendarDates.set(gregorianInstance.name, gregorian);
   }
