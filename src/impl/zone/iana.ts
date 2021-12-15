@@ -5,7 +5,7 @@ import { memo } from "../util/caching";
 import { Zone } from "../../types";
 import { isValidIANAZone } from "../util/zoneUtils";
 
-const makeDTF = memo("ianaDtf", (zone: string) => {
+const makeDTF = (name: string) => memo("ianaDtf", (zone: string) => {
   try {
     return new Intl.DateTimeFormat("en-US", {
       hourCycle: "h23",
@@ -20,7 +20,7 @@ const makeDTF = memo("ianaDtf", (zone: string) => {
   } catch {
     throw new InvalidZoneError(zone);
   }
-});
+})(name);
 
 const typeToPos: Partial<Record<Intl.DateTimeFormatPartTypes, number>> = {
   year: 0,
@@ -94,4 +94,4 @@ class IANAZone implements Zone {
 /**
  * @param name - Zone name
  */
-export const ianaZone: (zoneName: string) => Zone = memo("ianaZone", (name: string) => new IANAZone(name));
+export const ianaZone = (zoneName: string): Zone => memo("ianaZone", (name: string) => new IANAZone(name))(zoneName);

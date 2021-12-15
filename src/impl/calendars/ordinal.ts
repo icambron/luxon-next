@@ -1,10 +1,10 @@
 import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../util/dateMath";
-import { buildNormalizer, normalizeUnitBundle, ordinalUnits, simplePlural } from "../util/units";
+import { normalizeUnit, normalizeUnitBundle, ordinalUnits, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
 import { isInteger } from "../util/typeCheck";
 import { GregorianDate, OrdinalCalendar, OrdinalDate, OrdinalUnit } from "../../types";
 
-const ordinalNormalizer = buildNormalizer<OrdinalUnit>(ordinalUnits, simplePlural);
+const ordinalNormalizer = (unit: string, throwOnError?: boolean) => normalizeUnit<OrdinalUnit>("ordinalunit", ordinalUnits, simplePlural, unit, throwOnError);
 
 class OrdinalCalendarImpl implements OrdinalCalendar {
     defaultValues = { year: 1, ordinal: 1 };

@@ -1,9 +1,10 @@
 {
   "name": "luxon-next",
-  "version": "0.0.12",
+  "version": "0.0.18",
   "description": "",
   "author": "",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "check": "tsc --noEmit",
     "build": "node scripts/build.mjs",
@@ -22,17 +23,15 @@
     "typedoc": "latest",
     "typescript": "latest"
   },
-  "sideEffects": [
-    "src/impl/util/caching.ts"
-  ],
-  "main": "build/mjs/luxon.mjs",
+  "sideEffects": false,
+  "main": "build/es6/luxon.js",
   "module": "build/es6/luxon.js",
   "browser": "build/global/luxon.js",
   "types": "build/types/luxon.d.ts",
   "files": [
     "build/es6",
-    "build/mjs",
     "build/types",
-    "build/global"
+    "build/global",
+    "build/types"
   ]
 }

@@ -1,6 +1,6 @@
 import { getDefaultConversionAccuracy } from "../settings";
 import {
-  buildNormalizer,
+  normalizeUnit,
   gregorianUnitsPlural,
   miscDurationUnitsPlural,
   normalizeUnitBundle,
@@ -17,7 +17,7 @@ export const durationUnits: Array<DurationUnit> = [
   ...miscDurationUnitsPlural,
 ];
 
-export const normalizeDurationUnit = buildNormalizer<DurationUnit>(durationUnits, simpleSingular);
+export const normalizeDurationUnit = (unit: string, throwOnError?: boolean) => normalizeUnit<DurationUnit>("durationUnit", durationUnits, simpleSingular, unit, throwOnError);
 
 export const toIso = (dur: Duration): string => {
   let s = "P";

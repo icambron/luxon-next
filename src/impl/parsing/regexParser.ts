@@ -30,8 +30,8 @@ export const combineRegexes = (...regexes: RegExp[]): RegExp => {
   return RegExp(`^${full}$`);
 };
 
-export const combineExtractors = (...extractors: Extractor[]): Extractor => {
-  return (m, cursor) =>
+export const combineExtractors = (...extractors: Extractor[]): Extractor =>
+  (m, cursor) =>
     extractors.reduce<ExtractedResult>(
       (merged, ex) => {
         const next = ex(m, merged.cursor);
@@ -51,7 +51,6 @@ export const combineExtractors = (...extractors: Extractor[]): Extractor => {
         cursor,
       }
     );
-};
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
   if (isUndefined(s) || s == null) throw new InvalidArgumentError("No util input provided");

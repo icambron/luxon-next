@@ -1,3 +1,5 @@
+import { memo } from "./caching";
+
 const numberingSystems: Record<string, string> = {
   arab: "[\u0660-\u0669]",
   arabext: "[\u06F0-\u06F9]",
@@ -44,9 +46,8 @@ const numberingSystemsUTF16: Record<string, [number, number]> = {
   tibt: [3872, 3881],
 };
 
-const hanidecChars = numberingSystems.hanidec.replace(/[\[|\]]/g, "").split("");
-
 export const parseDigits = (str: string) => {
+  const hanidecChars = memo("hanidecDigits", () => numberingSystems.hanidec.replace(/[\[|\]]/g, "").split(""));
   const simplyParsed = parseInt(str, 10);
   if (!isNaN(simplyParsed)) {
     return simplyParsed;
@@ -57,7 +58,7 @@ export const parseDigits = (str: string) => {
     const code = str.charCodeAt(i);
 
     if (str[i].search(numberingSystems.hanidec) !== -1) {
-      valToParse += hanidecChars.indexOf(str[i]);
+      valToParse += hanidecChars("*").indexOf(str[i]);
     } else {
       for (const key in numberingSystemsUTF16) {
         const [min, max] = numberingSystemsUTF16[key];

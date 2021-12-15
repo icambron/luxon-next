@@ -1,6 +1,6 @@
 import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
 import { gregorianInstance, gregorianToTS } from "../impl/calendars/gregorian";
-import { buildNormalizer, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../impl/util/units";
+import { normalizeUnit, gregorianUnits, miscDurationUnits, simplePlural, timeUnits } from "../impl/util/units";
 import { intAndFraction, roundTo } from "../impl/util/numeric";
 import { bestBy } from "../impl/util/array";
 import { alter, set } from "../impl/dateTime";
@@ -27,7 +27,7 @@ export const max = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) =>
 export const min = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.min);
 
 const startEndUnits: Array<StartEndUnit> = [...gregorianUnits, ...timeUnits, ...miscDurationUnits];
-const normalizeStartEndUnit = buildNormalizer(startEndUnits, simplePlural);
+const normalizeStartEndUnit = (unit: string, throwOnError?: boolean) => normalizeUnit("startunits", startEndUnits, simplePlural, unit, throwOnError);
 
 /**
  * Return the DateTime representing the beginning of a unit of time, relative to the input date time

@@ -1,6 +1,6 @@
 import { promises as fs } from "fs"; 
 import * as fsSync from "fs";
-import swc, { minify } from "@swc/core";
+import swc from "@swc/core";
 
 const defaultSwcOpts = JSON.parse(fsSync.readFileSync(".swcrc"));
 
@@ -36,9 +36,8 @@ const bundle = async (name, opts = {}) => {
 
 const buildAll = () => Promise.all([
   bundle("es6"),
-  bundle("mjs", { output: "luxon.mjs" }),
   bundle("global", { entry: "src/global.js", minify: true }),
-  // not sure why these don't work??
+  // not sure why these don't work?? They just seem to produce es6 modules...
   // bundle("commonjs", { moduleType: "commonjs" }),
   // bundle("amd", { moduleType: "amd" })
 ]);

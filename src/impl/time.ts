@@ -1,8 +1,8 @@
-import { buildNormalizer, normalizeUnitBundle, simplePlural, timeUnits } from "./util/units";
+import { normalizeUnit, normalizeUnitBundle, simplePlural, timeUnits } from "./util/units";
 import { integerBetween } from "./util/numeric";
 import { Time, TimeUnit } from "../types";
 
-const timeNormalizer = buildNormalizer<TimeUnit>(timeUnits, simplePlural);
+const timeNormalizer = (unit: string, throwOnError?: boolean) => normalizeUnit<TimeUnit>("timeUnits", timeUnits, simplePlural, unit, throwOnError);
 export const fromObject = (obj: object) => normalizeUnitBundle<Time>(obj, timeNormalizer);
 
 export const hasInvalidTimeData = ({ hour, minute, second, millisecond }: Time): [string, number] | null => {

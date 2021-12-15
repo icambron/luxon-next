@@ -11,11 +11,6 @@ import {
 } from "../../types";
 import { isValidIANAZone } from "../util/zoneUtils";
 
-const getDtf = memo(
-  "dateTimeFormat",
-  ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts)
-);
-
 export const dateTimeFormat = (opts: FormatOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
   const { locale, ...rest } = opts;
 
@@ -31,13 +26,11 @@ export const dateTimeFormat = (opts: FormatOpts = {}, zone?: Zone ): Intl.DateTi
     fullOpts.timeZone = zOption;
   }
 
-  return getDtf([locale || getDefaultLocale(), fullOpts]);
+  return memo("dateTimeFormat", ([locale, opts]: [string, Intl.DateTimeFormatOptions]) => new Intl.DateTimeFormat(locale, opts))([locale || getDefaultLocale(), fullOpts]);
 }
 
 export interface NumberFormatOpts extends SharedFormatOpts, Intl.NumberFormatOptions {
 }
-
-const getNf = memo("numberFormat", ([locale, opts]: [string, Intl.NumberFormatOptions]) => new Intl.NumberFormat(locale, opts));
 
 export const numberFormat = (opts: NumberFormatOpts = {}) => {
   const { locale, ...rest } = opts;
@@ -47,7 +40,7 @@ export const numberFormat = (opts: NumberFormatOpts = {}) => {
     ...rest,
   };
 
-  return getNf([locale || getDefaultLocale(), fullOpts]);
+  return memo("numberFormat", ([locale, opts]: [string, Intl.NumberFormatOptions]) => new Intl.NumberFormat(locale, opts))([locale || getDefaultLocale(), fullOpts]);
 };
 
 export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): string => {

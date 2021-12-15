@@ -1,5 +1,5 @@
 import { daysInMonth } from "../util/dateMath";
-import { buildNormalizer, gregorianUnits, normalizeUnitBundle, simplePlural } from "../util/units";
+import { normalizeUnit, gregorianUnits, normalizeUnitBundle, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
 import { isInteger } from "../util/typeCheck";
 import { Zone, GregorianCalendar, GregorianDate, GregorianUnit, Time } from "../../types";
@@ -89,7 +89,7 @@ const fixOffset = (localTS: number, offset: number, zone: Zone): [number, number
     return [localTS - Math.min(o2, o3) * 60 * 1000, Math.max(o2, o3), true];
 };
 
-const gregorianNormalizer = buildNormalizer<GregorianUnit>(gregorianUnits, simplePlural);
+const gregorianNormalizer =  (unit: string, throwOnError?: boolean) => normalizeUnit<GregorianUnit>("gregorianUnit", gregorianUnits, simplePlural, unit, throwOnError);
 
 class GregorianCalendarImpl implements  GregorianCalendar {
     name = "gregorian";

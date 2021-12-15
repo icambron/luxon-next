@@ -3,17 +3,6 @@ import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, MonthFormatOpts, FormatFirstArg, FormatSecondArg, DateTime } from "../../types";
 
-const listMonthsInternal = memo("monthList", (formatOpts: MonthFormatOpts) => {
-  const dtf = monthDtf(formatOpts, utcInstance);
-
-  // @ts-ignore
-  const d = new Date([2016, 6, 15]);
-  return Array.from({ length: 12 }, (_, i) => {
-    d.setMonth(i);
-    return extract(d, dtf, "month");
-  });
-});
-
 const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const mode = formatOpts.mode || "standalone";
   const width = formatOpts.width || "long";
@@ -29,5 +18,15 @@ export const formatMonth = (dt: DateTime, firstArg?: FormatFirstArg<MonthFormatO
 
 export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>) => {
   const opts = getFormattingOpts(firstArg, secondArg);
-  return listMonthsInternal(opts);
+
+  return memo("monthList", (formatOpts: MonthFormatOpts) => {
+    const dtf = monthDtf(formatOpts, utcInstance);
+
+    // @ts-ignore
+    const d = new Date([2016, 6, 15]);
+    return Array.from({ length: 12 }, (_, i) => {
+      d.setMonth(i);
+      return extract(d, dtf, "month");
+    });
+  })(opts);
 };

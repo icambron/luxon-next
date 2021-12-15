@@ -8,17 +8,10 @@ import { signedOffset } from "../util/zoneUtils";
 
 const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/;
 const isoTimeBaseRegex = /(\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d{1,30}))?)?)?/;
-const isoTimeAndOffsetRegex = RegExp(`${isoTimeBaseRegex.source}${offsetRegex.source}?`);
-const isoTimeExtensionRegex = RegExp(`(?:T${isoTimeAndOffsetRegex.source})?`);
-const isoTimeCombinedRegex = combineRegexes(isoTimeAndOffsetRegex);
 
 const isoYmdRegex = /([+-]\d{6}|\d{4})(?:-?(\d\d)(?:-?(\d\d))?)?/;
 const isoWeekRegex = /(\d{4})-?W(\d\d)(?:-?(\d))?/;
 const isoOrdinalRegex = /(\d{4})-?(\d{3})/;
-
-const isoOrdinalWithTimeExtensionRegex = combineRegexes(isoOrdinalRegex, isoTimeExtensionRegex);
-const isoYmdWithTimeExtensionRegex = combineRegexes(isoYmdRegex, isoTimeExtensionRegex);
-const isoWeekWithTimeExtensionRegex = combineRegexes(isoWeekRegex, isoTimeExtensionRegex);
 
 const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
   const item = {
@@ -73,11 +66,14 @@ const extractISOYmdTimeAndOffset = combineExtractors(extractISOYmd, extractISOTi
 const extractISOWeekTimeAndOffset = combineExtractors(extractISOWeekData, extractISOTime, extractISOOffset);
 const extractISOOrdinalDateAndTime = combineExtractors(extractISOOrdinalData, extractISOTime, extractISOOffset);
 
-export const parseISODateTime = (s: string): ExtractedResult =>
-  parse(
+export const parseISODateTime = (s: string): ExtractedResult => {
+  const isoTimeAndOffsetRegex = RegExp(`${isoTimeBaseRegex.source}${offsetRegex.source}?`)
+  const isoTimeExtensionRegex = RegExp(`(?:T${isoTimeAndOffsetRegex.source})?`);
+  return parse(
     s,
-    { regex: isoYmdWithTimeExtensionRegex, extractor: extractISOYmdTimeAndOffset },
-    { regex: isoWeekWithTimeExtensionRegex, extractor: extractISOWeekTimeAndOffset },
-    { regex: isoOrdinalWithTimeExtensionRegex, extractor: extractISOOrdinalDateAndTime },
-    { regex: isoTimeCombinedRegex, extractor: extractISOTimeAndOffset }
+    { regex: combineRegexes(isoYmdRegex, isoTimeExtensionRegex), extractor: extractISOYmdTimeAndOffset },
+    { regex: combineRegexes(isoWeekRegex, isoTimeExtensionRegex), extractor: extractISOWeekTimeAndOffset },
+    { regex: combineRegexes(isoOrdinalRegex, isoTimeExtensionRegex), extractor: extractISOOrdinalDateAndTime },
+    { regex: combineRegexes(isoTimeAndOffsetRegex), extractor: extractISOTimeAndOffset }
   );
+}

@@ -1,10 +1,10 @@
 import { computeOrdinal, dayOfWeek, daysInYear, uncomputeOrdinal, weeksInWeekYear } from "../util/dateMath";
-import { buildNormalizer, isoWeekUnits, normalizeUnitBundle, simplePlural } from "../util/units";
+import { normalizeUnit, isoWeekUnits, normalizeUnitBundle, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
 import { isInteger } from "../util/typeCheck";
 import { GregorianDate, IsoWeekCalendar, ISOWeekDate, IsoWeekUnit } from "../../types";
 
-const isoWeekNormalizer = buildNormalizer<IsoWeekUnit>(isoWeekUnits, simplePlural);
+const isoWeekNormalizer = (unit: string, throwOnError?: boolean) => normalizeUnit<IsoWeekUnit>("isoWeekUnit", isoWeekUnits, simplePlural, unit, throwOnError);
 
 class IsoWeekCalendarImpl implements IsoWeekCalendar {
     defaultValues = { weekYear: 1, weekNumber: 1, weekday: 1};

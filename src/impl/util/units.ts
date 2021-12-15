@@ -6,6 +6,7 @@ import {
   MiscDurationUnit,
   MiscDurationUnitPlural, OrdinalUnit, TimeUnit, TimeUnitPlural
 } from "../../types";
+import { memo } from "./caching";
 
 export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) => keyof T | null): T => {
   const entries = Object.entries(obj)
@@ -14,28 +15,35 @@ export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) =
   return Object.fromEntries(entries) as T;
 };
 
-export const buildNormalizer = <T extends string>(
+export const normalizeUnit = <T extends string>(
+  name: string,
   valid: Array<T>,
-  mapper: (s: string) => T
-): ((s: string, throwOnInvalid?: boolean) => T | null) => {
-  const map = new Map<string, T>();
-  for (const s of valid) {
-    map.set(s.toLowerCase(), s);
-    map.set(mapper(s.toLowerCase()), s);
-  }
-  return (unit: string, throwOnInvalid?: boolean): T | null => {
-    const lowered = unit.toLowerCase();
-    const result = map.get(lowered) as T | undefined;
-    if (result === undefined) {
-      if (throwOnInvalid) {
-        throw new InvalidUnitError(unit);
-      }
-      return null;
-    } else {
-      return result;
+  mapper: (s: string) => T,
+  unit: string,
+  throwOnInvalid?: boolean,
+): T | null => {
+
+  const getMapping = memo(name, () => {
+    const map = new Map<string, T>();
+    for (const s of valid) {
+      map.set(s.toLowerCase(), s);
+      map.set(mapper(s.toLowerCase()), s);
     }
-  };
+    return map;
+  });
+
+  const lowered = unit.toLowerCase();
+  const result = getMapping("*").get(lowered) as T | undefined;
+  if (result === undefined) {
+    if (throwOnInvalid) {
+      throw new InvalidUnitError(unit);
+    }
+    return null;
+  } else {
+    return result;
+  }
 };
+
 export const simplePlural = <T extends string>(unit: string): T => (unit + "s") as T;
 export const simpleSingular = <T extends string>(unit: string): T => unit.slice(0, -1) as T;
 

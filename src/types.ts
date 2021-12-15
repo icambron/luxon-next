@@ -53,6 +53,10 @@ export type OrdinalUnit = "year" | "ordinal";
 export interface OrdinalCalendar extends Calendar<OrdinalDate> {
 }
 
+// MATH
+
+export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
+
 // ZONE
 
 /**
@@ -258,4 +262,3 @@ export interface TokenParseSummary {
   parsed: TokenParseValue | null;
 };
 
-export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
