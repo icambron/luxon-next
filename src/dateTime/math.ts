@@ -137,7 +137,7 @@ export const minus = (
 
 interface AccumulatedFractions {
   ints: DurationValues;
-  remainderMilliseconds: number;
+  remain: number;
 }
 
 const shiftFractionsToMillis =
@@ -153,16 +153,16 @@ const shiftFractionsToMillis =
         accum.ints[k] = whole;
 
         if (k !== "milliseconds") {
-          accum.remainderMilliseconds += convert(fraction, k, "milliseconds", conversionAccuracy);
+          accum.remain += convert(fraction, k, "milliseconds", conversionAccuracy);
         }
 
         return accum;
       },
-      { ints: {}, remainderMilliseconds: 0 } as AccumulatedFractions
+      { ints: {}, remain: 0 } as AccumulatedFractions
     );
 
     // no fractional millis please
-    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remainderMilliseconds, 0);
+    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remain, 0);
 
     return fromValues(newVals.ints as Partial<DurationValues>);
   };
