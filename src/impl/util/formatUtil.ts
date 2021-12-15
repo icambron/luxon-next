@@ -1,4 +1,4 @@
-import { getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
+import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
 import { FormatStringError, UnknownError } from "../../errors";
 import { memo } from "./caching";
 import {
@@ -89,6 +89,12 @@ export const getFormattingOpts = <T extends SharedFormatOpts>(
 
   return t;
 };
+
+export const getDefaultedFormattingOpts = (firstArg: FormatFirstArg<FormatOpts>, secondArg: FormatSecondArg<FormatOpts>): FormatOpts => {
+  const formatOpts = getFormattingOpts(firstArg, secondArg);
+  const { locale, calendar, numberingSystem, ...rest } = formatOpts;
+  return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultFormat() } : formatOpts;
+}
 
 export const hasKeys =
   <T>(...keys: string[]): ((o: any) => o is T) =>

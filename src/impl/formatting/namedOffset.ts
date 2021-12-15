@@ -1,19 +1,14 @@
 import {
+    DateTime,
+    FormatFirstArg,
+  FormatSecondArg,
   NamedOffsetFormatOpts,
   NumericOffsetFormatWidth,
   OffsetFormatOpts,
   Zone
 } from "../../types";
-import { dateTimeFormat, extract } from "../util/formatUtil";
+import { dateTimeFormat, extract, getFormattingOpts } from "../util/formatUtil";
 import { formatNumericOffset } from "../util/zoneUtils";
-import { makeDtOptReader, toJs } from "./combinators";
-
-const extractNamedOffset =
-  (formatOpts: NamedOffsetFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
-    (d, zone) => {
-      const dtf = offsetDtf(formatOpts, zone);
-      return extract(d, dtf, "timezonename");
-    };
 
 const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   const width = formatOpts.width || "short";
@@ -30,10 +25,15 @@ const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTime
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const formatOffset = makeDtOptReader<OffsetFormatOpts, string>((dt, opts) => {
+export const formatOffset = (dt: DateTime, firstArg?: FormatFirstArg<OffsetFormatOpts>, secondArg?: FormatSecondArg<OffsetFormatOpts>): string => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  
   const width = opts.width || "short";
-  return width === "short" || width === "long"
-    ? toJs(dt, extractNamedOffset(opts as NamedOffsetFormatOpts))
-    : formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth)
-  });
 
+  if (width === "short" || width === "long") {
+    const dtf = offsetDtf(opts as NamedOffsetFormatOpts, dt.zone);
+    return extract(new Date(+dt), dtf, "timezonename");
+  }
+
+  return formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth);
+};

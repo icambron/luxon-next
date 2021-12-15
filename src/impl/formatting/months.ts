@@ -1,15 +1,7 @@
-import { dateTimeFormat, extract} from "../util/formatUtil";
+import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
-import { Zone, MonthFormatOpts } from "../../types";
-import { makeItemFormatter, makeOptReader } from "./combinators";
-
-const extractMonth =
-  (formatOpts: MonthFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
-  (d, zone) => {
-    const dtf = monthDtf(formatOpts, zone);
-    return extract(d, dtf, "month");
-  };
+import { Zone, MonthFormatOpts, FormatFirstArg, FormatSecondArg, DateTime } from "../../types";
 
 const listMonthsInternal = memo("monthList", (formatOpts: MonthFormatOpts) => {
   const dtf = monthDtf(formatOpts, utcInstance);
@@ -29,5 +21,13 @@ const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat 
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
 
-export const formatMonth = makeItemFormatter(extractMonth);
-export const listMonths = makeOptReader(listMonthsInternal);
+export const formatMonth = (dt: DateTime, firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>): string => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  const dtf = monthDtf(opts, dt.zone);
+  return extract(new Date(+dt), dtf, "month");
+};
+
+export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>) => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  return listMonthsInternal(opts);
+};

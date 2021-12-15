@@ -1,15 +1,7 @@
-import { dateTimeFormat, extract} from "../util/formatUtil";
+import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
-import { Zone, EraFormatOpts} from "../../types";
-import { makeItemFormatter, makeOptReader } from "./combinators";
-
-const extractEra =
-  (formatOpts: EraFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
-  (d, zone) => {
-    const dtf = eraDtf(formatOpts, zone);
-    return extract(d, dtf, "era");
-  };
+import { Zone, EraFormatOpts, FormatFirstArg, DateTime, FormatSecondArg} from "../../types";
 
 const listErasInternal = memo("eraList", (formatOpts: EraFormatOpts) => {
   const dtf = eraDtf(formatOpts, utcInstance);
@@ -29,6 +21,14 @@ const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const formatEra = makeItemFormatter(extractEra);
+export const formatEra = (dt: DateTime, firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  const dtf = eraDtf(opts, dt.zone);
+  return extract(new Date(+dt), dtf, "era");
+}
+
 // note this doesn't support Japanese eras
-export const listEras = makeOptReader(listErasInternal);
+export const listEras = (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string[] => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  return listErasInternal(opts);
+}

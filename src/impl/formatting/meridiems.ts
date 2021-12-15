@@ -1,15 +1,7 @@
-import { dateTimeFormat, extract} from "../util/formatUtil";
+import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
-import { Zone, MeridiemFormatOpts } from "../../types";
-import { makeItemFormatter, makeOptReader } from "./combinators";
-
-const extractMeridiem =
-  (formatOpts: MeridiemFormatOpts): ((jsDate: Date, zone: Zone) => string) =>
-  (d, zone) => {
-    const dtf = meridiemDtf(formatOpts, zone);
-    return extract(d, dtf, "dayperiod");
-  };
+import { Zone, MeridiemFormatOpts, DateTime, FormatFirstArg, FormatSecondArg } from "../../types";
 
 const listMeridiemsInternal = memo("meridiemList", (formatOpts: MeridiemFormatOpts) => {
   const dtf = meridiemDtf(formatOpts, utcInstance);
@@ -37,6 +29,13 @@ const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeF
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
 
-export const formatMeridiem = makeItemFormatter(extractMeridiem);
-export const listMeridiems = makeOptReader(listMeridiemsInternal);
+export const formatMeridiem = (dt: DateTime, firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  const dtf = meridiemDtf(opts, dt.zone);
+  return extract(new Date(+dt), dtf, "dayperiod");
+}
 
+export const listMeridiems = (firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string[] => {
+  const opts = getFormattingOpts(firstArg, secondArg);
+  return listMeridiemsInternal(opts);
+}

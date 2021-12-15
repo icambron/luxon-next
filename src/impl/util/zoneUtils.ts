@@ -33,7 +33,7 @@ export const isValidIANASpecifier = (s: string): boolean => {
   return !!(s && ianaRegex.exec(s) !== null);
 };
 
-export function signedOffset(offHourStr: string, offMinuteStr: string) {
+export const signedOffset = (offHourStr: string, offMinuteStr: string): number => {
   let offHour = parseInt(offHourStr, 10);
 
   // don't || this because we want to preserve -0
@@ -46,7 +46,7 @@ export function signedOffset(offHourStr: string, offMinuteStr: string) {
   return offHour * 60 + offMinSigned;
 }
 
-export function formatNumericOffset(offset: number, format: OffsetFormatWidth) {
+export const formatNumericOffset = (offset: number, format: OffsetFormatWidth): string => {
   const hours = Math.trunc(Math.abs(offset / 60));
   const minutes = Math.trunc(Math.abs(offset % 60));
   const sign = offset >= 0 ? "+" : "-";

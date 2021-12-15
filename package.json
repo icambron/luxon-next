@@ -7,7 +7,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "build": "node scripts/build.mjs",
-    "types": "tsc",
+    "types": "tsc --emitDeclarationOnly",
     "test": "TZ=\"America/New_York\" jest",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",

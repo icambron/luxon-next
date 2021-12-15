@@ -1,4 +1,4 @@
-import { dateTimeFormat } from "../impl/util/formatUtil";
+import { dateTimeFormat, getDefaultedFormattingOpts, getFormattingOpts } from "../impl/util/formatUtil";
 import * as presets from "../impl/formatting/presets";
 import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
 import {
@@ -12,19 +12,30 @@ import {
 import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
 import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
 import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
-import { makeCombinedItemFormatter, makeDirectFormatter } from "../impl/formatting/combinators";
-import { DateTime, ISOFormatOpts } from "../types";
+import { DateTime, FormatFirstArg, FormatOpts, FormatSecondArg, ISOFormatOpts } from "../types";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
 
-export const toLocaleString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleString(loc, fmt));
-export const toLocaleDateString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleDateString(loc, fmt));
-export const toLocaleTimeString = makeDirectFormatter((loc, fmt) => (jsDate) => jsDate.toLocaleTimeString(loc, fmt));
+export const toLocaleString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
+  const opts = getDefaultedFormattingOpts(firstArg, secondArg);
+  return new Date(+dt).toLocaleString(opts.locale, opts);
+}
 
-export const toLocaleParts = makeCombinedItemFormatter(
-  (opts) => (jsDate, zone) => dateTimeFormat(opts, zone).formatToParts(jsDate)
-);
+export const toLocaleDateString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
+  const opts = getDefaultedFormattingOpts(firstArg, secondArg);
+  return new Date(+dt).toLocaleDateString(opts.locale, opts);
+}
+
+export const toLocaleTimeString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
+  const opts = getDefaultedFormattingOpts(firstArg, secondArg);
+  return new Date(+dt).toLocaleTimeString(opts.locale, opts);
+}
+
+export const toLocaleParts = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): Intl.DateTimeFormatPart[] => {
+  const opts = getDefaultedFormattingOpts(firstArg, secondArg);
+  return dateTimeFormat(opts, dt.zone).formatToParts(new Date(+dt));
+}
 
 export const toFormat = toFormatInternal;
 
