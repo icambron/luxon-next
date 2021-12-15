@@ -1,6 +1,6 @@
 import { isoWeekCalendarInstance } from "../impl/calendars/isoWeek";
 import { fromCalendar, getCalendarValue, set } from "../impl/dateTime";
-import { weeksInWeekYear } from "../impl/util/dateMath";
+import { weeksInWeekYear as weeksInWeekYearInternal } from "../impl/util/dateMath";
 import { Zone, DateTime, ISOWeekDate, Time } from "../types";
 
 export const fromISOWeek = (obj: Partial<ISOWeekDate & Time>, zone?: Zone): DateTime =>
@@ -20,4 +20,6 @@ export const weekYear = (dt: DateTime): number => getIsoWeekData(dt).weekYear;
 export const weekNumber = (dt: DateTime): number => getIsoWeekData(dt).weekNumber;
 export const weekday = (dt: DateTime): number => getIsoWeekData(dt).weekday;
 
-export const weeksInCurrentWeekYear = (dt: DateTime): number => weeksInWeekYear(weekYear(dt));
+export const weeksInCurrentWeekYear = (dt: DateTime): number => weeksInWeekYearInternal(weekYear(dt));
+
+export const weeksInWeekYear = weeksInWeekYearInternal;

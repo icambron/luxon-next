@@ -1,13 +1,13 @@
 {
   "name": "luxon-next",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "description": "",
   "author": "",
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
     "build": "node scripts/build.mjs",
-    "types": "tsc -d --outDir build/types",
+    "types": "tsc",
     "test": "TZ=\"America/New_York\" jest",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",
@@ -22,15 +22,17 @@
     "typedoc": "latest",
     "typescript": "latest"
   },
-
+  "sideEffects": [
+    "src/impl/util/caching.ts"
+  ],
+  "main": "build/mjs/luxon.mjs",
+  "module": "build/es6/luxon.js",
+  "browser": "build/global/luxon.js",
   "types": "build/types/luxon.d.ts",
-  "main": "build/commonjs/luxon.js",
   "files": [
-    "build/es6/luxon.js",
-    "build/es6/luxon.js.map",
-    "build/commonjs/luxon.js",
-    "build/commonjs/luxon.js.map",
-    "build/global/luxon.js",
-    "build/global/luxon.js.map"
+    "build/es6",
+    "build/mjs",
+    "build/types",
+    "build/global"
   ]
 }

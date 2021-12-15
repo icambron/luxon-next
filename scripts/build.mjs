@@ -16,8 +16,10 @@ const bundle = async (name, opts = {}) => {
 
   const swcOpts = {...defaultSwcOpts, minify: opts.minify, module: { type: opts.moduleType }};
 
-  if (minify) {
-    swcOpts.jsc.minify = { mangle: { topLevel: false }, compress: true };
+  if (opts.minify) {
+    const jsc = {...swcOpts.jsc };
+    jsc.minify = { mangle: { topLevel: false }, compress: true };
+    swcOpts.jsc = jsc;
   }
 
   const {luxon} = await swc.bundle({
@@ -35,8 +37,10 @@ const bundle = async (name, opts = {}) => {
 const buildAll = () => Promise.all([
   bundle("es6"),
   bundle("mjs", { output: "luxon.mjs" }),
-  bundle("commonjs", { moduleType: "commonjs" }),
-  bundle("global", { entry: "src/global.js", minify: true })
+  bundle("global", { entry: "src/global.js", minify: true }),
+  // not sure why these don't work??
+  // bundle("commonjs", { moduleType: "commonjs" }),
+  // bundle("amd", { moduleType: "amd" })
 ]);
 
 
