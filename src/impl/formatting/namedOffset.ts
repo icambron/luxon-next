@@ -32,7 +32,7 @@ export const formatOffset = (dt: DateTime, firstArg?: FormatFirstArg<OffsetForma
 
   if (width === "short" || width === "long") {
     const dtf = offsetDtf(opts as NamedOffsetFormatOpts, dt.zone);
-    return extract(new Date(+dt), dtf, "timezonename");
+    return extract(dt.native(), dtf, "timezonename");
   }
 
   return formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth);

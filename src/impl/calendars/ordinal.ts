@@ -1,7 +1,6 @@
 import { computeOrdinal, daysInYear, uncomputeOrdinal } from "../util/dateMath";
 import { normalizeUnit, normalizeUnitBundle, ordinalUnits, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
-import { isInteger } from "../util/typeCheck";
 import { GregorianDate, OrdinalCalendar, OrdinalDate, OrdinalUnit } from "../../types";
 
 const ordinalNormalizer = (unit: string, throwOnError?: boolean) => normalizeUnit<OrdinalUnit>("ordinalunit", ordinalUnits, simplePlural, unit, throwOnError);
@@ -18,7 +17,7 @@ class OrdinalCalendarImpl implements OrdinalCalendar {
     };
 
     isDateInvalid = (obj: OrdinalDate): [string, number] | null => {
-        if (!isInteger(obj.year)) {
+        if (!Number.isInteger(obj.year)) {
             return ["year", obj.year];
         }
 

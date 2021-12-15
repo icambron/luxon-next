@@ -13,7 +13,7 @@ const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat 
 export const formatMonth = (dt: DateTime, firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>): string => {
   const opts = getFormattingOpts(firstArg, secondArg);
   const dtf = monthDtf(opts, dt.zone);
-  return extract(new Date(+dt), dtf, "month");
+  return extract(dt.native(), dtf, "month");
 };
 
 export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>) => {

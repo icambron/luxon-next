@@ -7,19 +7,19 @@ const rfc850Regex =
 const asciiRegex =
   /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( \d|\d\d) (\d\d):(\d\d):(\d\d) (\d{4})$/;
 
-const extractRFC1123Or850 = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
+const extractRFC1123Or850 = (match: RegExpMatchArray, cur: number): ExtractedResult => {
   const [, , dayStr, monthStr, yearStr, hourStr, minuteStr, secondStr] = match;
-  return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cursor + 7);
+  return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cur + 7);
 };
 
-const extractASCII = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
+const extractASCII = (match: RegExpMatchArray, cur: number): ExtractedResult => {
   const [, , monthStr, dayStr, hourStr, minuteStr, secondStr, yearStr] = match;
-  return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cursor + 7);
+  return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cur + 7);
 };
 
 export const parseHTTPDate = (s: string) => parse(
   s,
-  { regex: rfc1123Regex, extractor: extractRFC1123Or850 },
-  { regex: rfc850Regex, extractor: extractRFC1123Or850 },
-  { regex: asciiRegex, extractor: extractASCII }
+  { r: rfc1123Regex, ex: extractRFC1123Or850 },
+  { r: rfc850Regex, ex: extractRFC1123Or850 },
+  { r: asciiRegex, ex: extractASCII }
 );

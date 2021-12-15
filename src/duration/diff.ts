@@ -3,7 +3,6 @@ import { as, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
 import { month, quarter, year } from "../dateTime/core";
-import { isUndefined } from "../impl/util/typeCheck";
 import { maybeArray } from "../impl/util/array";
 import { DateTime, Duration, DurationUnit, DurationValues } from "../types";
 
@@ -67,7 +66,7 @@ const highOrderDiffs = (cursor: DateTime, later: DateTime, units: DurationUnit[]
 };
 
 export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] | DurationUnit): Duration => {
-  if (isUndefined(units)) {
+  if (!units) {
     units = ["milliseconds"];
   } else units = maybeArray(units);
 

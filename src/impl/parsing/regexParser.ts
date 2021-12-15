@@ -3,7 +3,6 @@ import { InvalidArgumentError, NoMatchingParserPattern } from "../../errors";
 import { gregorianInstance } from "../calendars/gregorian";
 import { parseInteger } from "../util/numeric";
 import { untruncateYear } from "../util/dateMath";
-import { isNumber, isUndefined } from "../util/typeCheck";
 import { utcInstance } from "../zone/fixedOffset";
 import { ianaZone } from "../zone/iana";
 
@@ -11,18 +10,18 @@ import { ianaZone } from "../zone/iana";
 export type Cursor = number;
 
 export interface ExtractedResult {
-  calendar: Calendar<any> | null;
-  calendarUnits: object;
-  timeUnits: Partial<Time>;
+  cal: Calendar<any> | null;
+  date: object;
+  time: Partial<Time>;
   zone: Zone | null;
-  cursor: Cursor;
+  cur: Cursor;
 }
 
-export type Extractor = (match: RegExpMatchArray, cursor: Cursor) => ExtractedResult;
+export type Extractor = (match: RegExpMatchArray, cur: Cursor) => ExtractedResult;
 
 interface ParsingBlock {
-  regex: RegExp;
-  extractor: Extractor;
+  r: RegExp;
+  ex: Extractor;
 }
 
 export const combineRegexes = (...regexes: RegExp[]): RegExp => {
@@ -31,35 +30,35 @@ export const combineRegexes = (...regexes: RegExp[]): RegExp => {
 };
 
 export const combineExtractors = (...extractors: Extractor[]): Extractor =>
-  (m, cursor) =>
+  (m, cur) =>
     extractors.reduce<ExtractedResult>(
       (merged, ex) => {
-        const next = ex(m, merged.cursor);
+        const next = ex(m, merged.cur);
         return {
-          calendar: next.calendar || merged.calendar,
-          calendarUnits: { ...merged.calendarUnits, ...next.calendarUnits },
-          timeUnits: { ...merged.timeUnits, ...next.timeUnits },
+          cal: next.cal || merged.cal,
+          date: { ...merged.date, ...next.date },
+          time: { ...merged.time, ...next.time },
           zone: next.zone || merged.zone,
-          cursor: next.cursor,
+          cur: next.cur,
         };
       },
       {
-        calendar: null,
-        calendarUnits: {},
-        timeUnits: {},
+        cal: null,
+        date: {},
+        time: {},
         zone: null,
-        cursor,
+        cur,
       }
     );
 
 export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
-  if (isUndefined(s) || s == null) throw new InvalidArgumentError("No util input provided");
+  if (typeof s == "undefined" || s == null) throw new InvalidArgumentError("No util input provided");
 
-  for (const { regex, extractor } of patterns) {
-    const m = regex.exec(s);
+  for (const { r, ex } of patterns) {
+    const m = r.exec(s);
 
     if (m) {
-      return extractor(m, 1);
+      return ex(m, 1);
     }
   }
 
@@ -68,9 +67,9 @@ export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult =
 
 export const int = (match: RegExpMatchArray, pos: number, fallback: number): number => {
   const m = match[pos];
-  if (isUndefined(m)) return fallback;
+  if (typeof m == "undefined") return fallback;
   const parsed = parseInteger(m);
-  return isNumber(parsed) ? parsed : fallback;
+  return typeof parsed == "number" ? parsed : fallback;
 };
 
 export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extractor => {
@@ -83,54 +82,54 @@ export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extract
     }
 
     return {
-      calendar: cal,
-      calendarUnits: ret,
-      timeUnits: {},
-      cursor: cursor + i,
+      cal: cal,
+      date: ret,
+      time: {},
+      cur: cursor + i,
       zone: null,
     };
   };
 };
 
 export const fromStrings = (
-  yearStr: string,
-  monthStr: string,
-  dayStr: string,
-  hourStr: string,
-  minuteStr: string,
-  secondStr: string,
-  cursor: number
+  year: string,
+  month: string,
+  day: string,
+  hour: string,
+  minute: string,
+  second: string,
+  cur: number
 ): ExtractedResult => {
-  const calendarUnits = {
-    day: parseInteger(dayStr),
-    year: yearStr.length === 2 ? untruncateYear(parseInteger(yearStr)) : parseInteger(yearStr),
-    month: englishMonthsShort.indexOf(monthStr) + 1,
+  const date = {
+    day: parseInteger(day),
+    year: year.length === 2 ? untruncateYear(parseInteger(year)) : parseInteger(year),
+    month: englishMonthsShort.indexOf(month) + 1,
   };
 
-  const timeUnits: Partial<Time> = {
-    hour: parseInteger(hourStr),
-    minute: parseInteger(minuteStr),
+  const time: Partial<Time> = {
+    hour: parseInteger(hour),
+    minute: parseInteger(minute),
   };
 
-  if (secondStr) timeUnits.second = parseInteger(secondStr);
+  if (second) time.second = parseInteger(second);
 
   return {
-    calendar: gregorianInstance,
-    calendarUnits,
-    timeUnits,
+    cal: gregorianInstance,
+    date,
+    time,
     zone: utcInstance,
-    cursor: cursor,
+    cur: cur,
   };
 };
 
-export const extractIANAZone = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
-  const zone = match[cursor] ? ianaZone(match[cursor]) : null;
+export const extractIANAZone = (match: RegExpMatchArray, cur: number): ExtractedResult => {
+  const zone = match[cur] ? ianaZone(match[cur]) : null;
   return {
-    calendar: null,
-    calendarUnits: {},
-    timeUnits: {},
+    cal: null,
+    date: {},
+    time: {},
     zone,
-    cursor: cursor + 1,
+    cur: cur + 1,
   };
 };
 

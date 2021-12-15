@@ -1,8 +1,7 @@
 import { InvalidArgumentError } from "../../errors";
-import { isInteger, isUndefined } from "./typeCheck";
 
 export const integerBetween = (thing: number, bottom: number, top: number) =>
-  isInteger(thing) && thing >= bottom && thing <= top;
+  Number.isInteger(thing) && thing >= bottom && thing <= top;
 
 // x % n but takes the sign of n instead of x
 export const floorMod = (x: number, n: number) => x - n * Math.floor(x / n);
@@ -13,11 +12,11 @@ export const intAndFraction = (x: number) => {
 };
 
 export const parseInteger = (text: string): number =>
-  isUndefined(text) || text === null || text === "" ? NaN : parseInt(text, 10);
+  typeof text === "undefined" || text === null || text === "" ? NaN : parseInt(text, 10);
 
 export const parseMillis = (fraction: string | null | undefined) => {
   // Return undefined (instead of 0) in these cases, where fraction is not set
-  if (isUndefined(fraction) || fraction === null || fraction === "") {
+  if (typeof fraction === "undefined" || fraction === null || fraction === "") {
     return undefined;
   } else {
     const f = parseFloat("0." + fraction) * 1000;

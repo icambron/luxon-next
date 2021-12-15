@@ -54,7 +54,7 @@ export const toFormat = (dt: DateTime, format: string, firstArg?: FormatFirstArg
 
 const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: TokenFormatOpts = {}): string => {
   const tokenFormatOpts = macroTokens[token.name as MacroToken];
-  return tokenFormatOpts ? dateTimeFormat({ ...formatOpts, ...tokenFormatOpts }, dt.zone).format(new Date(+dt)) : token.name;
+  return tokenFormatOpts ? dateTimeFormat({ ...formatOpts, ...tokenFormatOpts }, dt.zone).format(dt.native()) : token.name;
 };
 
 const tokenToString = (dt: DateTime, token: FormatToken, formatOpts: TokenFormatOpts): string => {
@@ -83,7 +83,7 @@ const tokenToString = (dt: DateTime, token: FormatToken, formatOpts: TokenFormat
   const useDateTimeFormatter = formatOpts.calendar && formatOpts.calendar !== "gregory";
   const string = (opts: Intl.DateTimeFormatOptions, field: string) => {
     const dtf = dateTimeFormat({...formatOpts, ...opts}, dt.zone);
-    return extract(new Date(+dt), dtf, field);
+    return extract(dt.native(), dtf, field);
   }
 
   const pad = (p: number): ExtendedNumberFormatOpts => ({...numberOpts, minimumIntegerDigits: p});

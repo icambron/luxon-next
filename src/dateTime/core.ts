@@ -21,7 +21,7 @@ export const toTime = (dt: DateTime): Time => ({ ...dt.time });
 export const setTime = (dt: DateTime, obj: Partial<Time>): DateTime => setGregorian(dt, obj);
 
 // CONVERSIONS
-export const toJSDate = (dt: DateTime): Date => new Date(dt.ts);
+export const toJSDate = (dt: DateTime): Date => dt.native();
 export const toMillis = (dt: DateTime): number => dt.ts;
 export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 

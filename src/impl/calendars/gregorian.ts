@@ -1,7 +1,6 @@
 import { daysInMonth } from "../util/dateMath";
 import { normalizeUnit, gregorianUnits, normalizeUnitBundle, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
-import { isInteger } from "../util/typeCheck";
 import { Zone, GregorianCalendar, GregorianDate, GregorianUnit, Time } from "../../types";
 
 /*
@@ -100,7 +99,7 @@ class GregorianCalendarImpl implements  GregorianCalendar {
     toGregorian = (obj: GregorianDate): GregorianDate => obj;
 
     isDateInvalid = ({year, month, day}: any): [string, number] | null => {
-        if (!isInteger(year)) {
+        if (!Number.isInteger(year)) {
             return ["year", year];
         } else if (!integerBetween(month, 1, 12)) {
             return ["month", month];

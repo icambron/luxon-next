@@ -8,7 +8,6 @@ import {
   timeUnitsPlural,
 } from "./util/units";
 import { roundTo } from "./util/numeric";
-import { isUndefined } from "./util/typeCheck";
 import { ConversionAccuracy, Duration, DurationUnit, DurationValues } from "../types";
 
 export const durationUnits: Array<DurationUnit> = [
@@ -54,7 +53,7 @@ export const toMillis = (
   const matrix = pickMatrix(conversionAccuracy);
   return durationUnits.reduce((total: number, k) => {
     const val = values[k];
-    if (isUndefined(val)) return total;
+    if (typeof val === "undefined") return total;
     const ratio = k === "milliseconds" ? 1 : matrix[k]["milliseconds"];
     return total + ratio * val;
   }, 0);

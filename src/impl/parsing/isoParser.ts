@@ -22,11 +22,11 @@ const extractISOTime = (match: RegExpMatchArray, cursor: number): ExtractedResul
   };
 
   return {
-    calendar: null,
-    calendarUnits: {},
-    timeUnits: item,
+    cal: null,
+    date: {},
+    time: item,
     zone: null,
-    cursor: cursor + 4,
+    cur: cursor + 4,
   };
 };
 
@@ -35,11 +35,11 @@ const extractISOOffset = (match: RegExpMatchArray, cursor: number): ExtractedRes
   const fullOffset = signedOffset(match[cursor + 1], match[cursor + 2]);
   const zone = local ? null : fixedOffsetZone(fullOffset);
   return {
-    calendar: null,
-    calendarUnits: {},
-    timeUnits: {},
+    cal: null,
+    date: {},
+    time: {},
     zone,
-    cursor: cursor + 3,
+    cur: cursor + 3,
   };
 };
 const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult => {
@@ -50,11 +50,11 @@ const extractISOYmd = (match: RegExpMatchArray, cursor: number): ExtractedResult
   };
 
   return {
-    calendar: gregorianInstance,
-    calendarUnits: item,
-    timeUnits: {},
+    cal: gregorianInstance,
+    date: item,
+    time: {},
     zone: null,
-    cursor: cursor + 3,
+    cur: cursor + 3,
   };
 };
 
@@ -71,9 +71,9 @@ export const parseISODateTime = (s: string): ExtractedResult => {
   const isoTimeExtensionRegex = RegExp(`(?:T${isoTimeAndOffsetRegex.source})?`);
   return parse(
     s,
-    { regex: combineRegexes(isoYmdRegex, isoTimeExtensionRegex), extractor: extractISOYmdTimeAndOffset },
-    { regex: combineRegexes(isoWeekRegex, isoTimeExtensionRegex), extractor: extractISOWeekTimeAndOffset },
-    { regex: combineRegexes(isoOrdinalRegex, isoTimeExtensionRegex), extractor: extractISOOrdinalDateAndTime },
-    { regex: combineRegexes(isoTimeAndOffsetRegex), extractor: extractISOTimeAndOffset }
+    { r: combineRegexes(isoYmdRegex, isoTimeExtensionRegex), ex: extractISOYmdTimeAndOffset },
+    { r: combineRegexes(isoWeekRegex, isoTimeExtensionRegex), ex: extractISOWeekTimeAndOffset },
+    { r: combineRegexes(isoOrdinalRegex, isoTimeExtensionRegex), ex: extractISOOrdinalDateAndTime },
+    { r: combineRegexes(isoTimeAndOffsetRegex), ex: extractISOTimeAndOffset }
   );
 }

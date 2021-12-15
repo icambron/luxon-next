@@ -107,6 +107,8 @@ export interface DateTime {
   readonly time: Time;
   readonly calendarDates: Map<string, any>;
 
+  native(): Date;
+
   toJSON(): string;
 
   toString(): string;

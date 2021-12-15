@@ -3,7 +3,6 @@ import { getNowFn, getDefaultZone } from "../settings";
 import { fromObject, hasInvalidTimeData } from "./time";
 import { InvalidArgumentError, UnitOutOfRangeError } from "../errors";
 import { gregorianInstance, gregorianToTS, tsToGregorian } from "./calendars/gregorian";
-import { isNumber, isUndefined } from "./util/typeCheck";
 
 export const defaultTimeObject: Time = { hour: 0, minute: 0, second: 0, millisecond: 0 };
 
@@ -30,12 +29,12 @@ const fillInDefaults = <T extends object>(
 };
 
 const quick = (ts: number, zone: Zone, knownOffset?: number): [GregorianDate, Time, number] => {
-  const offset = isUndefined(knownOffset) ? zone.offset(ts) : knownOffset;
+  const offset = typeof knownOffset === "undefined" ? zone.offset(ts) : knownOffset;
   return [...tsToGregorian(ts, offset), offset];
 };
 
 export const fromMillis = (ts: number, zone?: Zone): DateTime => {
-  if (!isNumber(ts)) {
+  if (typeof ts !== "number") {
     throw new InvalidArgumentError(`timestamps must be numerical, but received a ${typeof ts} with value ${ts}`);
   }
 
@@ -90,7 +89,7 @@ export const fromCalendar = <TDate extends object>(
 
 export const alter = (ts: number, zone?: Zone, offset?: number): ((dt: DateTime) => DateTime) => {
   return (dt) => {
-    if (isUndefined(zone)) {
+    if (typeof zone === "undefined") {
       zone = dt.zone;
     }
     if (ts === dt.ts && zone.equals(dt.zone)) {
@@ -153,6 +152,7 @@ class DateTimeImpl implements DateTime {
   private readonly _gregorian: GregorianDate;
   private readonly _time: Time;
   private readonly _calendarDates: Map<string, any>;
+  private _date: Date | undefined;
 
   get gregorian(): GregorianDate {
     return { ...this._gregorian };
@@ -166,17 +166,25 @@ class DateTimeImpl implements DateTime {
     return new Map<string, any>(this._calendarDates);
   }
 
+  native(): Date {
+    if (typeof this._date == "undefined") {
+      this._date = new Date(this.ts);
+    }
+    return this._date;
+  }
+
+
   // these are here so that automagic layers work as expected
   toJSON(): string {
     return this.toString();
   }
 
   toString(): string {
-    return new Date(this.ts).toISOString();
+    return this.native().toISOString();
   }
 
   toBSON(): Date {
-    return new Date(this.ts);
+    return this.native();
   }
 
   valueOf(): number {

@@ -7,7 +7,6 @@ import { gregorianInstance } from "../impl/calendars/gregorian";
 import { parseRFC2822 } from "../impl/parsing/rfc2822Parser";
 import { parseHTTPDate } from "../impl/parsing/httpParser";
 import { getFormattingOpts } from "../impl/util/formatUtil";
-import { isUndefined } from "../impl/util/typeCheck";
 import { fromCalendar } from "../impl/dateTime";
 import { getDefaultZone } from "../settings";
 import { NoMatchingParserPattern } from "../errors";
@@ -46,8 +45,8 @@ const pickZone = (
 
 const fromRegexParse = (extracted: ExtractedResult, opts: ParseOpts): DateTime => {
   const { interpretationZone, targetZone } = pickZone(extracted.zone, opts);
-  const calendar = extracted.calendar || gregorianInstance;
-  const dt = fromCalendar(calendar, { ...extracted.calendarUnits, ...extracted.timeUnits }, interpretationZone);
+  const calendar = extracted.cal || gregorianInstance;
+  const dt = fromCalendar(calendar, { ...extracted.date, ...extracted.time }, interpretationZone);
   return setZone(dt, targetZone);
 };
 
@@ -66,6 +65,8 @@ const dateTimeFromParsedValues = (parsed: TokenParseValue, opts: ParseOpts): Dat
   let obj: object;
 
   const { interpretationZone, targetZone } = pickZone(parsed.zone, opts);
+
+  const isUndefined = (o: unknown): o is undefined => typeof o === "undefined";
 
   // ordinal first
   if (!isUndefined(parsed.ordinal)) {

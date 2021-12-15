@@ -16,7 +16,7 @@ const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeF
 export const formatMeridiem = (dt: DateTime, firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string => {
   const opts = getFormattingOpts(firstArg, secondArg);
   const dtf = meridiemDtf(opts, dt.zone);
-  return extract(new Date(+dt), dtf, "dayperiod");
+  return extract(dt.native(), dtf, "dayperiod");
 }
 
 export const listMeridiems = (firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string[] => {

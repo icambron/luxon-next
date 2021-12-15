@@ -66,4 +66,4 @@ const preprocessRFC2822 = (s: string): string =>
     .replace(/(\s\s+)/g, " ")
     .trim();
 
-export const parseRFC2822 = (s: string) => parse(preprocessRFC2822(s), { regex: rfc2822, extractor: extractRFC2822 });
+export const parseRFC2822 = (s: string) => parse(preprocessRFC2822(s), { r: rfc2822, ex: extractRFC2822 });

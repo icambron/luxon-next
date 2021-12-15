@@ -1,4 +1,3 @@
-import { isUndefined } from "../util/typeCheck";
 import { InvalidZoneError } from "../../errors";
 import { gregorianToLocalTS } from "../calendars/gregorian";
 import { memo } from "../util/caching";
@@ -38,7 +37,7 @@ const partsOffset = (dtf: Intl.DateTimeFormat, date: Date) => {
     const { type, value } = formatted[i];
     const pos = typeToPos[type];
 
-    if (!isUndefined(pos)) {
+    if (typeof pos !== "undefined") {
       filled[pos] = parseInt(value, 10);
     }
   }

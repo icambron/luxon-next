@@ -12,7 +12,7 @@ const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
 export const formatEra = (dt: DateTime, firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string => {
   const opts = getFormattingOpts(firstArg, secondArg);
   const dtf = eraDtf(opts, dt.zone);
-  return extract(new Date(+dt), dtf, "era");
+  return extract(dt.native(), dtf, "era");
 }
 
 // note this doesn't support Japanese eras

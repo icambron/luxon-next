@@ -9,7 +9,6 @@ import { MacroToken, macroTokens } from "../formatting/presets";
 import { digitRegex, parseDigits } from "../util/digits";
 import { parseMillis } from "../util/numeric";
 import { untruncateYear } from "../util/dateMath";
-import { isUndefined } from "../util/typeCheck";
 import { fixedOffsetZone } from "../zone/fixedOffset";
 import { ianaZone } from "../zone/iana";
 import { signedOffset } from "../util/zoneUtils";
@@ -257,7 +256,7 @@ function tokenForPart(part: Intl.DateTimeFormatPart, formatOps: Intl.DateTimeFor
   if (type === "literal") return { literal: true, name: value };
 
   let val = partTypeStyleToTokenVal[type];
-  if (!isUndefined(val)) {
+  if (typeof val !== "undefined") {
 
     const style: Style = formatOps[type] || "*";
     const specific = val[style] || val["*"];
@@ -295,11 +294,11 @@ const zoneForMatch = (fields: TokenParseFields): [Zone | undefined, number | und
   let zone = undefined;
   let specificOffset = undefined;
 
-  if (!isUndefined(fields.z)) {
+  if (typeof fields.z !== "undefined") {
     zone = ianaZone(fields.z);
   }
 
-  if (!isUndefined(fields.Z)) {
+  if (typeof fields.Z !== "undefined") {
     if (!zone) {
       zone = fixedOffsetZone(fields.Z);
     }
@@ -323,9 +322,9 @@ const valsForFields = (fields: TokenParseFields): TokenParseValue => {
   // gregorian
   parsed.gregorian.year = fields.G === 0 && fields.y ? -fields.y : fields.y;
 
-  if (!isUndefined(fields.M) || !isUndefined(fields.L)) {
+  if (typeof fields.M != "undefined" || typeof fields.L !== "undefined") {
     parsed.gregorian.month = fields.M || fields.L;
-  } else if (!isUndefined(fields.q)) {
+  } else if (typeof fields.q !== "undefined") {
     parsed.gregorian.month = (fields.q - 1) * 3 + 1;
   }
 
@@ -344,7 +343,7 @@ const valsForFields = (fields: TokenParseFields): TokenParseValue => {
     throw new ConflictingSpecificationError("Can't include meridiem when specifying 24-hour format");
   }
 
-  if (!isUndefined(fields.h)) {
+  if (typeof fields.h !== "undefined") {
     if (fields.h < 12 && fields.a === 1) {
       parsed.time.hour = fields.h + 12;
     } else if (fields.h === 12 && fields.a === 0) {
@@ -359,7 +358,7 @@ const valsForFields = (fields: TokenParseFields): TokenParseValue => {
   parsed.time.minute = fields.m;
   parsed.time.second = fields.s;
 
-  if (!isUndefined(fields.u)) {
+  if (typeof fields.u !== "undefined") {
     parsed.time.millisecond = parseMillis(fields.u);
   } else {
     parsed.time.millisecond = fields.S

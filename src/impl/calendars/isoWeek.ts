@@ -1,7 +1,6 @@
 import { computeOrdinal, dayOfWeek, daysInYear, uncomputeOrdinal, weeksInWeekYear } from "../util/dateMath";
 import { normalizeUnit, isoWeekUnits, normalizeUnitBundle, simplePlural } from "../util/units";
 import { integerBetween } from "../util/numeric";
-import { isInteger } from "../util/typeCheck";
 import { GregorianDate, IsoWeekCalendar, ISOWeekDate, IsoWeekUnit } from "../../types";
 
 const isoWeekNormalizer = (unit: string, throwOnError?: boolean) => normalizeUnit<IsoWeekUnit>("isoWeekUnit", isoWeekUnits, simplePlural, unit, throwOnError);
@@ -34,7 +33,7 @@ class IsoWeekCalendarImpl implements IsoWeekCalendar {
     }
 
     isDateInvalid(obj: ISOWeekDate): [string, number] | null {
-        if (!isInteger(obj.weekYear)) {
+        if (!Number.isInteger(obj.weekYear)) {
             return ["weekYear", obj.weekYear];
         }
 

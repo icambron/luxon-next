@@ -19,17 +19,17 @@ import { toUTC } from "./zone";
 
 export const toLocaleString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
   const opts = getDefaultedFormattingOpts(firstArg, secondArg);
-  return new Date(+dt).toLocaleString(opts.locale, opts);
+  return dt.native().toLocaleString(opts.locale, opts);
 }
 
 export const toLocaleDateString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
   const opts = getDefaultedFormattingOpts(firstArg, secondArg);
-  return new Date(+dt).toLocaleDateString(opts.locale, opts);
+  return dt.native().toLocaleDateString(opts.locale, opts);
 }
 
 export const toLocaleTimeString = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): string => {
   const opts = getDefaultedFormattingOpts(firstArg, secondArg);
-  return new Date(+dt).toLocaleTimeString(opts.locale, opts);
+  return dt.native().toLocaleTimeString(opts.locale, opts);
 }
 
 export const toLocaleParts = (dt: DateTime, firstArg?: FormatFirstArg<FormatOpts>, secondArg?: FormatSecondArg<FormatOpts>): Intl.DateTimeFormatPart[] => {
@@ -42,7 +42,9 @@ export const toFormat = toFormatInternal;
 export const toRFC2822 = (dt: DateTime) => toFormat(dt, "EEE, dd LLL yyyy HH:mm:ss ZZZ", "en-US");
 export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH:mm:ss [GMT]");
 
-export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
+export const toISO = (dt: DateTime) => dt.toString();
+
+export const toISOAdvanced = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
   `${toISODate(dt, opts)}T${toISOTime(dt, opts)}`;
 
 export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}): string => {

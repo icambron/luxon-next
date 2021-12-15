@@ -14,7 +14,7 @@ const weekdayDtf = (formatOpts: WeekdayFormatOpts, zone: Zone): Intl.DateTimeFor
 export const formatWeekday = (dt: DateTime, firstArg?: FormatFirstArg<WeekdayFormatOpts>, secondArg?: FormatSecondArg<WeekdayFormatOpts>): string => {
   const opts = getFormattingOpts(firstArg, secondArg);
   const dtf = weekdayDtf(opts, dt.zone);
-  return extract(new Date(+dt), dtf, "weekday");
+  return extract(dt.native(), dtf, "weekday");
 }
 
 export const listWeekdays = (firstArg?: FormatFirstArg<WeekdayFormatOpts>, secondArg?: FormatSecondArg<WeekdayFormatOpts>): string[] => {

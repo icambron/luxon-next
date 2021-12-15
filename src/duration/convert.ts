@@ -1,6 +1,5 @@
 import { getDefaultConversionAccuracy } from "../settings";
 import { antiTrunc } from "../impl/util/numeric";
-import { isNumber, isUndefined } from "../impl/util/typeCheck";
 import { ConversionMatrix, fromValues, normalizeDurationUnit, pickMatrix } from "../impl/duration";
 import { ConversionAccuracy, Duration, DurationUnit } from "../types";
 
@@ -51,7 +50,7 @@ const durToMap = (dur: Duration): Map<DurationUnit, number> => {
 // NB: mutates parameters
 const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, number>) => {
   reverseUnits.reduce((previous: DurationUnit | null, current) => {
-    if (!isUndefined(vals.get(current))) {
+    if (typeof vals.get(current) !== "undefined") {
       if (previous) {
         convertInternal(matrix, vals, previous, vals, current);
       }
@@ -112,7 +111,7 @@ export const durShiftTo = (
       }
 
       // plus anything that's already in this unit
-      if (isNumber(valueMap.get(k))) {
+      if (typeof valueMap.get(k) === "number") {
         own += valueMap.get(k) as number;
       }
 
@@ -127,7 +126,7 @@ export const durShiftTo = (
         }
       }
       // otherwise, keep it in the wings to boil it later
-    } else if (isNumber(valueMap.get(k))) {
+    } else if (typeof valueMap.get(k) == "number") {
       accumulated.set(k, valueMap.get(k) as number);
     }
   }
