@@ -7,7 +7,7 @@ import {
   parseFormat
 } from "../util/formatUtil";
 import { padStart } from "../util/string";
-import { MacroToken, macroTokens } from "./presets";
+import { MacroToken, macroTokens } from "./macroTokens";
 import { getCalendarValue } from "../dateTime";
 import { ordinalInstance } from "../calendars/ordinal";
 import { gregorianInstance } from "../calendars/gregorian";
@@ -46,8 +46,8 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
   return s;
 };
 
-export const toFormat = (dt: DateTime, format: string, firstArg?: FormatFirstArg<TokenFormatOpts>, secondArg?: FormatSecondArg<TokenFormatOpts>): string => {
-  const formatOpts = getFormattingOpts<TokenFormatOpts>(firstArg, secondArg);
+export const toFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<TokenFormatOpts>, opts?: FormatSecondArg<TokenFormatOpts>): string => {
+  const formatOpts = getFormattingOpts<TokenFormatOpts>(locale, opts);
   const tokens = parseFormat(format);
   return stringifyTokens(tokens, token => tokenToString(dt, token, formatOpts));
 }

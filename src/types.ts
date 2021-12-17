@@ -18,8 +18,7 @@ export type GregorianDate = {
   [key in GregorianUnit]: number;
 };
 
-export interface GregorianCalendar extends Calendar<GregorianDate> {
-}
+export type GregorianCalendar = Calendar<GregorianDate>;
 
 // TIME
 
@@ -32,26 +31,23 @@ export type Time = {
 // ISO WEEK
 export type IsoWeekUnit = "weekYear" | "weekNumber" | "weekday";
 
-export interface ISOWeekDate {
+export type ISOWeekDate = {
   weekYear: number;
   weekNumber: number;
   weekday: number;
-}
+};
 
-export interface IsoWeekCalendar extends Calendar<ISOWeekDate> {
-}
+export type IsoWeekCalendar = Calendar<ISOWeekDate>;
 
-export interface OrdinalDate {
+export type OrdinalDate = {
   year: number;
   ordinal: number;
-}
+};
 
 // ORDINAL
 
 export type OrdinalUnit = "year" | "ordinal";
-
-export interface OrdinalCalendar extends Calendar<OrdinalDate> {
-}
+export type OrdinalCalendar = Calendar<OrdinalDate>;
 
 // MATH
 
@@ -149,47 +145,53 @@ export type NumericOffsetFormatWidth = "narrow" | "standard" | "techie";
 export type OffsetFormatWidth = NumericOffsetFormatWidth | NamedOffsetFormatWidth;
 export type FormatMode = "standalone" | "format";
 
-export interface SharedFormatOpts {
+export type SharedFormatOpts = {
   locale?: string;
   numberingSystem?: string;
 }
 
-export interface FormatOpts extends SharedFormatOpts, Intl.DateTimeFormatOptions {
-}
+export type FormatOpts = SharedFormatOpts & Intl.DateTimeFormatOptions;
 
-export interface TokenFormatOpts extends SharedFormatOpts {
+export type TokenFormatOpts = SharedFormatOpts & {
   forceSimple?: boolean,
   allowZ?: boolean,
   calendar?: string
-}
+};
 
-export interface MonthFormatOpts extends FormatOpts {
+export type MonthFormatOpts = FormatOpts & {
   mode?: FormatMode;
   width?: MonthFormatWidth;
-}
+};
 
-export interface WeekdayFormatOpts extends FormatOpts {
+export type WeekdayFormatOpts = FormatOpts & {
   mode?: FormatMode;
   width?: WeekdayFormatWidth;
-}
+};
 
-export interface MeridiemFormatOpts extends FormatOpts {
+export type MeridiemFormatOpts = FormatOpts & {
   width?: MeridiemFormatWidth;
-}
+};
 
-export interface EraFormatOpts extends FormatOpts {
+export type EraFormatOpts = FormatOpts & {
+  /*
+   * The length of the era string to format.
+   * * "narrow" for English is like "A" or "B"
+   * * "short" for English is like "AD" or "BC"
+   * * "long" for English is like "Anno Domini" or "Before Christ"
+   * @defaultValue "short"
+  */
   width?: EraFormatWidth;
-}
+};
 
-export interface NamedOffsetFormatOpts extends FormatOpts {
+export type NamedOffsetFormatOpts = FormatOpts & {
   width?: NamedOffsetFormatWidth;
-}
+};
 
-export interface OffsetFormatOpts extends FormatOpts {
+export type OffsetFormatOpts = FormatOpts & {
   width?: OffsetFormatWidth;
-}
+};
 
-export interface FormatToken {
+export type FormatToken = {
   name: string;
   literal?: boolean;
 }
@@ -199,34 +201,68 @@ export type FormatSecondArg<T extends SharedFormatOpts> = T | undefined;
 
 export type ISOFormatLength = "basic" | "extended";
 
+/**
+  * Options for ISO-8601 string formatting.
+  * @see {@link toISOAdvanced}
+*/
 export type ISOFormatOpts = {
+  /**
+    * Whether to include display seconds.
+    * @defaultValue true
+  */
   seconds: boolean,
+
+  /**
+    * Whether to include display milliseconds. Ignored if `seconds` is set to false.
+    * @defaultValue true
+  */
   milliseconds: boolean
+
+  /*
+   * Whether to include seconds in the output if they're zero. Ignored if `seconds` is set to false`.
+   * @remarks This is a subtle flag:
+   *  * If `seconds` is set to false, seconds aren't displayed, so this flag is ignored.
+   *  * If `milliseconds` is set to true (the default) and there the time contains non-zero milliseconds, the seconds and milliseconds will be displayed
+   *  * This flag implies `elideZeroMilliseconds`
+  */
   elideZeroSeconds: boolean,
+
+  /*
+   * Whether to include milliseconds in the output if they're zero. Ignored if `milliseconds` or `seconds` is set to false`.
+  */
   elideZeroMilliseconds: boolean,
+
+  /*
+   * The ISO-8601 format type
+   * @defaultValue "extended"
+  */
   format: ISOFormatLength,
+
+  /*
+   * Whether to include the offset in the output.
+   * @defaultValue true
+  */
   includeOffset: boolean
 };
 
 // PARSING
 
-export interface ParseOpts {
+export type ParseOpts = {
   interpretationZone?: Zoneish;
   targetZone?: Zoneish;
   useTargetZoneFromInput?: boolean;
-}
+};
 
-export interface TokenParseOpts extends ParseOpts, SharedFormatOpts {
-}
+export type TokenParseOpts = ParseOpts & SharedFormatOpts;
 
-export interface TokenParseValue {
+export type TokenParseValue = {
   gregorian: Partial<GregorianDate>;
   week: Partial<ISOWeekDate>;
   time: Partial<Time>;
   ordinal?: number;
   zone?: Zone;
   knownOffset?: number;
-}
+};
 
 export type TokenParsedField =
   | "G"
@@ -254,7 +290,7 @@ export type TokenParseFields = Partial<{
   [key in TokenParsedField]: any;
 }>;
 
-export interface TokenParseSummary {
+export type TokenParseSummary = {
   input: string;
   format: string;
   tokens: FormatToken[];

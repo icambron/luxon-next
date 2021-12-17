@@ -1,6 +1,6 @@
 {
   "name": "luxon-next",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -14,9 +14,11 @@
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
     "docs": "typedoc src/dateTime src/duration src/model",
     "circular": "dpdm --exit-code=circular:1 src/**/*.ts",
-    "repl": "LANG=en-US.utf8 node -i -r \"./scripts/bootstrap.cjs\""
+    "repl": "LANG=en-US.utf8 node -i -r \"./scripts/bootstrap.cjs\"",
+    "docs": "typedoc -out build/docs src/luxon.ts"
   },
   "devDependencies": {
+    "typedoc": "latest",
     "@swc/core": "^1.2.119",
     "@swc/jest": "^0.2.12",
     "dpdm": "latest",
@@ -27,7 +29,6 @@
   },
   "sideEffects": false,
   "main": "build/es6/luxon.js",
-  "module": "build/es6/luxon.js",
   "browser": "build/global/luxon.js",
   "types": "build/types/luxon.d.ts",
   "files": [

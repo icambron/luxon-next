@@ -59,7 +59,7 @@ export const toMillis = (
   }, 0);
 };
 
-export const fromValues = (values: Partial<DurationValues>) => new DurationImpl(values);
+export const fromValues = (values: Partial<DurationValues>): Duration => new DurationImpl(values);
 
 export const convert = (
   val: number,

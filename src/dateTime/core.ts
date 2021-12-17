@@ -47,6 +47,16 @@ export const ymd = (
   millisecond?: number
 ) => fromGregorian({ year, month, day, hour, minute, second, millisecond });
 
+export const ymdUTC = (
+  year: number,
+  month: number,
+  day: number,
+  hour?: number,
+  minute?: number,
+  second?: number,
+  millisecond?: number
+) => fromGregorian({ year, month, day, hour, minute, second, millisecond }, utcInstance);
+
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>
   fromCalendar(gregorianInstance, obj, normalizeZone(zone));
