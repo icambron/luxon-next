@@ -171,25 +171,3 @@ export const DATETIME_HUGE_WITH_SECONDS: Intl.DateTimeFormatOptions = {
   timeZoneName: l,
 };
 
-export type MacroToken =
-  | "D"
-  | "DD"
-  | "DDD"
-  | "DDDD"
-  | "t"
-  | "tt"
-  | "ttt"
-  | "tttt"
-  | "T"
-  | "TT"
-  | "TTT"
-  | "TTTT"
-  | "f"
-  | "ff"
-  | "fff"
-  | "ffff"
-  | "F"
-  | "FF"
-  | "FFF"
-  | "FFFF";
-
