@@ -17,6 +17,8 @@ import { Duration, DurationHumanizeFormatOpts, FormatFirstArg, FormatSecondArg }
   * durToHuman(dur) //=> '1 day, 5 hours, 6 minutes'
   * durToHuman(dur, { listStyle: "long" }) //=> '1 day, 5 hours, and 6 minutes'
   * durToHuman(dur, { unitDisplay: "short" }) //=> '1 day, 5 hr, 6 min'
+  * durToHuman(dur, "bn") //=> '১ দিন, ৫ ঘন্টা, ৬ মিনিট'
+  * durToHuman(dur, "bn", { listStyle: "long" }) //=> '১ দিন, ৫ ঘন্টা এবং ৬ মিনিট'
   * ```
 */
 export const durToHuman = (dur: Duration, locale: FormatFirstArg<DurationHumanizeFormatOpts>, opts: FormatSecondArg<DurationHumanizeFormatOpts>): string => {
@@ -56,6 +58,6 @@ export const durToHuman = (dur: Duration, locale: FormatFirstArg<DurationHumaniz
    * durToFormat(dur, "yy dd sss") //=> "01 06 002"
    * durToFormat(dur, "M S") //=> "12 518402000"
    * durToFormat(dur, "yy dd sss", "bn") // => '০১ ০৬ ০০২'
-   * durToFormat(durFromMillis(100000),"SSS", { notation: "compact" }) //=> '100K'
+   * durToFormat(durFromMillis(100000), "SSS", { notation: "compact" }) //=> '100K'
    */
 export const durToFormat = durationToFormat;
