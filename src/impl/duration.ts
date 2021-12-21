@@ -16,6 +16,22 @@ export const durationUnits: Array<DurationUnit> = [
   ...miscDurationUnitsPlural,
 ];
 
+// convert ordered by size
+export const orderedUnits: DurationUnit[] = [
+  "years",
+  "quarters",
+  "months",
+  "weeks",
+  "days",
+  "hours",
+  "minutes",
+  "seconds",
+  "milliseconds",
+];
+
+export const biggestNonZero = (dur: Duration): DurationUnit | undefined =>
+  orderedUnits.find((unit) => !!dur._values[unit]);
+
 export const normalizeDurationUnit = (unit: string, throwOnError?: boolean) => normalizeUnit<DurationUnit>("durationUnit", durationUnits, simpleSingular, unit, throwOnError);
 
 export const toIso = (dur: Duration): string => {

@@ -5,6 +5,7 @@ export * from "./dateTime/format";
 export * from "./dateTime/math";
 export * from "./dateTime/isoWeek";
 export * from "./dateTime/ordinal";
+export * from "./dateTime/relative";
 
 export * from "./duration/core";
 export * from "./duration/diff";

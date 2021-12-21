@@ -6,13 +6,14 @@ import { bestBy } from "../impl/util/array";
 import { alter, set } from "../impl/dateTime";
 import { convert, defaultEmpties, durationUnits, fromValues, toMillis } from "../impl/duration";
 import { daysInMonth } from "../impl/util/dateMath";
-import { ConversionAccuracy, DateTime, Duration, DurationValues, StartEndUnit } from "../types";
+import { ConversionAccuracy, DateTime, Duration, DurationValues, ComparableUnit, ComparableUnitPlural } from "../types";
 import { isDuration } from "../impl/util/typeCheck";
 import { InvalidUnitError } from "../errors";
 import { getDefaultConversionAccuracy } from "../settings";
 
 // weird dep
 import { durNegate } from "../duration/core";
+import { setZone } from "../impl/zone/setZone";
 
 /**
  * Return the max of several date times, or `undefined` if the input array is empty
@@ -26,8 +27,8 @@ export const max = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) =>
  */
 export const min = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.min);
 
-const startEndUnits: Array<StartEndUnit> = [...gregorianUnits, ...timeUnits, ...miscDurationUnits];
-const normalizeStartEndUnit = (unit: string, throwOnError?: boolean) => normalizeUnit("startunits", startEndUnits, simplePlural, unit, throwOnError);
+const startEndUnits: Array<ComparableUnit> = [...gregorianUnits, ...timeUnits, ...miscDurationUnits];
+const normalizeComparableUnit = (unit: string, throwOnError?: boolean) => normalizeUnit("startunits", startEndUnits, simplePlural, unit, throwOnError);
 
 /**
  * Return the DateTime representing the beginning of a unit of time, relative to the input date time
@@ -40,8 +41,8 @@ const normalizeStartEndUnit = (unit: string, throwOnError?: boolean) => normaliz
  * ```
  * @param unit - The unit to go to the beginning of. Can be "year", "quarter", "month", "week", "day", "hour", "minute", "second", or "millisecond".
  */
-export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
-  const u = normalizeStartEndUnit(unit);
+export const startOf = (dt: DateTime, unit: ComparableUnit | ComparableUnitPlural): DateTime => {
+  const u = normalizeComparableUnit(unit);
   const o = {} as Record<string, number>;
   switch (u) {
     case "year":
@@ -64,6 +65,7 @@ export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
     case "second":
       o.millisecond = 0;
       break;
+    case "millisecond": break;
     default:
       throw new InvalidUnitError(unit);
   }
@@ -80,6 +82,12 @@ export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
   return o.weekday ? set(dt, isoWeekCalendarInstance, o) : set(dt, gregorianInstance, o);
 };
 
+export const hasSame = (first: DateTime, second: DateTime, unit: ComparableUnit): boolean => {
+    const inputMs = second.valueOf();
+    const firstAdjusted = setZone(first, second.zone, { keepLocalTime: true });
+    return +startOf(firstAdjusted, unit) <= +inputMs && +inputMs <= +endOf(firstAdjusted, unit);
+}
+
 /**
  * Return the DateTime representing the end of a unit of time (meaning, the last millisecond), relative to the input date time
  * ```js
@@ -91,7 +99,7 @@ export const startOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
  * ```
  * @param  unit - The unit to go to the end of. Can be 'year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', or 'millisecond'.
  */
-export const endOf = (dt: DateTime, unit: StartEndUnit): DateTime => {
+export const endOf = (dt: DateTime, unit: ComparableUnit): DateTime => {
   // need a pipe operator, please
   const plussed = plus(dt, { [unit as string]: 1 });
   const started = startOf(plussed, unit);

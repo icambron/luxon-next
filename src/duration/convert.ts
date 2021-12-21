@@ -1,20 +1,7 @@
 import { getDefaultConversionAccuracy } from "../settings";
 import { antiTrunc } from "../impl/util/numeric";
-import { ConversionMatrix, fromValues, normalizeDurationUnit, pickMatrix } from "../impl/duration";
+import { ConversionMatrix, fromValues, normalizeDurationUnit, orderedUnits, pickMatrix } from "../impl/duration";
 import { ConversionAccuracy, Duration, DurationUnit } from "../types";
-
-// convert ordered by size
-const orderedUnits: DurationUnit[] = [
-  "years",
-  "quarters",
-  "months",
-  "weeks",
-  "days",
-  "hours",
-  "minutes",
-  "seconds",
-  "milliseconds",
-];
 
 const reverseUnits: DurationUnit[] = orderedUnits.slice(0).reverse();
 
@@ -60,12 +47,6 @@ const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, numbe
     }
   }, null);
 };
-
-export const as = (dur: Duration, unit: DurationUnit): number => {
-  const shifted = durShiftTo(dur, [unit]);
-  return shifted.values[unit] || 0;
-};
-
 /**
  * Reduce this Duration to its canonical representation in its current convert.
  * @example fromValues({ years: 2, days: 5000 }) |> normalize() |> values //=> { years: 15, days: 255 }
@@ -80,6 +61,12 @@ export const durNormalize = (
   normalizeValues(pickMatrix(conversionAccuracy), map);
   return fromValues(Object.fromEntries(map));
 };
+
+export const durAs = (dur: Duration, unit: DurationUnit) => {
+  const normalizedUnit = normalizeDurationUnit(unit, true);
+  const shifted = durShiftTo(dur, [normalizedUnit as DurationUnit]);
+  return shifted._values[unit] || 0;
+}
 
 export const durShiftTo = (
   dur: Duration,

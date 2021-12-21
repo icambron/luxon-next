@@ -7,9 +7,12 @@ import {
   FormatSecondArg,
   FormatToken,
   SharedFormatOpts,
-  FormatOpts
+  FormatOpts,
+  RelativeFormatOpts,
+  RelativeUnit
 } from "../../types";
 import { isValidIANAZone } from "../util/zoneUtils";
+import { roundTo } from "./numeric";
 
 export const dateTimeFormat = (opts: FormatOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
   const { locale, ...rest } = opts;
@@ -178,3 +181,24 @@ const zoneOptionForZone = (zone: Zone | undefined): string | null => {
     return zone.name;
   }
 };
+
+export const relativeFormatter = (formatOpts: Partial<RelativeFormatOpts>): Intl.RelativeTimeFormat => {
+  const { locale, ...opts } = formatOpts;
+  const cache = memo("relativeFormat", ([locale, opts]: [string, Partial<RelativeFormatOpts>]): Intl.RelativeTimeFormat => new Intl.RelativeTimeFormat(locale, opts));
+  return cache([locale || getDefaultLocale(), opts]);
+};
+
+// es2020 doesn't have Intl.ListFormat and related types, so fake it
+interface ListFormat {
+  format: (items: Array<string>) => string;
+}
+
+const listFormatter = (locale: string, opts: object): ListFormat => {
+  //@ts-ignore
+  const cache = memo("listFormat", ([locale, opts]: [string, object]): ListFormatter => new Intl.ListFormat(locale, opts) as ListFormat);
+  return cache([locale, opts]);
+}
+
+export const formatList = (items: Array<string>, locale: string, opts: object): string =>
+  listFormatter(locale, opts).format(items);
+  

@@ -1,10 +1,11 @@
-import { durFromMillis, duration, durPlus as durationPlus } from "./core";
-import { as, durShiftTo } from "./convert";
+import { durFromMillis, duration, durPlus as durationPlus, durNegate } from "./core";
+import { durAs, durShiftTo } from "./convert";
 import { toUTC } from "../dateTime/zone";
 import { plus, startOf } from "../dateTime/math";
 import { month, quarter, year } from "../dateTime/core";
 import { maybeArray } from "../impl/util/array";
 import { DateTime, Duration, DurationUnit, DurationValues } from "../types";
+import { normalizeDurationUnit } from "../impl/duration";
 
 type Differ = (a: DateTime, b: DateTime) => number;
 
@@ -22,7 +23,7 @@ const dayDiff = (earlier: DateTime, later: DateTime): number => {
     return +start;
   };
   const ms = utcDayStart(later) - utcDayStart(earlier);
-  return Math.floor(as(durFromMillis(ms), "days"));
+  return Math.floor(durAs(durFromMillis(ms), "days"));
 };
 
 const differs: [DurationUnit, Differ][] = [
@@ -66,15 +67,27 @@ const highOrderDiffs = (cursor: DateTime, later: DateTime, units: DurationUnit[]
 };
 
 export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] | DurationUnit): Duration => {
-  if (!units) {
-    units = ["milliseconds"];
-  } else units = maybeArray(units);
 
-  let { cursor, results, highWater, lowestOrder } = highOrderDiffs(earlier, later, units);
+  let flipped = false;
+  if (+later < +earlier) {
+    const tmp = later;
+    later = earlier;
+    earlier = tmp;
+    flipped = true;
+  }
+
+  let normalizedUnits: DurationUnit[];
+  if (!units) {
+    normalizedUnits = ["milliseconds"];
+  } else normalizedUnits = maybeArray(units);
+
+  normalizedUnits = normalizedUnits.map(u => normalizeDurationUnit(u, true) as DurationUnit);
+
+  let { cursor, results, highWater, lowestOrder } = highOrderDiffs(earlier, later, normalizedUnits);
 
   const remainingMillis = +later - +cursor;
 
-  const lowerOrderUnits = units.filter((u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0);
+  const lowerOrderUnits = normalizedUnits.filter((u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0);
 
   if (lowerOrderUnits.length === 0 && highWater && lowestOrder) {
     if (+highWater < +later) {
@@ -88,11 +101,14 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
 
   const dur = duration(results);
 
+  let result;
   if (lowerOrderUnits.length > 0) {
     const simple = durFromMillis(remainingMillis);
     const shiftedToUnits = durShiftTo(simple, lowerOrderUnits);
-    return durationPlus(dur, shiftedToUnits);
+    result = durationPlus(dur, shiftedToUnits);
   } else {
-    return dur;
+    result = dur;
   }
+
+  return flipped ? durNegate(result) : result;
 };

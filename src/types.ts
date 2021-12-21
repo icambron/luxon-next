@@ -51,7 +51,9 @@ export type OrdinalCalendar = Calendar<OrdinalDate>;
 
 // MATH
 
-export type StartEndUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
+export type ComparableUnit = GregorianUnit | TimeUnit | MiscDurationUnit;
+export type ComparableUnitPlural = GregorianUnitPlural | TimeUnitPlural | MiscDurationUnitPlural;
+export type RelativeUnit = Exclude<DurationUnit, "milliseconds">;
 
 // ZONE
 
@@ -245,6 +247,19 @@ export type ISOFormatOpts = {
   includeOffset: boolean
 };
 
+export type RelativeFormatOpts = SharedFormatOpts & Intl.RelativeTimeFormatOptions & {
+  /**
+   * Whether to round the values
+   * @defaultValue 0
+  */
+  roundTo: number,
+
+  /**
+   * Unit to use
+  */
+  unit: RelativeUnit,
+}
+
 // PARSING
 
 export type ParseOpts = {
@@ -299,4 +314,3 @@ export type TokenParseSummary = {
   fields: TokenParseFields | null;
   parsed: TokenParseValue | null;
 };
-
