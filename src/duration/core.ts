@@ -44,7 +44,7 @@ export const durPlus = (...durs: Duration[]): Duration => {
 
 /**
  * Subtracts durations
- * @param  dur - the duration to subtract from
+ * @param dur - the duration to subtract from
  * @param durs - The durations to subtract.
  */
 export const durMinus = (dur: Duration, ...durs: Duration[]) => {
@@ -53,12 +53,14 @@ export const durMinus = (dur: Duration, ...durs: Duration[]) => {
 };
 
 /**
- * Scale this Duration by the specified amount. Return a newly-constructed Duration.
+ * Scale a Duration by the specified function. Return a newly-constructed Duration.
+ * @example
  * ```js
  * const dur = duration({ hours: 1, minutes: 30 });
- * mapUnit(dur, x => x * 2) |> toGregorian //=> { hours: 2, minutes: 60 }
- * mapUnit(dur, (x, u) => u === "hour" ? x * 2 : x) |> toGregorian //=> { hours: 2, minutes: 30 }
+ * mapUnit(dur, x => x * 2) |> toGregorian(%) //=> { hours: 2, minutes: 60 }
+ * mapUnit(dur, (x, u) => u === "hour" ? x * 2 : x) |> toGregorian(%) //=> { hours: 2, minutes: 30 }
  * ```
+ * @param dur - The duration to map the values
  * @param fn - The function to apply to each unit. Arity is 1 or 2: the value of the unit and, optionally, the unit name. Must return a number.
  */
 export const durMapInputs = (dur: Duration, fn: (val: number, unit: DurationUnit) => number): Duration => {
@@ -74,11 +76,12 @@ export const durMapInputs = (dur: Duration, fn: (val: number, unit: DurationUnit
 
 /**
  * Get a specific unit's value from duration.
+ * @example
  * ```js
  * const dur = duration({years: 2, days: 3});
- * dur |> get('years') //=> 2
- * dur |> get('months') //=> 0
- * dur |> get('days') //=> 3
+ * get(dur, 'years') //=> 2
+ * get(dur, 'months') //=> 0
+ * get(dur, 'days') //=> 3
  */
 export const durGet = (dur: Duration, unit: DurationUnit): number => {
   const normalized = normalizeDurationUnit(unit);
