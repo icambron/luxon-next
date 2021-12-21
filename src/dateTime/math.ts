@@ -101,7 +101,7 @@ export const hasSame = (first: DateTime, second: DateTime, unit: ComparableUnit)
  */
 export const endOf = (dt: DateTime, unit: ComparableUnit): DateTime => {
   // need a pipe operator, please
-  const plussed = plus(dt, { [unit as string]: 1 });
+  const plussed = plus(dt, { [unit]: 1 });
   const started = startOf(plussed, unit);
   return minus(started, { milliseconds: 1 });
 };
@@ -144,13 +144,12 @@ export const minus = (
 };
 
 interface AccumulatedFractions {
-  ints: DurationValues;
+  ints: Partial<DurationValues>;
   remain: number;
 }
 
 const shiftFractionsToMillis =
-  (conversionAccuracy: ConversionAccuracy): ((dur: Duration) => Duration) =>
-  (dur) => {
+  (dur: Duration, conversionAccuracy: ConversionAccuracy):Duration => {
     const vs = { milliseconds: 0, ...dur.values };
 
     const newVals = Array.from(durationUnits).reduce(
@@ -166,21 +165,19 @@ const shiftFractionsToMillis =
 
         return accum;
       },
-      { ints: {}, remain: 0 } as AccumulatedFractions
+      { ints: {}, remain: 0 }
     );
 
     // no fractional millis please
-    newVals.ints.milliseconds = roundTo(newVals.ints.milliseconds + newVals.remain, 0);
+    newVals.ints.milliseconds = roundTo((newVals.ints.milliseconds || 0) + newVals.remain, 0);
 
-    return fromValues(newVals.ints as Partial<DurationValues>);
+    return fromValues(newVals.ints);
   };
 
 const adjustTime = (dt: DateTime, dur: Duration, conversionAccuracy: ConversionAccuracy): [number, number] => {
-  const unfractioned = shiftFractionsToMillis(conversionAccuracy);
+  const unfractioned = shiftFractionsToMillis(dur, conversionAccuracy);
 
-  const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(
-    unfractioned(dur).values
-  );
+  const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(unfractioned.values);
 
   const greg = dt.gregorian;
 

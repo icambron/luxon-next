@@ -81,7 +81,7 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
     normalizedUnits = ["milliseconds"];
   } else normalizedUnits = maybeArray(units);
 
-  normalizedUnits = normalizedUnits.map(u => normalizeDurationUnit(u, true) as DurationUnit);
+  normalizedUnits = normalizedUnits.map(normalizeDurationUnit);
 
   let { cursor, results, highWater, lowestOrder } = highOrderDiffs(earlier, later, normalizedUnits);
 

@@ -155,23 +155,23 @@ export type SharedFormatOpts = {
 export type DateTimeFormatOpts = SharedFormatOpts & Intl.DateTimeFormatOptions;
 
 export type DateTimeTokenFormatOpts = SharedFormatOpts & {
-  forceSimple?: boolean,
-  allowZ?: boolean,
-  calendar?: string
+  forceSimple: boolean,
+  allowZ: boolean,
+  calendar: string | undefined
 };
 
 export type MonthFormatOpts = DateTimeFormatOpts & {
-  mode?: FormatMode;
-  width?: MonthFormatWidth;
+  mode: FormatMode;
+  width: MonthFormatWidth;
 };
 
 export type WeekdayFormatOpts = DateTimeFormatOpts & {
-  mode?: FormatMode;
-  width?: WeekdayFormatWidth;
+  mode: FormatMode;
+  width: WeekdayFormatWidth;
 };
 
 export type MeridiemFormatOpts = DateTimeFormatOpts & {
-  width?: MeridiemFormatWidth;
+  width: MeridiemFormatWidth;
 };
 
 export type EraFormatOpts = DateTimeFormatOpts & {
@@ -182,24 +182,24 @@ export type EraFormatOpts = DateTimeFormatOpts & {
    * * "long" for English is like "Anno Domini" or "Before Christ"
    * @defaultValue "short"
   */
-  width?: EraFormatWidth;
+  width: EraFormatWidth;
 };
 
 export type NamedOffsetFormatOpts = DateTimeFormatOpts & {
-  width?: NamedOffsetFormatWidth;
+  width: NamedOffsetFormatWidth;
 };
 
 export type OffsetFormatOpts = DateTimeFormatOpts & {
-  width?: OffsetFormatWidth;
+  width: OffsetFormatWidth;
 };
 
 export type FormatToken = {
   name: string;
-  literal?: boolean;
+  literal: boolean;
 }
 
-export type FormatFirstArg<T extends SharedFormatOpts> = T | string | undefined;
-export type FormatSecondArg<T extends SharedFormatOpts> = T | undefined;
+export type FormatFirstArg<T extends SharedFormatOpts> = Partial<T> | string | undefined;
+export type FormatSecondArg<T extends SharedFormatOpts> = Partial<T> | undefined;
 
 export type ISOFormatLength = "basic" | "extended";
 

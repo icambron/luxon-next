@@ -29,7 +29,7 @@ export const orderedUnits: DurationUnit[] = [
   "milliseconds",
 ];
 
-export const normalizeDurationUnit = (unit: string, throwOnError?: boolean) => normalizeUnit<DurationUnit>("durationUnit", durationUnits, simpleSingular, unit, throwOnError);
+export const normalizeDurationUnit = (unit: string) => normalizeUnit<DurationUnit>("durationUnit", durationUnits, simpleSingular, unit, true) as DurationUnit;
 
 export const toIso = (dur: Duration): string => {
   let s = "P";

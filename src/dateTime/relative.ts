@@ -2,15 +2,11 @@ import { durGet } from "../duration/core";
 import { diff } from "../duration/diff";
 import { durShiftTo } from "../duration/convert";
 import { normalizeDurationUnit } from "../impl/duration";
-import { getFormattingOpts, relativeFormatter } from "../impl/util/formatUtil";
+import { getFullFormattingOpts, relativeFormatter } from "../impl/util/formatUtil";
 import { roundTo } from "../impl/util/numeric";
 import { DateTime, Duration, FormatFirstArg, FormatSecondArg, RelativeFormatOpts, RelativeUnit } from "../types";
 import { startOf } from "./math";
 
-type SimpleRelativeFormatOpts = {
-  units: RelativeUnit[],
-  roundTo: number
-} & Intl.RelativeTimeFormatOptions
 
 const allUnits: RelativeUnit[] = ["years", "months", "days", "hours", "minutes", "seconds"];
 const higherUnits: RelativeUnit[] = ["years", "quarters", "months", "days"];
@@ -20,16 +16,14 @@ const value = (dur: Duration, unit: RelativeUnit, precision: number): number => 
   return roundTo(val, precision, true);
 }
 
-const getOpts = (locale: FormatFirstArg<RelativeFormatOpts>, format: FormatSecondArg<RelativeFormatOpts>): SimpleRelativeFormatOpts => {
-  const baseOpts = getFormattingOpts(locale, format);
-
-  const defaults = { roundTo: 0, units: allUnits };
-
+const getOpts = (locale: FormatFirstArg<RelativeFormatOpts>, format: FormatSecondArg<RelativeFormatOpts>): RelativeFormatOpts => {
+  const baseOpts = getFullFormattingOpts(locale, format, { roundTo: 0, units: allUnits });
   if (baseOpts.units) {
-    baseOpts.units = baseOpts.units.map(u => normalizeDurationUnit(u) as RelativeUnit); // Duration units can be milliseconds, but I know normalizeDurationUnit won't add it
+  // Duration units can be milliseconds, but I know normalizeDurationUnit won't add it, so we just cast here
+    baseOpts.units = baseOpts.units.map(u => normalizeDurationUnit(u) as RelativeUnit);
   }
 
-  return {...defaults, units: allUnits, ...baseOpts }
+  return baseOpts;
 }
 
 const biggestQualified = (dur: Duration, threshold: number, precision: number): RelativeUnit | undefined =>

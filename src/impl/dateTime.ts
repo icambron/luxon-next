@@ -124,7 +124,7 @@ export const set = <TDate extends object>(
   const timeObj = fromObject(obj);
 
   const current = getCalendarValue(dt, calendar);
-  let mixed = { ...current, ...dt.time, ...calObj, ...timeObj } as TDate & Time;
+  let mixed = { ...current, ...dt.time, ...calObj, ...timeObj };
 
   if (adjust) {
     mixed = adjust(obj, mixed);

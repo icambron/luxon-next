@@ -3,7 +3,7 @@ import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, MeridiemFormatOpts, DateTime, FormatFirstArg, FormatSecondArg } from "../../types";
 
-const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeFormat => {
+const meridiemDtf = (formatOpts: Partial<MeridiemFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
   const width = formatOpts?.width || "simple";
 
   const options: Intl.DateTimeFormatOptions =
@@ -22,7 +22,7 @@ export const formatMeridiem = (dt: DateTime, locale?: FormatFirstArg<MeridiemFor
 export const listMeridiems = (locale?: FormatFirstArg<MeridiemFormatOpts>, opts?: FormatSecondArg<MeridiemFormatOpts>): string[] => {
   const formatOpts = getFormattingOpts(locale, opts);
 
-  return memo("meridiemList", (formatOpts: MeridiemFormatOpts) => {
+  return memo("meridiemList", (formatOpts: Partial<MeridiemFormatOpts>) => {
     const dtf = meridiemDtf(formatOpts, utcInstance);
 
     // @ts-ignore

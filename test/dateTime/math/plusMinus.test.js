@@ -114,7 +114,7 @@ test("plus throws when out of max. datetime range using seconds", () => {
 
 test("plus handles fractional days", () => {
   const d = ymd(2016, 1, 31, 10);
-  // expect(plus(d, { days: 0.8 })).toEqual(plus(d, { minutes: 1152 }));
+  expect(plus(d, { days: 0.8 })).toEqual(plus(d, { minutes: 1152 }));
   expect(plus(d, { days: 6.8 })).toEqual(plus(d, { days: 6, minutes: 1152 }));
   expect(plus(d, { days: 6.8, milliseconds: 17 })).toEqual(
     plus(d, { days: 6, milliseconds: 0.8 * 24 * 60 * 60 * 1000 + 17 })

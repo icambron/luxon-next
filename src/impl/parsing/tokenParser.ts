@@ -5,7 +5,7 @@ import { listMeridiems } from "../formatting/meridiems";
 import { ConflictingSpecificationError } from "../../errors";
 import { dateTimeFormat, parseFormat } from "../util/formatUtil";
 import { memo } from "../util/caching";
-import { MacroToken, macroTokens } from "../formatting/macroTokens";
+import { isMacroToken, MacroToken, macroTokens } from "../formatting/macroTokens";
 import { digitRegex, parseDigits } from "../util/digits";
 import { parseMillis } from "../util/numeric";
 import { untruncateYear } from "../util/dateMath";
@@ -380,12 +380,11 @@ const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts):
     return [token];
   }
 
-  const formatOpts = macroTokens[token.name as MacroToken];
-  if (!formatOpts) {
-    // not actually a macro token
+  if (!isMacroToken(token.name)) {
     return [token];
   }
 
+  const formatOpts = macroTokens[token.name];
   const formatter = dateTimeFormat({ ...parsingOpts, ...formatOpts });
 
   const parts = formatter.formatToParts(getDummyDateTime());
@@ -399,7 +398,7 @@ const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts):
   return tokens as FormatToken[];
 };
 
-const expandMacroTokens = (tokens: FormatToken[], parsingOpts: DateTimeTokenFormatOpts) : FormatToken[] =>
+const expandMacroTokens = (tokens: FormatToken[], parsingOpts: Partial<DateTimeTokenFormatOpts>) : FormatToken[] =>
   Array.prototype.concat(...tokens.map(t => maybeExpandMacroToken(t, parsingOpts)));
 
 /**

@@ -15,7 +15,7 @@ const convertInternal = (
 ) => {
   const conv = matrix[toUnit][fromUnit];
 
-  let fromValue = fromMap.get(fromUnit) as number;
+  let fromValue = fromMap.get(fromUnit) as number; // cast because we're sure they're not undefined
   let toValue = toMap.get(toUnit) as number;
 
   const raw = fromValue / conv;
@@ -63,8 +63,8 @@ export const durNormalize = (
 };
 
 export const durAs = (dur: Duration, unit: DurationUnit) => {
-  const normalizedUnit = normalizeDurationUnit(unit, true);
-  const shifted = durShiftTo(dur, [normalizedUnit as DurationUnit]);
+  const normalizedUnit = normalizeDurationUnit(unit);
+  const shifted = durShiftTo(dur, [normalizedUnit]);
   return shifted._values[unit] || 0;
 }
 
@@ -77,7 +77,7 @@ export const durShiftTo = (
     return dur;
   }
 
-  units = units.map((u) => normalizeDurationUnit(u, true)) as DurationUnit[];
+  units = units.map((u) => normalizeDurationUnit(u));
   const valueMap = durToMap(dur);
   const built = new Map<DurationUnit, number>();
   const accumulated = new Map<DurationUnit, number>();

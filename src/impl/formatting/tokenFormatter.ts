@@ -2,12 +2,13 @@ import {
   dateTimeFormat,
   extract,
   getFormattingOpts,
+  getFullFormattingOpts,
   numberFormat,
   NumberFormatOpts,
   parseFormat
 } from "../util/formatUtil";
 import { padStart } from "../util/string";
-import { MacroToken, macroTokens } from "./macroTokens";
+import { isMacroToken, MacroToken, macroTokens } from "./macroTokens";
 import { getCalendarValue } from "../dateTime";
 import { ordinalInstance } from "../calendars/ordinal";
 import { gregorianInstance } from "../calendars/gregorian";
@@ -56,23 +57,25 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
 
 export const durationToFormat = (dur: Duration, format: string, locale?: FormatFirstArg<DurationTokenFormatOpts>, opts?: FormatSecondArg<DurationTokenFormatOpts>): string => {
   // todo - better defaulting
-  const formatOpts = getFormattingOpts<DurationTokenFormatOpts>(locale, opts);
-  const defaultedOpts = {conversionAccuracy: "casual", floor: true, ...formatOpts, useGrouping: false} as DurationTokenFormatOpts;
+  const formatOpts = getFullFormattingOpts<DurationTokenFormatOpts>(locale, opts, {conversionAccuracy: "casual", floor: true }, {useGrouping: false});
   const tokens = parseFormat(format);
   const fields = tokens.map(durationTokenToField).filter(n => n) as DurationUnit[];
-  const shifted = durShiftTo(dur, fields, defaultedOpts.conversionAccuracy);
-  return stringifyTokens(tokens, token => durationTokenToString(shifted, token, defaultedOpts));
+  const shifted = durShiftTo(dur, fields, formatOpts.conversionAccuracy);
+  return stringifyTokens(tokens, token => durationTokenToString(shifted, token, formatOpts));
 }
 
 export const dateTimeToFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<DateTimeTokenFormatOpts>, opts?: FormatSecondArg<DateTimeTokenFormatOpts>): string => {
-  const formatOpts = getFormattingOpts<DateTimeTokenFormatOpts>(locale, opts);
+  const formatOpts = getFullFormattingOpts<DateTimeTokenFormatOpts>(locale, opts, { allowZ: false, forceSimple: false, calendar: undefined });
   const tokens = parseFormat(format);
   return stringifyTokens(tokens, token => dateTimeTokenToString(dt, token, formatOpts));
 }
 
-const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts = {}): string => {
-  const tokenFormatOpts = macroTokens[token.name as MacroToken];
-  return tokenFormatOpts ? dateTimeFormat({ ...formatOpts, ...tokenFormatOpts }, dt.zone).format(dt.native()) : token.name;
+const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts): string => {
+  if (isMacroToken(token.name)) {
+    const tokenFormatOpts = macroTokens[token.name];
+    return dateTimeFormat({ ...formatOpts, ...tokenFormatOpts }, dt.zone).format(dt.native());
+  }
+  return token.name;
 };
 
 const formatNumber = (n: number, opts: ExtendedNumberFormatOpts): string => {

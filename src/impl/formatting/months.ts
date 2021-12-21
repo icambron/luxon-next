@@ -3,7 +3,7 @@ import { memo } from "../util/caching";
 import { utcInstance } from "../zone/fixedOffset";
 import { Zone, MonthFormatOpts, FormatFirstArg, FormatSecondArg, DateTime } from "../../types";
 
-const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat => {
+const monthDtf = (formatOpts: Partial<MonthFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
   const mode = formatOpts.mode || "standalone";
   const width = formatOpts.width || "long";
   const options: Intl.DateTimeFormatOptions = mode === "format" ? { month: width, day: "numeric" } : { month: width };
@@ -19,7 +19,7 @@ export const formatMonth = (dt: DateTime, locale?: FormatFirstArg<MonthFormatOpt
 export const listMonths = (locale?: FormatFirstArg<MonthFormatOpts>, opts?: FormatSecondArg<MonthFormatOpts>) => {
   const formatOpts = getFormattingOpts(locale, opts);
 
-  return memo("monthList", (formatOpts: MonthFormatOpts) => {
+  return memo("monthList", (formatOpts: Partial<MonthFormatOpts>) => {
     const dtf = monthDtf(formatOpts, utcInstance);
 
     // @ts-ignore

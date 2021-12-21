@@ -10,7 +10,7 @@ import {
   clearCaches,
 } from "../src/luxon";
 
-const resetCaches = () => {
+export const resetCaches = () => {
   clearCaches();
 };
 

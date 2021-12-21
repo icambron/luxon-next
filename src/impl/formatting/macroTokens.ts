@@ -22,7 +22,7 @@ export type MacroToken =
   | "FFF"
   | "FFFF";
 
-export const macroTokens: Partial<Record<MacroToken, Intl.DateTimeFormatOptions>> = {
+export const macroTokens: Record<MacroToken, Intl.DateTimeFormatOptions> = {
   D: presets.DATE_SHORT,
   DD: presets.DATE_MED,
   DDD: presets.DATE_FULL,
@@ -44,3 +44,5 @@ export const macroTokens: Partial<Record<MacroToken, Intl.DateTimeFormatOptions>
   FFF: presets.DATETIME_FULL_WITH_SECONDS,
   FFFF: presets.DATETIME_HUGE_WITH_SECONDS,
 };
+
+export const isMacroToken = (token: string): token is MacroToken => token in macroTokens;

@@ -54,24 +54,37 @@ export const extract = (jsDate: Date, df: Intl.DateTimeFormat, field: string): s
   return matching.value;
 };
 
+export const getFullFormattingOpts = <T extends SharedFormatOpts>(
+  firstArg: FormatFirstArg<T>,
+  secondArg: FormatSecondArg<T>,
+  defaults: T,
+  overrides?: Partial<T>
+
+  // I can make this cast because I know `defaults` will all be included, so T will be filled out
+): T => getFormattingOpts(firstArg, secondArg, defaults, overrides) as T;
+
+
 // () -> ?
 // ("fr") -> { locale: "fr" }
 // ("fr", { width: "short" }) => { locale: "fr", width: "short" }
 // ({ width: short } => { width: "short" }
 export const getFormattingOpts = <T extends SharedFormatOpts>(
   firstArg: FormatFirstArg<T>,
-  secondArg: FormatSecondArg<T>
+  secondArg: FormatSecondArg<T>,
+  defaults: Partial<T> = {},
+  overrides: Partial<T> = {}
+
 ): Partial<T> => {
   let locale: string | undefined = undefined;
   let t: Partial<T> | undefined = undefined;
   if (typeof firstArg === "string") {
     locale = firstArg;
   } else if (typeof firstArg === "object") {
-    t = firstArg as Partial<T>; // we hope!
+    t = firstArg;
   }
 
   if (!t && typeof secondArg === "object") {
-    t = secondArg as Partial<T>;
+    t = secondArg;
   }
 
   if (t && !t.locale) {
@@ -80,7 +93,7 @@ export const getFormattingOpts = <T extends SharedFormatOpts>(
     t = (locale ? { locale } : {}) as Partial<T>;
   }
 
-  return t;
+  return {...defaults, ...t, ...overrides };
 };
 
 export const getDefaultedDateTimeFormattingOpts = (firstArg: FormatFirstArg<DateTimeFormatOpts>, secondArg: FormatSecondArg<DateTimeFormatOpts>): DateTimeFormatOpts => {

@@ -1,4 +1,3 @@
-import { InvalidUnitError } from "../errors";
 import { asNumber } from "../impl/util/numeric";
 import { alter, durationUnits, fromValues, normalizeDurationUnit, toIso as toIsoInternal } from "../impl/duration";
 import { Duration, DurationUnit, DurationValues } from "../types";
@@ -8,11 +7,11 @@ export const duration = fromValues;
 export const durFromMillis = (milliseconds: number) => duration({ milliseconds });
 
 export const durNegate = (dur: Duration): Duration => {
-  const negated = {} as Record<keyof DurationValues, number>;
-  for (const k of Object.keys(dur._values) as Array<keyof DurationValues>) {
+  const negated: Partial<DurationValues> = {};
+  for (const k of Object.keys(dur._values) as DurationUnit[]) {
     negated[k] = -(dur.values[k] as number);
   }
-  return fromValues(negated as Partial<DurationValues>);
+  return fromValues(negated);
 };
 
 export const durToMillis = (dur: Duration): number => dur.valueOf();
@@ -85,9 +84,6 @@ export const durMapInputs = (dur: Duration, fn: (val: number, unit: DurationUnit
  */
 export const durGet = (dur: Duration, unit: DurationUnit): number => {
   const normalized = normalizeDurationUnit(unit);
-  if (normalized == null) {
-    throw new InvalidUnitError(unit);
-  }
   return dur._values[normalized] || 0;
 };
 

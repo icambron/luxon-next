@@ -3,11 +3,10 @@ import {
     FormatFirstArg,
   FormatSecondArg,
   NamedOffsetFormatOpts,
-  NumericOffsetFormatWidth,
   OffsetFormatOpts,
   Zone
 } from "../../types";
-import { dateTimeFormat, extract, getFormattingOpts } from "../util/formatUtil";
+import { dateTimeFormat, extract, getFullFormattingOpts } from "../util/formatUtil";
 import { formatNumericOffset } from "../util/zoneUtils";
 
 const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTimeFormat => {
@@ -26,14 +25,12 @@ const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTime
 };
 
 export const formatOffset = (dt: DateTime, locale?: FormatFirstArg<OffsetFormatOpts>, opts?: FormatSecondArg<OffsetFormatOpts>): string => {
-  const formatOpts = getFormattingOpts(locale, opts);
-  
-  const width = formatOpts.width || "short";
+  const formatOpts = getFullFormattingOpts(locale, opts, {width: "short" });
 
-  if (width === "short" || width === "long") {
+  if (formatOpts.width === "short" || formatOpts.width === "long") {
     const dtf = offsetDtf(formatOpts as NamedOffsetFormatOpts, dt.zone);
     return extract(dt.native(), dtf, "timezonename");
   }
 
-  return formatNumericOffset(dt.offset, width as NumericOffsetFormatWidth);
+  return formatNumericOffset(dt.offset, formatOpts.width);
 };
