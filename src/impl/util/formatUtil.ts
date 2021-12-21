@@ -1,4 +1,4 @@
-import { getDefaultFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
+import { getDefaultDateTimeFormat, getDefaultLocale, getDefaultNumberingSystem, getDefaultOutputCalendar } from "../../settings";
 import { FormatStringError, UnknownError } from "../../errors";
 import { memo } from "./caching";
 import {
@@ -7,14 +7,11 @@ import {
   FormatSecondArg,
   FormatToken,
   SharedFormatOpts,
-  FormatOpts,
-  RelativeFormatOpts,
-  RelativeUnit
-} from "../../types";
+  DateTimeFormatOpts,
+  RelativeFormatOpts} from "../../types";
 import { isValidIANAZone } from "../util/zoneUtils";
-import { roundTo } from "./numeric";
 
-export const dateTimeFormat = (opts: FormatOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
+export const dateTimeFormat = (opts: DateTimeFormatOpts = {}, zone?: Zone ): Intl.DateTimeFormat => {
   const { locale, ...rest } = opts;
 
   const fullOpts: Intl.DateTimeFormatOptions = {
@@ -86,10 +83,10 @@ export const getFormattingOpts = <T extends SharedFormatOpts>(
   return t;
 };
 
-export const getDefaultedFormattingOpts = (firstArg: FormatFirstArg<FormatOpts>, secondArg: FormatSecondArg<FormatOpts>): FormatOpts => {
+export const getDefaultedDateTimeFormattingOpts = (firstArg: FormatFirstArg<DateTimeFormatOpts>, secondArg: FormatSecondArg<DateTimeFormatOpts>): DateTimeFormatOpts => {
   const formatOpts = getFormattingOpts(firstArg, secondArg);
   const { locale, calendar, numberingSystem, ...rest } = formatOpts;
-  return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultFormat() } : formatOpts;
+  return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultDateTimeFormat() } : formatOpts;
 }
 
 export const hasKeys =
@@ -199,6 +196,5 @@ const listFormatter = (locale: string, opts: object): ListFormat => {
   return cache([locale, opts]);
 }
 
-export const formatList = (items: Array<string>, locale: string, opts: object): string =>
-  listFormatter(locale, opts).format(items);
+export const formatList = (items: Array<string>, locale: string, opts: object): string => listFormatter(locale, opts).format(items);
   

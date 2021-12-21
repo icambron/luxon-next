@@ -25,13 +25,13 @@ const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTime
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const formatOffset = (dt: DateTime, firstArg?: FormatFirstArg<OffsetFormatOpts>, secondArg?: FormatSecondArg<OffsetFormatOpts>): string => {
-  const opts = getFormattingOpts(firstArg, secondArg);
+export const formatOffset = (dt: DateTime, locale?: FormatFirstArg<OffsetFormatOpts>, opts?: FormatSecondArg<OffsetFormatOpts>): string => {
+  const formatOpts = getFormattingOpts(locale, opts);
   
-  const width = opts.width || "short";
+  const width = formatOpts.width || "short";
 
   if (width === "short" || width === "long") {
-    const dtf = offsetDtf(opts as NamedOffsetFormatOpts, dt.zone);
+    const dtf = offsetDtf(formatOpts as NamedOffsetFormatOpts, dt.zone);
     return extract(dt.native(), dtf, "timezonename");
   }
 

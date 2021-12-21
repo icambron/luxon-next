@@ -1,4 +1,4 @@
-import { dateTimeFormat, getDefaultedFormattingOpts, getFormattingOpts } from "../impl/util/formatUtil";
+import { dateTimeFormat, getDefaultedDateTimeFormattingOpts } from "../impl/util/formatUtil";
 import { formatMonth as formatMonthInternal, listMonths as listMonthsInternal } from "../impl/formatting/months";
 import {
   formatMeridiem as formatMeridiemInternal,
@@ -9,9 +9,9 @@ import {
   listWeekdays as listWeekdaysInternal,
 } from "../impl/formatting/weekdays";
 import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
-import { toFormat as toFormatInternal } from "../impl/formatting/tokenFormatter";
+import { dateTimeToFormat } from "../impl/formatting/tokenFormatter";
 import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
-import { DateTime, FormatFirstArg, FormatOpts, FormatSecondArg, ISOFormatOpts } from "../types";
+import { DateTime, FormatFirstArg, DateTimeFormatOpts, FormatSecondArg, ISOFormatOpts } from "../types";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
@@ -19,7 +19,7 @@ import { toUTC } from "./zone";
 /**
  * Returns a locale-appropriate locale string, given options to control the locale and format
  *  @param dt - the DateTime to create the string from
- *  @param locale - A locale string like "en" to override the default locale.If you wish to use the default locale, but have a format argument, you may provide it here instead.
+ *  @param locale - A locale string like "en" to override the default locale.If you wish to use the default locale, but have an options argument, you may provide it here instead.
  *  @param opts - On option object to override the formatting. Accepts the same keys as the native `Date#toLocaleString()`.
  *
  *  @example
@@ -34,15 +34,15 @@ import { toUTC } from "./zone";
  *  ```
  *  @label formatting
  */
-export const toLocaleString = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>, opts?: FormatSecondArg<FormatOpts>): string => {
-  const defaulted = getDefaultedFormattingOpts(locale, opts);
+export const toLocaleString = (dt: DateTime, locale?: FormatFirstArg<DateTimeFormatOpts>, opts?: FormatSecondArg<DateTimeFormatOpts>): string => {
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
   return dt.native().toLocaleString(defaulted.locale, defaulted);
 }
 
 /**
  * Returns a locale-appropriate locale string for the date, given options to control the locale and format
  *  @param dt - the DateTime to create the string from
- *  @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have a format argument, you may provide that format argument here instead.
+ *  @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have a options argument, you may provide that options argument here instead.
  *  @param opts - On option object to override the formatting. Accepts the same keys as the native `Date#toLocaleDateString()`.
  *
  *  @example
@@ -57,15 +57,15 @@ export const toLocaleString = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>
  *  ```
  *  @label formatting
  */
-export const toLocaleDateString = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>, opts?: FormatSecondArg<FormatOpts>): string => {
-  const defaulted = getDefaultedFormattingOpts(locale, opts);
+export const toLocaleDateString = (dt: DateTime, locale?: FormatFirstArg<DateTimeFormatOpts>, opts?: FormatSecondArg<DateTimeFormatOpts>): string => {
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
   return dt.native().toLocaleDateString(defaulted.locale, defaulted);
 }
 
 /**
  * Returns a locale-appropriate locale string for the time, given options to control the locale and format
  *  @param dt - the DateTime to create the string from
- *  @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have a format argument, you may provide that format argument here instead.
+ *  @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have an options argument, you may provide that options argument here instead.
  *  @param opts - On option object to override the formatting. Accepts the same keys as the native `Date#toLocaleTimeString()`.
  *  @label formatting
  *
@@ -80,16 +80,16 @@ export const toLocaleDateString = (dt: DateTime, locale?: FormatFirstArg<FormatO
  *  toLocaleTimeString(dt, "fr", { timeStyle: "medium" }) // => '00:00:00'
  *  ```
  */
-export const toLocaleTimeString = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>, opts?: FormatSecondArg<FormatOpts>): string => {
-  const defaulted = getDefaultedFormattingOpts(locale, opts);
+export const toLocaleTimeString = (dt: DateTime, locale?: FormatFirstArg<DateTimeFormatOpts>, opts?: FormatSecondArg<DateTimeFormatOpts>): string => {
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
   return dt.native().toLocaleTimeString(defaulted.locale, defaulted);
 }
 
 /**
   * Returns an array of objects containing formatted sections. See {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/formatToParts | Intl.DateTimeFormat#formatToParts}.
   * @param dt - the DateTime to format
-  * @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have a format argument, you may provide that format argument here instead.
-  * @param opts - On option object to override the formatting. Accepts the same keys as the options parameter of native `Int.DateTimeFormat` constructor.
+  * @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have an options argument, you may provide that options argument here instead.
+  * @param opts - On option object to override the formatting. Accepts the same keys as the options parameter of the native `Int.DateTimeFormat` constructor.
   * @example
   * ```js
   * toLocaleParts(ymd(1982, 5, 25));
@@ -103,8 +103,8 @@ export const toLocaleTimeString = (dt: DateTime, locale?: FormatFirstArg<FormatO
   *```
  *  @label formatting
 */
-export const toLocaleParts = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>, opts?: FormatSecondArg<FormatOpts>): Intl.DateTimeFormatPart[] => {
-  const defaulted = getDefaultedFormattingOpts(locale, opts);
+export const toLocaleParts = (dt: DateTime, locale?: FormatFirstArg<DateTimeFormatOpts>, opts?: FormatSecondArg<DateTimeFormatOpts>): Intl.DateTimeFormatPart[] => {
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
   return dateTimeFormat(defaulted, dt.zone).formatToParts(new Date(+dt));
 }
 
@@ -118,7 +118,7 @@ export const toLocaleParts = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>,
   * @see For table of tokens and their interpretations, see [here](https://moment.github.io/luxon/#/formatting?id=table-of-tokens).
   * @param format - The format string to use
   * @param dt - the DateTime to format
-  * @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have a format argument, you may provide that format argument here instead.
+  * @param locale - A locale string like "en" to override the default locale. If you wish to use the default locale, but have an options argument, you may provide that options argument here instead.
   * @param opts - On option object to override the formatting. See {@link TokenFormatOpts} for the available options
   * @example
   * ```js 
@@ -130,7 +130,7 @@ export const toLocaleParts = (dt: DateTime, locale?: FormatFirstArg<FormatOpts>,
   * ```
   * @label formatting
   */
-export const toFormat = toFormatInternal;
+export const toFormat = dateTimeToFormat;
 
 /**
  * Returns an RFC 2822-compatible string representation of the DateTime
@@ -203,7 +203,7 @@ export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}): stri
   if (dt.gregorian.year > 9999) {
     fmt = "+" + fmt;
   }
-  return toFormatInternal(dt, fmt);
+  return dateTimeToFormat(dt, fmt);
 };
 
 /**
@@ -268,7 +268,7 @@ export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) => {
     fmt += realOpts.format === "basic" ? "ZZZ" : "ZZ";
   }
 
-  return toFormatInternal(dt, fmt, { allowZ: true });
+  return dateTimeToFormat(dt, fmt, { allowZ: true });
 };
 
 /**

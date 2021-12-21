@@ -18,7 +18,7 @@ import {
   TokenParsedField,
   TokenParseFields,
   TokenParseValue, TokenParseOpts,
-  TokenParseSummary, TokenFormatOpts
+  TokenParseSummary, DateTimeTokenFormatOpts
 } from "../../types";
 
 // TYPES
@@ -399,7 +399,7 @@ const maybeExpandMacroToken = (token: FormatToken, parsingOpts: TokenParseOpts):
   return tokens as FormatToken[];
 };
 
-const expandMacroTokens = (tokens: FormatToken[], parsingOpts: TokenFormatOpts) : FormatToken[] =>
+const expandMacroTokens = (tokens: FormatToken[], parsingOpts: DateTimeTokenFormatOpts) : FormatToken[] =>
   Array.prototype.concat(...tokens.map(t => maybeExpandMacroToken(t, parsingOpts)));
 
 /**

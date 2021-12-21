@@ -29,9 +29,6 @@ export const orderedUnits: DurationUnit[] = [
   "milliseconds",
 ];
 
-export const biggestNonZero = (dur: Duration): DurationUnit | undefined =>
-  orderedUnits.find((unit) => !!dur._values[unit]);
-
 export const normalizeDurationUnit = (unit: string, throwOnError?: boolean) => normalizeUnit<DurationUnit>("durationUnit", durationUnits, simpleSingular, unit, throwOnError);
 
 export const toIso = (dur: Duration): string => {

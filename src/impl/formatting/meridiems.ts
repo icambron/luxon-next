@@ -13,14 +13,14 @@ const meridiemDtf = (formatOpts: MeridiemFormatOpts, zone: Zone): Intl.DateTimeF
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
 
-export const formatMeridiem = (dt: DateTime, firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string => {
-  const opts = getFormattingOpts(firstArg, secondArg);
-  const dtf = meridiemDtf(opts, dt.zone);
+export const formatMeridiem = (dt: DateTime, locale?: FormatFirstArg<MeridiemFormatOpts>, opts?: FormatSecondArg<MeridiemFormatOpts>): string => {
+  const formatOpts = getFormattingOpts(locale, opts);
+  const dtf = meridiemDtf(formatOpts, dt.zone);
   return extract(dt.native(), dtf, "dayperiod");
 }
 
-export const listMeridiems = (firstArg?: FormatFirstArg<MeridiemFormatOpts>, secondArg?: FormatSecondArg<MeridiemFormatOpts>): string[] => {
-  const opts = getFormattingOpts(firstArg, secondArg);
+export const listMeridiems = (locale?: FormatFirstArg<MeridiemFormatOpts>, opts?: FormatSecondArg<MeridiemFormatOpts>): string[] => {
+  const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("meridiemList", (formatOpts: MeridiemFormatOpts) => {
     const dtf = meridiemDtf(formatOpts, utcInstance);
@@ -36,5 +36,5 @@ export const listMeridiems = (firstArg?: FormatFirstArg<MeridiemFormatOpts>, sec
     });
 
     return [...new Set(found)];
-  })(opts);
+  })(formatOpts);
 }

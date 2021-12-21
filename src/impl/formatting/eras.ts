@@ -9,16 +9,16 @@ const eraDtf = (formatOpts: EraFormatOpts, zone: Zone): Intl.DateTimeFormat => {
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const formatEra = (dt: DateTime, firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string => {
-  const opts = getFormattingOpts(firstArg, secondArg);
-  const dtf = eraDtf(opts, dt.zone);
+export const formatEra = (dt: DateTime, locale?: FormatFirstArg<EraFormatOpts>, opts?: FormatSecondArg<EraFormatOpts>): string => {
+  const formatOpts = getFormattingOpts(locale, opts);
+  const dtf = eraDtf(formatOpts, dt.zone);
   return extract(dt.native(), dtf, "era");
 }
 
 // note this doesn't support Japanese eras
-export const listEras = (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: FormatSecondArg<EraFormatOpts>): string[] => {
+export const listEras = (locale?: FormatFirstArg<EraFormatOpts>, opts?: FormatSecondArg<EraFormatOpts>): string[] => {
 
-  const opts = getFormattingOpts(firstArg, secondArg);
+  const formatOpts = getFormattingOpts(locale, opts);
   return memo("eraList", (formatOpts: EraFormatOpts) => {
     const dtf = eraDtf(formatOpts, utcInstance);
 
@@ -29,5 +29,5 @@ export const listEras = (firstArg?: FormatFirstArg<EraFormatOpts>, secondArg?: F
       return extract(d, dtf, "era");
     });
     return [...new Set(foundEras)];
-  })(opts);
+  })(formatOpts);
 }

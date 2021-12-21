@@ -152,29 +152,29 @@ export type SharedFormatOpts = {
   numberingSystem?: string;
 }
 
-export type FormatOpts = SharedFormatOpts & Intl.DateTimeFormatOptions;
+export type DateTimeFormatOpts = SharedFormatOpts & Intl.DateTimeFormatOptions;
 
-export type TokenFormatOpts = SharedFormatOpts & {
+export type DateTimeTokenFormatOpts = SharedFormatOpts & {
   forceSimple?: boolean,
   allowZ?: boolean,
   calendar?: string
 };
 
-export type MonthFormatOpts = FormatOpts & {
+export type MonthFormatOpts = DateTimeFormatOpts & {
   mode?: FormatMode;
   width?: MonthFormatWidth;
 };
 
-export type WeekdayFormatOpts = FormatOpts & {
+export type WeekdayFormatOpts = DateTimeFormatOpts & {
   mode?: FormatMode;
   width?: WeekdayFormatWidth;
 };
 
-export type MeridiemFormatOpts = FormatOpts & {
+export type MeridiemFormatOpts = DateTimeFormatOpts & {
   width?: MeridiemFormatWidth;
 };
 
-export type EraFormatOpts = FormatOpts & {
+export type EraFormatOpts = DateTimeFormatOpts & {
   /*
    * The length of the era string to format.
    * * "narrow" for English is like "A" or "B"
@@ -185,11 +185,11 @@ export type EraFormatOpts = FormatOpts & {
   width?: EraFormatWidth;
 };
 
-export type NamedOffsetFormatOpts = FormatOpts & {
+export type NamedOffsetFormatOpts = DateTimeFormatOpts & {
   width?: NamedOffsetFormatWidth;
 };
 
-export type OffsetFormatOpts = FormatOpts & {
+export type OffsetFormatOpts = DateTimeFormatOpts & {
   width?: OffsetFormatWidth;
 };
 
@@ -255,9 +255,22 @@ export type RelativeFormatOpts = SharedFormatOpts & Intl.RelativeTimeFormatOptio
   roundTo: number,
 
   /**
-   * Unit to use
+   * Units to consider
   */
-  unit: RelativeUnit,
+  units: RelativeUnit[],
+}
+
+export type DurationTokenFormatOpts = SharedFormatOpts & Intl.NumberFormatOptions & {
+  floor: boolean,
+  conversionAccuracy: ConversionAccuracy
+}
+
+export type DurationHumanizeFormatOpts = SharedFormatOpts & Intl.NumberFormatOptions & {
+  /**
+   * How to display the list
+   * @defaultValue "narrow"
+  */
+  listStyle: "long" | "short" | "narrow"
 }
 
 // PARSING

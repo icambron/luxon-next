@@ -21,15 +21,23 @@ import {
   Calendar,
   DateTime,
   EraFormatOpts, FormatFirstArg,
-  FormatOpts, FormatSecondArg,
+  DateTimeFormatOpts, FormatSecondArg,
   FormatToken,
   MeridiemFormatOpts,
   MonthFormatOpts,
-  OffsetFormatWidth, TimeUnit, TokenFormatOpts,
-  WeekdayFormatOpts
+  OffsetFormatWidth, TimeUnit, DateTimeTokenFormatOpts,
+  WeekdayFormatOpts,
+  Duration,
+  DurationUnit,
+  DurationTokenFormatOpts
 } from "../../types";
+import { roundTo } from "../util/numeric";
 
-interface ExtendedNumberFormatOpts extends NumberFormatOpts {
+// todo - dependencies
+import { durShiftTo } from "../../duration/convert";
+
+type ExtendedNumberFormatOpts = NumberFormatOpts & {
+  floor?: boolean,
   forceSimple?: boolean
   last?: number
 }
@@ -46,32 +54,82 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
   return s;
 };
 
-export const toFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<TokenFormatOpts>, opts?: FormatSecondArg<TokenFormatOpts>): string => {
-  const formatOpts = getFormattingOpts<TokenFormatOpts>(locale, opts);
+export const durationToFormat = (dur: Duration, format: string, locale?: FormatFirstArg<DurationTokenFormatOpts>, opts?: FormatSecondArg<DurationTokenFormatOpts>): string => {
+  // todo - better defaulting
+  const formatOpts = getFormattingOpts<DurationTokenFormatOpts>(locale, opts);
+  const defaultedOpts = {conversionAccuracy: "casual", floor: true, ...formatOpts, useGrouping: false} as DurationTokenFormatOpts;
   const tokens = parseFormat(format);
-  return stringifyTokens(tokens, token => tokenToString(dt, token, formatOpts));
+  const fields = tokens.map(durationTokenToField).filter(n => n) as DurationUnit[];
+  const shifted = durShiftTo(dur, fields, defaultedOpts.conversionAccuracy);
+  return stringifyTokens(tokens, token => durationTokenToString(shifted, token, defaultedOpts));
 }
 
-const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: TokenFormatOpts = {}): string => {
+export const dateTimeToFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<DateTimeTokenFormatOpts>, opts?: FormatSecondArg<DateTimeTokenFormatOpts>): string => {
+  const formatOpts = getFormattingOpts<DateTimeTokenFormatOpts>(locale, opts);
+  const tokens = parseFormat(format);
+  return stringifyTokens(tokens, token => dateTimeTokenToString(dt, token, formatOpts));
+}
+
+const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts = {}): string => {
   const tokenFormatOpts = macroTokens[token.name as MacroToken];
   return tokenFormatOpts ? dateTimeFormat({ ...formatOpts, ...tokenFormatOpts }, dt.zone).format(dt.native()) : token.name;
 };
 
-const tokenToString = (dt: DateTime, token: FormatToken, formatOpts: TokenFormatOpts): string => {
+const formatNumber = (n: number, opts: ExtendedNumberFormatOpts): string => {
+  if (opts.floor) {
+    n = roundTo(n, 0, true);
+  } 
+
+  if (opts.last) {
+    n = parseInt(n.toString().slice(-opts.last));
+  }
+
+  return opts.forceSimple ? padStart(n, opts.minimumIntegerDigits || 1) : numberFormat(opts).format(n);
+}
+
+const durationTokenToField = (token: FormatToken): DurationUnit | null => {
+  if (token.literal) {
+    return null;
+  }
+  switch (token.name[0]) {
+    case "S":
+      return "milliseconds";
+    case "s":
+      return "seconds";
+    case "m":
+      return "minutes";
+    case "h":
+      return "hours";
+    case "d":
+      return "days";
+    case "M":
+      return "months";
+    case "y":
+      return "years";
+    default:
+      return null;
+  }
+}
+
+const durationTokenToString = (dt: Duration, token: FormatToken, opts: DurationTokenFormatOpts): string => {
+  if (token.literal) {
+    return token.name;
+  }
+
+  let field: DurationUnit | null = durationTokenToField(token);
+  return field ? formatNumber(dt._values[field] || 0, { ...opts, minimumIntegerDigits: token.name.length} ) : token.name;
+}
+
+const dateTimeTokenToString = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts): string => {
 
   const numberOpts: ExtendedNumberFormatOpts = { locale: formatOpts.locale, numberingSystem: formatOpts.numberingSystem, forceSimple: formatOpts.forceSimple, useGrouping: false };
 
   // todo - these closures can all be created in a partial and then have dt applied to the lot of them. Does that affect performance in practice or only in theory?
   // todo - benchmark to find out
-  const num = (n: number, opts: ExtendedNumberFormatOpts = numberOpts): string => {
-    if (opts.last) {
-      n = parseInt(n.toString().slice(-opts.last));
-    }
-    return opts.forceSimple ? padStart(n, opts.minimumIntegerDigits || 1) : numberFormat(opts).format(n);
-  }
-
-  const formatField = <T extends FormatOpts>(formatter: ((dt: DateTime, opts: T)  => string), opts: T): string =>
+  const formatField = <T extends DateTimeFormatOpts>(formatter: ((dt: DateTime, opts: T)  => string), opts: T): string =>
     formatter(dt, {...formatOpts, ...opts});
+
+  const num = (n: number, opts: ExtendedNumberFormatOpts = numberOpts) => formatNumber(n, opts);
 
   const fWeekday = (opt: WeekdayFormatOpts) => formatField(formatWeekday, opt);
   const fMonth = (opt: MonthFormatOpts) => formatField(formatMonth, opt);

@@ -1,9 +1,9 @@
 import { durGet } from "../duration/core";
 import { diff } from "../duration/diff";
+import { durShiftTo } from "../duration/convert";
 import { normalizeDurationUnit } from "../impl/duration";
 import { getFormattingOpts, relativeFormatter } from "../impl/util/formatUtil";
 import { roundTo } from "../impl/util/numeric";
-import { durShiftTo } from "../luxon";
 import { DateTime, Duration, FormatFirstArg, FormatSecondArg, RelativeFormatOpts, RelativeUnit } from "../types";
 import { startOf } from "./math";
 

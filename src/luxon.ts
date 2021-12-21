@@ -10,6 +10,7 @@ export * from "./dateTime/relative";
 export * from "./duration/core";
 export * from "./duration/diff";
 export * from "./duration/convert";
+export * from "./duration/format";
 
 export * from "./settings";
 export * from "./errors";

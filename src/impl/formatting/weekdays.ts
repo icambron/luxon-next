@@ -11,14 +11,14 @@ const weekdayDtf = (formatOpts: WeekdayFormatOpts, zone: Zone): Intl.DateTimeFor
   return dateTimeFormat({ ...options, ...formatOpts }, zone);
 };
 
-export const formatWeekday = (dt: DateTime, firstArg?: FormatFirstArg<WeekdayFormatOpts>, secondArg?: FormatSecondArg<WeekdayFormatOpts>): string => {
-  const opts = getFormattingOpts(firstArg, secondArg);
-  const dtf = weekdayDtf(opts, dt.zone);
+export const formatWeekday = (dt: DateTime, locale?: FormatFirstArg<WeekdayFormatOpts>, opts?: FormatSecondArg<WeekdayFormatOpts>): string => {
+  const formatOpts = getFormattingOpts(locale, opts);
+  const dtf = weekdayDtf(formatOpts, dt.zone);
   return extract(dt.native(), dtf, "weekday");
 }
 
-export const listWeekdays = (firstArg?: FormatFirstArg<WeekdayFormatOpts>, secondArg?: FormatSecondArg<WeekdayFormatOpts>): string[] => {
-  const opts = getFormattingOpts(firstArg, secondArg);
+export const listWeekdays = (locale?: FormatFirstArg<WeekdayFormatOpts>, opts?: FormatSecondArg<WeekdayFormatOpts>): string[] => {
+  const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("weekdayList", (formatOpts: WeekdayFormatOpts) => {
     const dtf = weekdayDtf(formatOpts, utcInstance);
@@ -28,5 +28,5 @@ export const listWeekdays = (firstArg?: FormatFirstArg<WeekdayFormatOpts>, secon
       d.setUTCDate(14 + i);
       return extract(d, dtf, "weekday");
     });
-  })(opts);
+  })(formatOpts);
 }

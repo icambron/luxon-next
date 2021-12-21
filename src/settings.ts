@@ -32,8 +32,8 @@ export const setDefaultConversionAccuracy = (accuracy: ConversionAccuracy) => de
 export const getDefaultLocale = (): string => defaultLocale;
 export const setDefaultLocale = (loc: string)  => defaultLocale = loc;
 
-export const getDefaultFormat = (): Intl.DateTimeFormatOptions => defaultFormat;
-export const setDefaultFormat = (format: Intl.DateTimeFormatOptions)  => defaultFormat = format;
+export const getDefaultDateTimeFormat = (): Intl.DateTimeFormatOptions => defaultFormat;
+export const setDefaultDateTimeFormat = (format: Intl.DateTimeFormatOptions)  => defaultFormat = format;
 
 export const getDefaultNumberingSystem = (): string | undefined => defaultNumberingSystem;
 export const setDefaultNumberingSystem = (numberingSystem: string)  => defaultNumberingSystem = numberingSystem;

@@ -10,14 +10,14 @@ const monthDtf = (formatOpts: MonthFormatOpts, zone: Zone): Intl.DateTimeFormat 
   return dateTimeFormat({ ...options, ...formatOpts }, zone, );
 };
 
-export const formatMonth = (dt: DateTime, firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>): string => {
-  const opts = getFormattingOpts(firstArg, secondArg);
-  const dtf = monthDtf(opts, dt.zone);
+export const formatMonth = (dt: DateTime, locale?: FormatFirstArg<MonthFormatOpts>, opts?: FormatSecondArg<MonthFormatOpts>): string => {
+  const formatOpts = getFormattingOpts(locale, opts);
+  const dtf = monthDtf(formatOpts, dt.zone);
   return extract(dt.native(), dtf, "month");
 };
 
-export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg?: FormatSecondArg<MonthFormatOpts>) => {
-  const opts = getFormattingOpts(firstArg, secondArg);
+export const listMonths = (locale?: FormatFirstArg<MonthFormatOpts>, opts?: FormatSecondArg<MonthFormatOpts>) => {
+  const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("monthList", (formatOpts: MonthFormatOpts) => {
     const dtf = monthDtf(formatOpts, utcInstance);
@@ -28,5 +28,5 @@ export const listMonths = (firstArg?: FormatFirstArg<MonthFormatOpts>, secondArg
       d.setMonth(i);
       return extract(d, dtf, "month");
     });
-  })(opts);
+  })(formatOpts);
 };

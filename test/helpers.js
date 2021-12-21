@@ -1,9 +1,9 @@
 import {
-  getDefaultFormat,
+  getDefaultDateTimeFormat,
   getDefaultLocale,
   getNowFn,
   getDefaultZone,
-  setDefaultFormat,
+  setDefaultDateTimeFormat,
   setDefaultLocale,
   setNowFn,
   setDefaultZone,
@@ -46,11 +46,11 @@ export const withDefaultLocale = (local, f) => {
 };
 
 export const withDefaultFormat = (fmt, f) => {
-  const oldFmt = getDefaultFormat();
+  const oldFmt = getDefaultDateTimeFormat();
   try {
-    setDefaultFormat(fmt);
+    setDefaultDateTimeFormat(fmt);
     f();
   } finally {
-    setDefaultFormat(oldFmt);
+    setDefaultDateTimeFormat(oldFmt);
   }
 };

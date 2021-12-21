@@ -104,20 +104,20 @@ export const tryFromHTTP = wrapError(fromHTTP);
 export const fromFormatExplain = (
   input: string,
   format: string,
-  firstArg?: FormatFirstArg<TokenParseOpts>,
-  secondArg?: FormatSecondArg<TokenParseOpts>
+  locale?: FormatFirstArg<TokenParseOpts>,
+  opts?: FormatSecondArg<TokenParseOpts>
 ): TokenParseSummary => {
-  const parsingOpts = getFormattingOpts(firstArg, secondArg);
+  const parsingOpts = getFormattingOpts(locale, opts);
   return parseFromFormat(input, format, parsingOpts);
 };
 
 export const fromFormat = (
   input: string,
   format: string,
-  firstArg?: FormatFirstArg<TokenParseOpts>,
-  secondArg?: FormatSecondArg<TokenParseOpts>
+  locale?: FormatFirstArg<TokenParseOpts>,
+  opts?: FormatSecondArg<TokenParseOpts>
 ): DateTime => {
-  const parsingOpts = getFormattingOpts(firstArg, secondArg);
+  const parsingOpts = getFormattingOpts(locale, opts);
   const summary = fromFormatExplain(input, format, parsingOpts);
   if (summary.parsed) {
     return dateTimeFromParsedValues(summary.parsed, parsingOpts);

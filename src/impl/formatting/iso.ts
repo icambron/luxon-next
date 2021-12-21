@@ -1,5 +1,5 @@
 import { DateTime, ISOFormatOpts } from "../../types";
-import { toFormat } from "./tokenFormatter";
+import { dateTimeToFormat } from "./tokenFormatter";
 
 export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
   `${toISODate(dt, opts)}T${toISOTime(dt, opts)}`;
@@ -12,10 +12,10 @@ export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}):strin
   if (dt.gregorian.year > 9999) {
     fmt = "+" + fmt;
   }
-  return toFormat(dt, fmt);
+  return dateTimeToFormat(dt, fmt);
 }
 
-export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
+export const toISOWeekDate = (dt: DateTime) => dateTimeToFormat(dt, "kkkk-[W]W-c");
 
 export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> =  {}) => {
   let realOpts = {seconds: true, milliseconds: true, elideZeroSeconds: false, elideZeroMilliseconds: false, format: "extended", includeOffset: true, ...opts}
@@ -36,6 +36,6 @@ export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> =  {}) => {
     fmt += realOpts.format === "basic" ? "ZZZ" : "ZZ";
   }
 
-  return toFormat(dt, fmt, { allowZ: true });
+  return dateTimeToFormat(dt, fmt, { allowZ: true });
 }
 
