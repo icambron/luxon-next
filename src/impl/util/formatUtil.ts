@@ -190,11 +190,11 @@ interface ListFormat {
   format: (items: Array<string>) => string;
 }
 
-const listFormatter = (locale: string, opts: object): ListFormat => {
+const listFormatter = (locale: string | undefined, opts: object): ListFormat => {
   //@ts-ignore
   const cache = memo("listFormat", ([locale, opts]: [string, object]): ListFormatter => new Intl.ListFormat(locale, opts) as ListFormat);
-  return cache([locale, opts]);
+  return cache([locale || getDefaultLocale(), opts]);
 }
 
-export const formatList = (items: Array<string>, locale: string, opts: object): string => listFormatter(locale, opts).format(items);
+export const formatList = (items: Array<string>, locale: string | undefined , opts: object): string => listFormatter(locale, opts).format(items);
   

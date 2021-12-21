@@ -1,8 +1,7 @@
 import { orderedUnits } from "../impl/duration";
 import { durationToFormat } from "../impl/formatting/tokenFormatter";
-import { formatList, getFormattingOpts } from "../impl/util/formatUtil";
+import { formatList, getFormattingOpts, numberFormat } from "../impl/util/formatUtil";
 import { simpleSingular } from "../impl/util/units";
-import { getDefaultLocale } from "../settings";
 import { Duration, DurationHumanizeFormatOpts, FormatFirstArg, FormatSecondArg } from "../types";
 
 /**
@@ -27,11 +26,11 @@ export const durToHuman = (dur: Duration, locale: FormatFirstArg<DurationHumaniz
   const l = orderedUnits.map(unit => {
     const v = vals[unit];
     return typeof(v) === "undefined" ? null :
-      new Intl.NumberFormat(formatOpts.locale, { style: "unit", unitDisplay: "long", ...formatOpts, unit: simpleSingular(unit) }).format(v);
+      numberFormat({ style: "unit", unitDisplay: "long", ...formatOpts, unit: simpleSingular(unit) }).format(v);
   })
   .filter(n => n) as string[];
 
-  return formatList(l, formatOpts.locale || getDefaultLocale(), { type: "conjunction", style: formatOpts.listStyle || "narrow" });
+  return formatList(l, formatOpts.locale, { type: "conjunction", style: formatOpts.listStyle || "narrow" });
 }
 
   /**
