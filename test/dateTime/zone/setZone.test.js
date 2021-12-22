@@ -1,5 +1,3 @@
-/* global test expect */
-
 import {
   now,
   offset,
@@ -24,12 +22,12 @@ import {
 
 import { withDefaultZone } from "../../helpers";
 
-const millis = 391147200000,
-  // 1982-05-25T04:00:00.000Z
-  dt = () => fromMillis(millis);
+// 1982-05-25T04:00:00.000Z
+const millis = 391147200000;
+const dt = fromMillis(millis);
 
 test("setZone setZone sets the TZ to the specified zone", () => {
-  const zoned = setZone(dt(), "America/Los_Angeles");
+  const zoned = setZone(dt, "America/Los_Angeles");
 
   expect(zoneName(zoned)).toBe("America/Los_Angeles");
   expect(isOffsetFixed(zoned)).toBe(false);
@@ -92,7 +90,7 @@ test("setZone does not accept dumb things", () => {
 });
 
 test("setZone accepts IANA zone names", () => {
-  const zoned = setZone(dt(), "Europe/Paris");
+  const zoned = setZone(dt, "Europe/Paris");
   expect(zoneName(zoned)).toBe("Europe/Paris");
   // not convinced this is universal. Could also be 'CEDT'
   expect(toMillis(zoned)).toBe(millis);
@@ -108,7 +106,7 @@ test("setZone accepts a keepLocalTime option", () => {
     expect(isOffsetFixed(dt)).toBe(false);
   };
 
-  const zoned = setZone(toUTC(dt()), "America/Los_Angeles", { keepLocalTime: true });
+  const zoned = setZone(toUTC(dt), "America/Los_Angeles", { keepLocalTime: true });
 
   expect(zoneName(zoned)).toBe("America/Los_Angeles");
   expectCorrectLocalTime(zoned);
