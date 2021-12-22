@@ -23,7 +23,7 @@ test("startOf('year') goes to the start of the year", () => {
 });
 
 test.each([
-  [1, 1], 
+  [1, 1],
   [2, 1],
   [3, 1],
   [4, 4],
@@ -34,7 +34,7 @@ test.each([
   [9, 7],
   [10, 10],
   [11, 10],
-  [12, 10]
+  [12, 10],
 ])("startOf('quarter') from month %p goes to the start of the quarter %p", (m, startMonth) => {
   const dt = startOf(
     fromGregorian({
@@ -164,7 +164,7 @@ test("endOf('quarter') goes to the end of the quarter", () => {
 });
 
 test.each([
-  [1, 3], 
+  [1, 3],
   [2, 3],
   [3, 3],
   [4, 6],
@@ -175,7 +175,7 @@ test.each([
   [9, 9],
   [10, 12],
   [11, 12],
-  [12, 12]
+  [12, 12],
 ])("endOf('quarter') from month %p goes to the end of the quarter %p", (m, endMonth) => {
   const dt = endOf(
     fromGregorian({

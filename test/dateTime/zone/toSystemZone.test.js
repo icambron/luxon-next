@@ -1,8 +1,4 @@
-import {
-  ymdUTC,
-  hour,
-  toSystemZone
-} from "../../../src/luxon";
+import { ymdUTC, hour, toSystemZone } from "../../../src/luxon";
 
 // NB: this test only works with system zone set to America/New_York
 test("toSystemZone switches to the system zone", () => {

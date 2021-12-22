@@ -67,7 +67,6 @@ const highOrderDiffs = (cursor: DateTime, later: DateTime, units: DurationUnit[]
 };
 
 export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] | DurationUnit): Duration => {
-
   let flipped = false;
   if (+later < +earlier) {
     const tmp = later;
@@ -87,7 +86,9 @@ export const diff = (later: DateTime, earlier: DateTime, units?: DurationUnit[] 
 
   const remainingMillis = +later - +cursor;
 
-  const lowerOrderUnits = normalizedUnits.filter((u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0);
+  const lowerOrderUnits = normalizedUnits.filter(
+    (u) => ["hours", "minutes", "seconds", "milliseconds"].indexOf(u) >= 0
+  );
 
   if (lowerOrderUnits.length === 0 && highWater && lowestOrder) {
     if (+highWater < +later) {

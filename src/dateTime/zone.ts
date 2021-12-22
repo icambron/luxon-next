@@ -67,4 +67,3 @@ export const toDefaultZone = (dt: DateTime): DateTime => setZone(dt, getDefaultZ
 export const ianaZone = ianaZoneInternal;
 export const fixedOffsetZone = fixedOffsetZoneInternal;
 export const systemZone = systemZoneInternal;
-

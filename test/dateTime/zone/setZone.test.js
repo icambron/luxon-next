@@ -152,5 +152,3 @@ test("setZone works for dates before 1970 with milliseconds", () => {
   const zoned = setZone(o, "America/New_York");
   expect(offset(zoned)).toBe(-300);
 });
-
-

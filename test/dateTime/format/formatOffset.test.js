@@ -18,7 +18,7 @@ test("formatOffset defaults to English", () => {
 });
 
 test("formatOffset accepts locales", () => {
-  expect(formatOffset(dt, "be", { width: "long" } )).toEqual("Паўночнаамерыканскі ўсходні летні час");
+  expect(formatOffset(dt, "be", { width: "long" })).toEqual("Паўночнаамерыканскі ўсходні летні час");
 });
 
 test.each([
@@ -30,4 +30,3 @@ test.each([
 ])("formatOffset accepts width argument: %p", (width, expected) =>
   expect(formatOffset(dt, { width })).toEqual(expected)
 );
-

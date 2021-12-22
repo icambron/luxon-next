@@ -66,16 +66,16 @@ export const durAs = (dur: Duration, unit: DurationUnit) => {
   const normalizedUnit = normalizeDurationUnit(unit);
   const shifted = durShiftTo(dur, [normalizedUnit]);
   return shifted._values[unit] || 0;
-}
+};
 
 /**
-  * Convert this Duration into its representation in a different set of units.
-  * @example
-  * ```js
-  * const dur = duration({ hours: 1, seconds: 30 })
-  * shiftTo(dur ['minutes', 'milliseconds']) |> values(%) //=> { minutes: 60, milliseconds: 30000 }
-  * ```
-  */
+ * Convert this Duration into its representation in a different set of units.
+ * @example
+ * ```js
+ * const dur = duration({ hours: 1, seconds: 30 })
+ * shiftTo(dur ['minutes', 'milliseconds']) |> values(%) //=> { minutes: 60, milliseconds: 30000 }
+ * ```
+ */
 export const durShiftTo = (
   dur: Duration,
   units: DurationUnit[],

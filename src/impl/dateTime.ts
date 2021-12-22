@@ -153,11 +153,19 @@ class DateTimeImpl implements DateTime {
   private readonly _calendarDates: Map<string, any>;
   private _date: Date | undefined;
 
-  get zone(): Zone { return this._zone };
+  get zone(): Zone {
+    return this._zone;
+  }
 
-  get ts(): number { return this._ts };
-  get offset(): number { return this._offset };
-  get isLuxonDateTime(): boolean { return true };
+  get ts(): number {
+    return this._ts;
+  }
+  get offset(): number {
+    return this._offset;
+  }
+  get isLuxonDateTime(): boolean {
+    return true;
+  }
 
   get gregorian(): GregorianDate {
     return { ...this._gregorian };
@@ -177,7 +185,6 @@ class DateTimeImpl implements DateTime {
     }
     return this._date;
   }
-
 
   // these are here so that automagic layers work as expected
   toJSON(): string {

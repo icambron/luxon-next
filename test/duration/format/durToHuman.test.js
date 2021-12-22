@@ -16,7 +16,9 @@ test("durToHuman formats out a list", () => {
 });
 
 test("durToHuman accepts a listStyle", () => {
-  expect(durToHuman(dur, { listStyle: "long" })).toEqual("1 year, 2 months, 1 week, 3 days, 4 hours, 5 minutes, 6 seconds, and 7 milliseconds");
+  expect(durToHuman(dur, { listStyle: "long" })).toEqual(
+    "1 year, 2 months, 1 week, 3 days, 4 hours, 5 minutes, 6 seconds, and 7 milliseconds"
+  );
 });
 
 test("durToHuman accepts number format opts", () => {
@@ -24,5 +26,7 @@ test("durToHuman accepts number format opts", () => {
 });
 
 test("Duration#toHuman works in differt languages", () => {
-  expect(durToHuman(dur, "fr")).toEqual("1 an, 2 mois, 1 semaine, 3 jours, 4 heures, 5 minutes, 6 secondes, 7 millisecondes");
+  expect(durToHuman(dur, "fr")).toEqual(
+    "1 an, 2 mois, 1 semaine, 3 jours, 4 heures, 5 minutes, 6 secondes, 7 millisecondes"
+  );
 });

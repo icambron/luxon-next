@@ -1,9 +1,4 @@
-import {
-  ianaZone,
-  ymdUTC,
-  hour,
-  toDefaultZone
-} from "../../../src/luxon";
+import { ianaZone, ymdUTC, hour, toDefaultZone } from "../../../src/luxon";
 import { withDefaultZone } from "../../helpers";
 
 test("toDefaultZone switches to the default zone", () => {

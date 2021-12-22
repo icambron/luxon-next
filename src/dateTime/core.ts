@@ -97,4 +97,4 @@ export const isInDST = (dt: DateTime): boolean => {
     return false;
   }
   return dt.offset > setGregorian(dt, { month: 1 }).offset || dt.offset > setGregorian(dt, { month: 5 }).offset;
-}
+};

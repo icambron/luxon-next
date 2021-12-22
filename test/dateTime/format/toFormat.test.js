@@ -436,7 +436,9 @@ test("toFormat('fff') returns a medium date/time representation without seconds"
 
 test("toFormat('ffff') returns a long date/time representation without seconds", () => {
   expect(toFormat(ny, "ffff")).toBe("Tuesday, May 25, 1982 at 9:23:54 AM Eastern Daylight Time");
-  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff")).toBe("Tuesday, May 25, 1982 at 1:23:54 PM Eastern Daylight Time");
+  expect(toFormat(setGregorian(ny, { hour: 13 }), "ffff")).toBe(
+    "Tuesday, May 25, 1982 at 1:23:54 PM Eastern Daylight Time"
+  );
   expect(toFormat(setGregorian(ny, { month: 2 }), "ffff")).toBe(
     "Thursday, February 25, 1982 at 9:23:54 AM Eastern Standard Time"
   );

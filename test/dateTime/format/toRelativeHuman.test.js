@@ -7,7 +7,7 @@ test.each([
   [{ hours: 25 }, "tomorrow"],
   [{ months: 1 }, "in 1 month"],
   [{ months: 5 }, "in 5 months"],
-  [{ months: 15 }, "in 1 year"]
+  [{ months: 15 }, "in 1 year"],
 ])("toRelativeHuman adding %p results in %p", (toAdd, expected) => {
   const base = fromGregorian({ year: 1983, month: 10, day: 14, hour: 12 });
   expect(toRelativeHuman(base, plus(base, toAdd))).toEqual(expected);
@@ -21,7 +21,7 @@ test.each([
   [{ hours: 25 }, "yesterday"],
   [{ months: 1 }, "1 month ago"],
   [{ months: 5 }, "5 months ago"],
-  [{ months: 15 }, "1 year ago"]
+  [{ months: 15 }, "1 year ago"],
 ])("toRelativeHuman subtracting %p results in %p", (toAdd, expected) => {
   const base = fromGregorian({ year: 1983, month: 10, day: 14, hour: 12 });
   expect(toRelativeHuman(base, minus(base, toAdd))).toEqual(expected);
@@ -40,4 +40,3 @@ test("toRelativeHuman has good behavior at the edge of years", () => {
 
   expect(toRelativeHuman(almostMidnight, justOver)).toEqual("in 3 days");
 });
-

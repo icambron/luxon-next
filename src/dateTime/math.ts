@@ -28,7 +28,8 @@ export const max = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) =>
 export const min = (dts: Array<DateTime>): DateTime | null => bestBy(dts, (i) => i.valueOf(), Math.min);
 
 const startEndUnits: Array<ComparableUnit> = [...gregorianUnits, ...timeUnits, ...miscDurationUnits];
-const normalizeComparableUnit = (unit: string, throwOnError?: boolean) => normalizeUnit("startunits", startEndUnits, simplePlural, unit, throwOnError);
+const normalizeComparableUnit = (unit: string, throwOnError?: boolean) =>
+  normalizeUnit("startunits", startEndUnits, simplePlural, unit, throwOnError);
 
 /**
  * Return the DateTime representing the beginning of a unit of time, relative to the input date time
@@ -65,7 +66,8 @@ export const startOf = (dt: DateTime, unit: ComparableUnit | ComparableUnitPlura
     case "second":
       o.millisecond = 0;
       break;
-    case "millisecond": break;
+    case "millisecond":
+      break;
     default:
       throw new InvalidUnitError(unit);
   }
@@ -83,10 +85,10 @@ export const startOf = (dt: DateTime, unit: ComparableUnit | ComparableUnitPlura
 };
 
 export const hasSame = (first: DateTime, second: DateTime, unit: ComparableUnit): boolean => {
-    const inputMs = second.valueOf();
-    const firstAdjusted = setZone(first, second.zone, { keepLocalTime: true });
-    return +startOf(firstAdjusted, unit) <= +inputMs && +inputMs <= +endOf(firstAdjusted, unit);
-}
+  const inputMs = second.valueOf();
+  const firstAdjusted = setZone(first, second.zone, { keepLocalTime: true });
+  return +startOf(firstAdjusted, unit) <= +inputMs && +inputMs <= +endOf(firstAdjusted, unit);
+};
 
 /**
  * Return the DateTime representing the end of a unit of time (meaning, the last millisecond), relative to the input date time
@@ -148,36 +150,37 @@ interface AccumulatedFractions {
   remain: number;
 }
 
-const shiftFractionsToMillis =
-  (dur: Duration, conversionAccuracy: ConversionAccuracy):Duration => {
-    const vs = { milliseconds: 0, ...dur.values };
+const shiftFractionsToMillis = (dur: Duration, conversionAccuracy: ConversionAccuracy): Duration => {
+  const vs = { milliseconds: 0, ...dur.values };
 
-    const newVals = Array.from(durationUnits).reduce(
-      (accum: AccumulatedFractions, k) => {
-        const val = vs[k] || 0;
+  const newVals = Array.from(durationUnits).reduce(
+    (accum: AccumulatedFractions, k) => {
+      const val = vs[k] || 0;
 
-        const [whole, fraction] = intAndFraction(val);
-        accum.ints[k] = whole;
+      const [whole, fraction] = intAndFraction(val);
+      accum.ints[k] = whole;
 
-        if (k !== "milliseconds") {
-          accum.remain += convert(fraction, k, "milliseconds", conversionAccuracy);
-        }
+      if (k !== "milliseconds") {
+        accum.remain += convert(fraction, k, "milliseconds", conversionAccuracy);
+      }
 
-        return accum;
-      },
-      { ints: {}, remain: 0 }
-    );
+      return accum;
+    },
+    { ints: {}, remain: 0 }
+  );
 
-    // no fractional millis please
-    newVals.ints.milliseconds = roundTo((newVals.ints.milliseconds || 0) + newVals.remain, 0);
+  // no fractional millis please
+  newVals.ints.milliseconds = roundTo((newVals.ints.milliseconds || 0) + newVals.remain, 0);
 
-    return fromValues(newVals.ints);
-  };
+  return fromValues(newVals.ints);
+};
 
 const adjustTime = (dt: DateTime, dur: Duration, conversionAccuracy: ConversionAccuracy): [number, number] => {
   const unfractioned = shiftFractionsToMillis(dur, conversionAccuracy);
 
-  const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(unfractioned.values);
+  const { years, quarters, months, weeks, days, hours, minutes, seconds, milliseconds } = defaultEmpties(
+    unfractioned.values
+  );
 
   const greg = dt.gregorian;
 

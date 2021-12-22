@@ -111,13 +111,9 @@ test("durToFormat rounds down", () => {
 });
 
 test("durToFormat localizes the numbers", () => {
-  expect(durToFormat(dur, "yy:MM:dd:h:mm:ss.SSS", "bn")).toBe(
-    "০১:০২:১০:৪:০৫:০৬.০০৭"
-  );
+  expect(durToFormat(dur, "yy:MM:dd:h:mm:ss.SSS", "bn")).toBe("০১:০২:১০:৪:০৫:০৬.০০৭");
 });
 
 test("durToFormat accepts number formatter options", () => {
-  expect(durToFormat(durFromMillis(200000000), "SSS", { notation: "compact" } )).toBe(
-    "200M"
-  );
+  expect(durToFormat(durFromMillis(200000000), "SSS", { notation: "compact" })).toBe("200M");
 });

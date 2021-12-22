@@ -129,10 +129,11 @@ export const tryFromFormat = (
   input: string,
   format: string,
   locale?: FormatFirstArg<TokenParseOpts>,
-  opts?: FormatSecondArg<TokenParseOpts>): DateTime | null => {
-    try {
-      return fromFormat(input, format, locale, opts);
-    } catch {
-      return null;
-    }
-  };
+  opts?: FormatSecondArg<TokenParseOpts>
+): DateTime | null => {
+  try {
+    return fromFormat(input, format, locale, opts);
+  } catch {
+    return null;
+  }
+};

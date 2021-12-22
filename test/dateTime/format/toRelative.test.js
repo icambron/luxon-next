@@ -35,30 +35,20 @@ test("toRelative takes a units argument", () => {
 
   expect(toRelative(base, minus(base, { months: 15 }), { units: ["months"] })).toBe("15 months ago");
 
-  expect(toRelative(base, plus(base, { months: 3 }), { units: ["years"], roundTo: 2 })).toBe(
-    "in 0.25 years"
-  );
+  expect(toRelative(base, plus(base, { months: 3 }), { units: ["years"], roundTo: 2 })).toBe("in 0.25 years");
 
-  expect(toRelative(base, minus(base, { months: 3 }), { units: ["years"], roundTo: 2 })).toBe(
-    "0.25 years ago"
-  );
+  expect(toRelative(base, minus(base, { months: 3 }), { units: ["years"], roundTo: 2 })).toBe("0.25 years ago");
 
-  expect(toRelative(base, minus(base, { seconds: 30 }), { units: ["days", "hours", "minutes"] })).toBe(
-    "0 minutes ago"
-  );
+  expect(toRelative(base, minus(base, { seconds: 30 }), { units: ["days", "hours", "minutes"] })).toBe("0 minutes ago");
 
   expect(toRelative(base, minus(base, { seconds: 1 }), { units: ["minutes"] })).toBe("0 minutes ago");
 
   expect(toRelative(base, plus(base, { seconds: 1 }), { units: ["minutes"] })).toBe("in 0 minutes");
 
-  expect(
-    toRelative(base, plus(base, { seconds: 30 }), { units: ["days", "hours", "minutes"], })
-  ).toBe("in 0 minutes");
+  expect(toRelative(base, plus(base, { seconds: 30 }), { units: ["days", "hours", "minutes"] })).toBe("in 0 minutes");
 
-  expect(
-   toRelative(base, plus(base, { years: 2 }), { units: ["days", "hours", "minutes"], })).toBe("in 731 days");
+  expect(toRelative(base, plus(base, { years: 2 }), { units: ["days", "hours", "minutes"] })).toBe("in 731 days");
 });
-
 
 test("toRelative always rounds toward 0", () => {
   const base = fromGregorian({ year: 1983, month: 10, day: 14 });
