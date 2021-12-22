@@ -1,5 +1,3 @@
-import * as presets from "./presets";
-
 export type MacroToken =
   | "D"
   | "DD"
@@ -16,33 +14,25 @@ export type MacroToken =
   | "f"
   | "ff"
   | "fff"
-  | "ffff"
-  | "F"
-  | "FF"
-  | "FFF"
-  | "FFFF";
+  | "ffff";
 
 export const macroTokens: Record<MacroToken, Intl.DateTimeFormatOptions> = {
-  D: presets.DATE_SHORT,
-  DD: presets.DATE_MED,
-  DDD: presets.DATE_FULL,
-  DDDD: presets.DATE_HUGE,
-  t: presets.TIME_SIMPLE,
-  tt: presets.TIME_WITH_SECONDS,
-  ttt: presets.TIME_WITH_SHORT_OFFSET,
-  tttt: presets.TIME_WITH_LONG_OFFSET,
-  T: presets.TIME_24_SIMPLE,
-  TT: presets.TIME_24_WITH_SECONDS,
-  TTT: presets.TIME_24_WITH_SHORT_OFFSET,
-  TTTT: presets.TIME_24_WITH_LONG_OFFSET,
-  f: presets.DATETIME_SHORT,
-  ff: presets.DATETIME_MED,
-  fff: presets.DATETIME_FULL,
-  ffff: presets.DATETIME_HUGE,
-  F: presets.DATETIME_SHORT_WITH_SECONDS,
-  FF: presets.DATETIME_MED_WITH_SECONDS,
-  FFF: presets.DATETIME_FULL_WITH_SECONDS,
-  FFFF: presets.DATETIME_HUGE_WITH_SECONDS,
+  D: { dateStyle: "short" },
+  DD: { dateStyle: "medium" },
+  DDD: { dateStyle: "long" },
+  DDDD: { dateStyle: "full" },
+  t: { timeStyle: "short" },
+  tt: { timeStyle: "medium" },
+  ttt: { timeStyle: "long" },
+  tttt: { timeStyle: "full" },
+  T: { timeStyle: "short", hourCycle: "h23" },
+  TT: { timeStyle: "medium", hourCycle: "h23" },
+  TTT: { timeStyle: "long", hourCycle: "h23" },
+  TTTT: { timeStyle: "full", hourCycle: "h23" },
+  f: { dateStyle: "short", timeStyle: "short" },
+  ff: { dateStyle: "medium", timeStyle: "medium" },
+  fff: { dateStyle: "long", timeStyle: "long" },
+  ffff: { dateStyle: "full", timeStyle: "full" },
 };
 
 export const isMacroToken = (token: string): token is MacroToken => token in macroTokens;

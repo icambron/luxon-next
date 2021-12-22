@@ -16,7 +16,7 @@ export const durationUnits: Array<DurationUnit> = [
   ...miscDurationUnitsPlural,
 ];
 
-// convert ordered by size
+// ordered by size
 export const orderedUnits: DurationUnit[] = [
   "years",
   "quarters",

@@ -4,12 +4,10 @@ Middle of:
 Big stuff:
  * A new name!
  * Intervals
- * Redo format presets in light of `timeStyle` and `dateStyle`
 
 Others:
  * Also need arbitrary formatting, but that seems pretty easy?
  * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
- * Relative time
 
 Organization stuff:
  * nothing now

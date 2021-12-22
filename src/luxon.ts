@@ -16,5 +16,3 @@ export * from "./settings";
 export * from "./errors";
 
 export * from "./types";
-
-export * from "./impl/formatting/presets";

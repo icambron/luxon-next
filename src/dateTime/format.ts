@@ -272,7 +272,7 @@ export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) => {
 };
 
 /**
- *  @param locale - A locale string like "en" to override the default locale.If you wish to use the default locale, but have a format argument, you may provide it here instead.
+ *  @param locale - A locale string like "en" to override the default locale.If you wish to use the default locale, but have an options argument, you may provide it here instead.
  *  @param opts - On option object to override the formatting. See {@link EraFormatOpts}.
  * @example
  * ```js
