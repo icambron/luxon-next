@@ -26,42 +26,40 @@ test("startOf('year') goes to the start of the year", () => {
   expect(millisecond(dt)).toBe(0);
 });
 
-test("startOf('quarter') goes to the start of the quarter", () => {
-  const monthToQuarterStart = (m, quarterStart) => {
-    const dt = startOf(
-      fromGregorian({
-        year: 2017,
-        month: m,
-        day: 10,
-        hour: 4,
-        minute: 5,
-        second: 6,
-        millisecond: 7,
-      }),
-      "quarter"
-    );
+test.each([
+  [1, 1], 
+  [2, 1],
+  [3, 1],
+  [4, 4],
+  [5, 4],
+  [6, 4],
+  [7, 7],
+  [8, 7],
+  [9, 7],
+  [10, 10],
+  [11, 10],
+  [12, 10]
+])("startOf('quarter') from month %p goes to the start of the quarter %p", (m, quarterStart) => {
+  const dt = startOf(
+    fromGregorian({
+      year: 2017,
+      month: m,
+      day: 10,
+      hour: 4,
+      minute: 5,
+      second: 6,
+      millisecond: 7,
+    }),
+    "quarter"
+  );
 
-    expect(year(dt)).toBe(2017);
-    expect(month(dt)).toBe(quarterStart);
-    expect(day(dt)).toBe(1);
-    expect(hour(dt)).toBe(0);
-    expect(minute(dt)).toBe(0);
-    expect(second(dt)).toBe(0);
-    expect(millisecond(dt)).toBe(0);
-  };
-
-  monthToQuarterStart(1, 1);
-  monthToQuarterStart(2, 1);
-  monthToQuarterStart(3, 1);
-  monthToQuarterStart(4, 4);
-  monthToQuarterStart(5, 4);
-  monthToQuarterStart(6, 4);
-  monthToQuarterStart(7, 7);
-  monthToQuarterStart(8, 7);
-  monthToQuarterStart(9, 7);
-  monthToQuarterStart(10, 10);
-  monthToQuarterStart(11, 10);
-  monthToQuarterStart(12, 10);
+  expect(year(dt)).toBe(2017);
+  expect(month(dt)).toBe(quarterStart);
+  expect(day(dt)).toBe(1);
+  expect(hour(dt)).toBe(0);
+  expect(minute(dt)).toBe(0);
+  expect(second(dt)).toBe(0);
+  expect(millisecond(dt)).toBe(0);
 });
 
 test("startOf('month') goes to the start of the month", () => {
@@ -169,42 +167,40 @@ test("endOf('quarter') goes to the end of the quarter", () => {
   expect(millisecond(dt)).toBe(999);
 });
 
-test("endOf('quarter') goes to the end of the quarter in December", () => {
-  const monthToQuarterEnd = (m, endMonth) => {
-    const dt = endOf(
-      fromGregorian({
-        year: 2017,
-        month: m,
-        day: 10,
-        hour: 4,
-        minute: 5,
-        second: 6,
-        millisecond: 7,
-      }),
-      "quarter"
-    );
+test.each([
+  [1, 3], 
+  [2, 3],
+  [3, 3],
+  [4, 6],
+  [5, 6],
+  [6, 6],
+  [7, 9],
+  [8, 9],
+  [9, 9],
+  [10, 12],
+  [11, 12],
+  [12, 12]
+])("endOf('quarter') from month %p goes to the end of the quarter %p", (m, endMonth) => {
+  const dt = endOf(
+    fromGregorian({
+      year: 2017,
+      month: m,
+      day: 10,
+      hour: 4,
+      minute: 5,
+      second: 6,
+      millisecond: 7,
+    }),
+    "quarter"
+  );
 
-    expect(year(dt)).toBe(2017);
-    expect(month(dt)).toBe(endMonth);
-    expect(day(dt)).toBe(day(endOf(dt, "month")));
-    expect(hour(dt)).toBe(23);
-    expect(minute(dt)).toBe(59);
-    expect(second(dt)).toBe(59);
-    expect(millisecond(dt)).toBe(999);
-  };
-
-  monthToQuarterEnd(1, 3);
-  monthToQuarterEnd(2, 3);
-  monthToQuarterEnd(3, 3);
-  monthToQuarterEnd(4, 6);
-  monthToQuarterEnd(5, 6);
-  monthToQuarterEnd(6, 6);
-  monthToQuarterEnd(7, 9);
-  monthToQuarterEnd(8, 9);
-  monthToQuarterEnd(9, 9);
-  monthToQuarterEnd(10, 12);
-  monthToQuarterEnd(11, 12);
-  monthToQuarterEnd(12, 12);
+  expect(year(dt)).toBe(2017);
+  expect(month(dt)).toBe(endMonth);
+  expect(day(dt)).toBe(day(endOf(dt, "month")));
+  expect(hour(dt)).toBe(23);
+  expect(minute(dt)).toBe(59);
+  expect(second(dt)).toBe(59);
+  expect(millisecond(dt)).toBe(999);
 });
 
 test("endOf('month') goes to the start of the month", () => {

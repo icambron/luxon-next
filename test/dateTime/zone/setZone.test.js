@@ -85,6 +85,17 @@ test('setZone accepts "utc-3:30"', () => {
   expect(zoned.offset).toBe(-3 * 60 - 30);
 });
 
+test.each([
+  ["Etc/GMT+8", -8],
+  ["Etc/GMT-5", 5],
+  ["Etc/GMT", 0],
+  ["Etc/GMT-0", 0],
+  ["Etc/GMT", 0],
+])("Etc/GMTx zones now work natively: %p", (zone, expectedOffset) => {
+  let zoned = setZone(dt, zone);
+  expect(zoned.offset).toEqual(expectedOffset * 60);
+});
+
 test("setZone does not accept dumb things", () => {
   expect(() => setZone(now(), "utc-yo")).toThrow(InvalidZoneError);
 });
@@ -141,3 +152,5 @@ test("setZone works for dates before 1970 with milliseconds", () => {
   const zoned = setZone(o, "America/New_York");
   expect(offset(zoned)).toBe(-300);
 });
+
+
