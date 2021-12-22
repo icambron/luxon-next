@@ -54,20 +54,6 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
   return s;
 };
 
-export const durationToFormat = (dur: Duration, format: string, locale?: FormatFirstArg<DurationTokenFormatOpts>, opts?: FormatSecondArg<DurationTokenFormatOpts>): string => {
-  const formatOpts = getFullFormattingOpts<DurationTokenFormatOpts>(locale, opts, {conversionAccuracy: "casual", floor: true }, {useGrouping: false});
-  const tokens = parseFormat(format);
-  const fields = tokens.map(durationTokenToField).filter(n => n) as DurationUnit[];
-  const shifted = durShiftTo(dur, fields, formatOpts.conversionAccuracy);
-  return stringifyTokens(tokens, token => durationTokenToString(shifted, token, formatOpts));
-}
-
-export const dateTimeToFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<DateTimeTokenFormatOpts>, opts?: FormatSecondArg<DateTimeTokenFormatOpts>): string => {
-  const formatOpts = getFullFormattingOpts<DateTimeTokenFormatOpts>(locale, opts, { allowZ: false, forceSimple: false, calendar: undefined });
-  const tokens = parseFormat(format);
-  return stringifyTokens(tokens, token => dateTimeTokenToString(dt, token, formatOpts));
-}
-
 const maybeMacro = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts): string => {
   if (isMacroToken(token.name)) {
     const tokenFormatOpts = macroTokens[token.name];
@@ -86,39 +72,6 @@ const formatNumber = (n: number, opts: ExtendedNumberFormatOpts): string => {
   }
 
   return opts.forceSimple ? padStart(n, opts.minimumIntegerDigits || 1) : numberFormat(opts).format(n);
-}
-
-const durationTokenToField = (token: FormatToken): DurationUnit | null => {
-  if (token.literal) {
-    return null;
-  }
-  switch (token.name[0]) {
-    case "S":
-      return "milliseconds";
-    case "s":
-      return "seconds";
-    case "m":
-      return "minutes";
-    case "h":
-      return "hours";
-    case "d":
-      return "days";
-    case "M":
-      return "months";
-    case "y":
-      return "years";
-    default:
-      return null;
-  }
-}
-
-const durationTokenToString = (dt: Duration, token: FormatToken, opts: DurationTokenFormatOpts): string => {
-  if (token.literal) {
-    return token.name;
-  }
-
-  let field: DurationUnit | null = durationTokenToField(token);
-  return field ? formatNumber(dt._values[field] || 0, { ...opts, minimumIntegerDigits: token.name.length} ) : token.name;
 }
 
 const dateTimeTokenToString = (dt: DateTime, token: FormatToken, formatOpts: DateTimeTokenFormatOpts): string => {
@@ -328,3 +281,51 @@ const dateTimeTokenToString = (dt: DateTime, token: FormatToken, formatOpts: Dat
       return maybeMacro(dt, token, formatOpts);
     }
   }
+
+export const durationToFormat = (dur: Duration, format: string, locale?: FormatFirstArg<DurationTokenFormatOpts>, opts?: FormatSecondArg<DurationTokenFormatOpts>): string => {
+  const formatOpts = getFullFormattingOpts<DurationTokenFormatOpts>(locale, opts, {conversionAccuracy: "casual", floor: true }, {useGrouping: false});
+  const tokens = parseFormat(format);
+  const fields = tokens.map(durationTokenToField).filter(n => n) as DurationUnit[];
+  const shifted = durShiftTo(dur, fields, formatOpts.conversionAccuracy);
+  return stringifyTokens(tokens, token => durationTokenToString(shifted, token, formatOpts));
+}
+
+export const dateTimeToFormat = (dt: DateTime, format: string, locale?: FormatFirstArg<DateTimeTokenFormatOpts>, opts?: FormatSecondArg<DateTimeTokenFormatOpts>): string => {
+  const formatOpts = getFullFormattingOpts<DateTimeTokenFormatOpts>(locale, opts, { allowZ: false, forceSimple: false, calendar: undefined });
+  const tokens = parseFormat(format);
+  return stringifyTokens(tokens, token => dateTimeTokenToString(dt, token, formatOpts));
+}
+
+const durationTokenToField = (token: FormatToken): DurationUnit | null => {
+  if (token.literal) {
+    return null;
+  }
+  switch (token.name[0]) {
+    case "S":
+      return "milliseconds";
+    case "s":
+      return "seconds";
+    case "m":
+      return "minutes";
+    case "h":
+      return "hours";
+    case "d":
+      return "days";
+    case "M":
+      return "months";
+    case "y":
+      return "years";
+    default:
+      return null;
+  }
+}
+
+const durationTokenToString = (dt: Duration, token: FormatToken, opts: DurationTokenFormatOpts): string => {
+  if (token.literal) {
+    return token.name;
+  }
+
+  let field: DurationUnit | null = durationTokenToField(token);
+  return field ? formatNumber(dt._values[field] || 0, { ...opts, minimumIntegerDigits: token.name.length} ) : token.name;
+}
+
