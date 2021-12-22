@@ -9,7 +9,9 @@ import { ianaZone } from "../zone/iana";
 // internal-only types
 export type Cursor = number;
 
-export interface ExtractedResult {
+export type Extractor<T> = (match: RegExpMatchArray, cur: Cursor) => T;
+
+export type DateTimeExtractedResult = {
   cal: Calendar<any> | null;
   date: object;
   time: Partial<Time>;
@@ -17,11 +19,9 @@ export interface ExtractedResult {
   cur: Cursor;
 }
 
-export type Extractor = (match: RegExpMatchArray, cur: Cursor) => ExtractedResult;
-
-interface ParsingBlock {
+interface ParsingBlock<T> {
   r: RegExp;
-  ex: Extractor;
+  ex: Extractor<T>
 }
 
 export const combineRegexes = (...regexes: RegExp[]): RegExp => {
@@ -29,9 +29,10 @@ export const combineRegexes = (...regexes: RegExp[]): RegExp => {
   return RegExp(`^${full}$`);
 };
 
-export const combineExtractors = (...extractors: Extractor[]): Extractor =>
+// with some effort, we could make this generic, but we don't currently need to
+export const combineDateTimeExtractors = (...extractors: Extractor<DateTimeExtractedResult>[]): Extractor<DateTimeExtractedResult> =>
   (m, cur) =>
-    extractors.reduce<ExtractedResult>(
+    extractors.reduce<DateTimeExtractedResult>(
       (merged, ex) => {
         const next = ex(m, merged.cur);
         return {
@@ -51,7 +52,7 @@ export const combineExtractors = (...extractors: Extractor[]): Extractor =>
       }
     );
 
-export const parse = (s: string, ...patterns: ParsingBlock[]): ExtractedResult => {
+export const parse = <T>(s: string, ...patterns: ParsingBlock<T>[]): T => {
   if (typeof s == "undefined" || s == null) throw new InvalidArgumentError("No util input provided");
 
   for (const { r, ex } of patterns) {
@@ -72,7 +73,7 @@ export const int = (match: RegExpMatchArray, pos: number, fallback: number): num
   return typeof parsed == "number" ? parsed : fallback;
 };
 
-export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extractor => {
+export const simpleParse = (cal: Calendar<any>, ...keys: Array<string>): Extractor<DateTimeExtractedResult> => {
   return (match, cursor) => {
     const ret: any = {};
     let i;
@@ -99,7 +100,7 @@ export const fromStrings = (
   minute: string,
   second: string,
   cur: number
-): ExtractedResult => {
+): DateTimeExtractedResult => {
   const date = {
     day: parseInteger(day),
     year: year.length === 2 ? untruncateYear(parseInteger(year)) : parseInteger(year),
@@ -122,7 +123,7 @@ export const fromStrings = (
   };
 };
 
-export const extractIANAZone = (match: RegExpMatchArray, cur: number): ExtractedResult => {
+export const extractIANAZone = (match: RegExpMatchArray, cur: number): DateTimeExtractedResult => {
   const zone = match[cur] ? ianaZone(match[cur]) : null;
   return {
     cal: null,

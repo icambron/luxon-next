@@ -11,6 +11,7 @@ export * from "./duration/core";
 export * from "./duration/diff";
 export * from "./duration/convert";
 export * from "./duration/format";
+export * from "./duration/parse";
 
 export * from "./settings";
 export * from "./errors";

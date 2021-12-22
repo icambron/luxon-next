@@ -14,6 +14,9 @@ export const intAndFraction = (x: number) => {
 export const parseInteger = (text: string): number =>
   typeof text === "undefined" || text === null || text === "" ? NaN : parseInt(text, 10);
 
+export const parseFloating = (text: string) =>
+  typeof text === "undefined" || text === null || text === "" ? NaN : parseFloat(text);
+
 export const parseMillis = (fraction: string | null | undefined) => {
   // Return undefined (instead of 0) in these cases, where fraction is not set
   if (typeof fraction === "undefined" || fraction === null || fraction === "") {
