@@ -56,7 +56,6 @@ const stringifyTokens = (tokens: FormatToken[], tokenToString: (f: FormatToken) 
 };
 
 export const durationToFormat = (dur: Duration, format: string, locale?: FormatFirstArg<DurationTokenFormatOpts>, opts?: FormatSecondArg<DurationTokenFormatOpts>): string => {
-  // todo - better defaulting
   const formatOpts = getFullFormattingOpts<DurationTokenFormatOpts>(locale, opts, {conversionAccuracy: "casual", floor: true }, {useGrouping: false});
   const tokens = parseFormat(format);
   const fields = tokens.map(durationTokenToField).filter(n => n) as DurationUnit[];
