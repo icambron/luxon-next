@@ -1,21 +1,17 @@
-/* global test expect */
-
 import { startOf, endOf, fromGregorian, year, month, day, hour, minute, second, millisecond } from "../../../src/luxon";
 
-function makeDt() {
-  return fromGregorian({
-    year: 2010,
-    month: 2,
-    day: 3,
-    hour: 4,
-    minute: 5,
-    second: 6,
-    millisecond: 7,
-  });
-}
+const baseDt = fromGregorian({
+  year: 2010,
+  month: 2,
+  day: 3,
+  hour: 4,
+  minute: 5,
+  second: 6,
+  millisecond: 7,
+});
 
 test("startOf('year') goes to the start of the year", () => {
-  const dt = startOf(makeDt(), "year");
+  const dt = startOf(baseDt, "year");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(1);
@@ -39,7 +35,7 @@ test.each([
   [10, 10],
   [11, 10],
   [12, 10]
-])("startOf('quarter') from month %p goes to the start of the quarter %p", (m, quarterStart) => {
+])("startOf('quarter') from month %p goes to the start of the quarter %p", (m, startMonth) => {
   const dt = startOf(
     fromGregorian({
       year: 2017,
@@ -54,7 +50,7 @@ test.each([
   );
 
   expect(year(dt)).toBe(2017);
-  expect(month(dt)).toBe(quarterStart);
+  expect(month(dt)).toBe(startMonth);
   expect(day(dt)).toBe(1);
   expect(hour(dt)).toBe(0);
   expect(minute(dt)).toBe(0);
@@ -63,7 +59,7 @@ test.each([
 });
 
 test("startOf('month') goes to the start of the month", () => {
-  const dt = startOf(makeDt(), "month");
+  const dt = startOf(baseDt, "month");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -75,7 +71,7 @@ test("startOf('month') goes to the start of the month", () => {
 });
 
 test("startOf('day') goes to the start of the day", () => {
-  const dt = startOf(makeDt(), "day");
+  const dt = startOf(baseDt, "day");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -87,7 +83,7 @@ test("startOf('day') goes to the start of the day", () => {
 });
 
 test("startOf('hour') goes to the start of the hour", () => {
-  const dt = startOf(makeDt(), "hour");
+  const dt = startOf(baseDt, "hour");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -99,7 +95,7 @@ test("startOf('hour') goes to the start of the hour", () => {
 });
 
 test("startOf('minute') goes to the start of the minute", () => {
-  const dt = startOf(makeDt(), "minute");
+  const dt = startOf(baseDt, "minute");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -111,7 +107,7 @@ test("startOf('minute') goes to the start of the minute", () => {
 });
 
 test("startOf('second') goes to the start of the second", () => {
-  const dt = startOf(makeDt(), "second");
+  const dt = startOf(baseDt, "second");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -136,15 +132,15 @@ test("startOf('week') goes to the start of the week", () => {
 });
 
 test("startOf throws on invalid convert", () => {
-  expect(() => startOf(makeDt(), "splork")).toThrow();
-  expect(() => startOf(makeDt(), "")).toThrow();
+  expect(() => startOf(baseDt, "splork")).toThrow();
+  expect(() => startOf(baseDt, "")).toThrow();
 });
 
 //------
 // #endOf()
 //------
 test("endOf('year') goes to the start of the year", () => {
-  const dt = endOf(makeDt(), "year");
+  const dt = endOf(baseDt, "year");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(12);
@@ -156,7 +152,7 @@ test("endOf('year') goes to the start of the year", () => {
 });
 
 test("endOf('quarter') goes to the end of the quarter", () => {
-  const dt = endOf(makeDt(), "quarter");
+  const dt = endOf(baseDt, "quarter");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(3);
@@ -204,7 +200,7 @@ test.each([
 });
 
 test("endOf('month') goes to the start of the month", () => {
-  const dt = endOf(makeDt(), "month");
+  const dt = endOf(baseDt, "month");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -216,7 +212,7 @@ test("endOf('month') goes to the start of the month", () => {
 });
 
 test("endOf('day') goes to the start of the day", () => {
-  const dt = endOf(makeDt(), "day");
+  const dt = endOf(baseDt, "day");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -228,7 +224,7 @@ test("endOf('day') goes to the start of the day", () => {
 });
 
 test("endOf('hour') goes to the start of the hour", () => {
-  const dt = endOf(makeDt(), "hour");
+  const dt = endOf(baseDt, "hour");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -240,7 +236,7 @@ test("endOf('hour') goes to the start of the hour", () => {
 });
 
 test("endOf('minute') goes to the start of the minute", () => {
-  const dt = endOf(makeDt(), "minute");
+  const dt = endOf(baseDt, "minute");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -252,7 +248,7 @@ test("endOf('minute') goes to the start of the minute", () => {
 });
 
 test("endOf('second') goes to the start of the second", () => {
-  const dt = endOf(makeDt(), "second");
+  const dt = endOf(baseDt, "second");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(2);
@@ -277,11 +273,11 @@ test("endOf('week') goes to the end of the week", () => {
 });
 
 test("endOf throws on invalid convert", () => {
-  expect(() => endOf(makeDt(), "splork")).toThrow();
+  expect(() => endOf(baseDt, "splork")).toThrow();
 });
 
 test("endOf accepts plural convert", () => {
-  const dt = endOf(makeDt(), "years");
+  const dt = endOf(baseDt, "years");
 
   expect(year(dt)).toBe(2010);
   expect(month(dt)).toBe(12);
