@@ -1,14 +1,13 @@
 import {
   dateTimeFormat,
   extract,
-  getFormattingOpts,
   getFullFormattingOpts,
   numberFormat,
   NumberFormatOpts,
   parseFormat
 } from "../util/formatUtil";
 import { padStart } from "../util/string";
-import { isMacroToken, MacroToken, macroTokens } from "./macroTokens";
+import { isMacroToken, macroTokens } from "./macroTokens";
 import { getCalendarValue } from "../dateTime";
 import { ordinalInstance } from "../calendars/ordinal";
 import { gregorianInstance } from "../calendars/gregorian";
@@ -34,7 +33,7 @@ import {
 } from "../../types";
 import { roundTo } from "../util/numeric";
 
-// todo - dependencies
+// I guess we just live with this. Anything else is too weird
 import { durShiftTo } from "../../duration/convert";
 
 type ExtendedNumberFormatOpts = NumberFormatOpts & {

@@ -47,11 +47,11 @@ const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, numbe
     }
   }, null);
 };
+
 /**
  * Reduce this Duration to its canonical representation in its current convert.
- * @example fromValues({ years: 2, days: 5000 }) |> normalize() |> values //=> { years: 15, days: 255 }
- * @example fromValues({ hours: 12, minutes: -45 }) |> normalize() |> values //=> { hours: 11, minutes: 15 }
- * @return {Duration}
+ * @example duration({ years: 2, days: 5000 }) |> durNormalize(%) |> durValues(%) //=> { years: 15, days: 255 }
+ * @example duration({ hours: 12, minutes: -45 }) |> durNormalize(%) |> durValues(%) //=> { hours: 11, minutes: 15 }
  */
 export const durNormalize = (
   dur: Duration,
@@ -68,6 +68,14 @@ export const durAs = (dur: Duration, unit: DurationUnit) => {
   return shifted._values[unit] || 0;
 }
 
+/**
+  * Convert this Duration into its representation in a different set of units.
+  * @example
+  * ```js
+  * const dur = duration({ hours: 1, seconds: 30 })
+  * shiftTo(dur ['minutes', 'milliseconds']) |> values(%) //=> { minutes: 60, milliseconds: 30000 }
+  * ```
+  */
 export const durShiftTo = (
   dur: Duration,
   units: DurationUnit[],

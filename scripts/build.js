@@ -4,11 +4,11 @@ import swc from "@swc/core";
 
 const defaultSwcOpts = JSON.parse(fsSync.readFileSync(".swcrc"));
 
-const bundle = async (name, opts = {}) => {
+const bundle = async (name, options = {}) => {
 
   const defaultOpts = {entry: "src/luxon.ts", moduleType: "es6", minify: false, output: "luxon.js", global: false};
 
-  opts = {...defaultOpts, ...opts};
+  const opts = {...defaultOpts, ...options };
 
   if (!fsSync.existsSync(`build/${name}`)) {
     await fs.mkdir(`build/${name}`);

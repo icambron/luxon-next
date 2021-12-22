@@ -23,7 +23,6 @@ import {
   Zoneish,
 } from "../types";
 
-// todo - dependencies - these two should be on the same level
 import { normalizeZone } from "../impl/zone/normalizeZone";
 import { setZone } from "./zone";
 
