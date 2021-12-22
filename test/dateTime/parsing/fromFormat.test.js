@@ -371,12 +371,6 @@ test("DateTime.fromFormat() parses ordinals", () => {
   expect(ordinal(d)).toBe(16);
 });
 
-// todo - consider doing this
-// test("fromFormat() throws on mixed units", () => {
-//   expect(() => { fromFormat("2017 34", "yyyy WW") }).toThrow();
-//   expect(() => { fromFormat("2017 05 340", "yyyy MM ooo") }).toThrow();
-// });
-
 test("fromFormat() accepts weekYear by itself", () => {
   let d = fromFormat("2004", "kkkk");
   expect(weekYear(d)).toBe(2004);
