@@ -17,7 +17,7 @@ export const normalizeUnitBundle = <T>(obj: object, normalizer: (unit: string) =
 
 export const normalizeUnit = <T extends string>(
   name: string,
-  valid: Array<T>,
+  valid: T[],
   mapper: (s: string) => T,
   unit: string,
   throwOnInvalid?: boolean,
