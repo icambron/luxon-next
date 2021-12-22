@@ -25,12 +25,15 @@ const offsetDtf = (formatOpts: NamedOffsetFormatOpts, zone: Zone): Intl.DateTime
 };
 
 export const formatOffset = (dt: DateTime, locale?: FormatFirstArg<OffsetFormatOpts>, opts?: FormatSecondArg<OffsetFormatOpts>): string => {
-  const formatOpts = getFullFormattingOpts(locale, opts, {width: "short" });
+  const formatOpts = getFullFormattingOpts(locale, opts, { width: "short" });
 
-  if (formatOpts.width === "short" || formatOpts.width === "long") {
-    const dtf = offsetDtf(formatOpts as NamedOffsetFormatOpts, dt.zone);
-    return extract(dt.native(), dtf, "timezonename");
+  if (["narrow", "standard", "techie"].includes(formatOpts.width)) {
+    return formatNumericOffset(dt.offset, formatOpts.width);
   }
 
-  return formatNumericOffset(dt.offset, formatOpts.width);
+  // leaving the set of widths you can provide open-ended in order to support new upcoming ones like
+  // "longOffset" and "shortGeneric"
+  const dtf = offsetDtf(formatOpts as NamedOffsetFormatOpts, dt.zone);
+  return extract(dt.native(), dtf, "timezonename");
+
 };

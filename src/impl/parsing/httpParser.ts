@@ -1,4 +1,4 @@
-import { ExtractedResult, fromStrings, parse } from "./regexParser";
+import { DateTimeExtractedResult, fromStrings, parse } from "./regexParser";
 
 const rfc1123Regex =
   /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d\d):(\d\d):(\d\d) GMT$/;
@@ -7,12 +7,12 @@ const rfc850Regex =
 const asciiRegex =
   /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( \d|\d\d) (\d\d):(\d\d):(\d\d) (\d{4})$/;
 
-const extractRFC1123Or850 = (match: RegExpMatchArray, cur: number): ExtractedResult => {
+const extractRFC1123Or850 = (match: RegExpMatchArray, cur: number): DateTimeExtractedResult => {
   const [, , dayStr, monthStr, yearStr, hourStr, minuteStr, secondStr] = match;
   return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cur + 7);
 };
 
-const extractASCII = (match: RegExpMatchArray, cur: number): ExtractedResult => {
+const extractASCII = (match: RegExpMatchArray, cur: number): DateTimeExtractedResult => {
   const [, , monthStr, dayStr, hourStr, minuteStr, secondStr, yearStr] = match;
   return fromStrings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr, cur + 7);
 };

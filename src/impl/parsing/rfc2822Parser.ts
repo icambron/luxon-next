@@ -1,5 +1,5 @@
 // RFC 2822/5322
-import { ExtractedResult, fromStrings, parse } from "./regexParser";
+import { DateTimeExtractedResult, fromStrings, parse } from "./regexParser";
 import { fixedOffsetZone } from "../zone/fixedOffset";
 import { signedOffset } from "../util/zoneUtils";
 
@@ -49,7 +49,7 @@ const computeOffset = (obsOffset: string, milOffset: string, offHourStr: string,
   }
 };
 
-const extractRFC2822 = (match: RegExpMatchArray, _: number): ExtractedResult => {
+const extractRFC2822 = (match: RegExpMatchArray, _: number): DateTimeExtractedResult => {
   const [, , dayStr, monthStr, yearStr, hourStr, minuteStr, secondStr, obsOffset, milOffset, offHourStr, offMinuteStr] =
     match;
 

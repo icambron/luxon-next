@@ -17,9 +17,9 @@ test("formatOffset defaults to English", () => {
   expect(formatOffset(dt)).toEqual("EDT");
 });
 
-// test("formatOffset accepts locales", () => {
-//   expect(formatOffset(dtMaker(), "be")).toEqual("жнівень");
-// });
+test("formatOffset accepts locales", () => {
+  expect(formatOffset(dt, "be", { width: "long" } )).toEqual("Паўночнаамерыканскі ўсходні летні час");
+});
 
 test.each([
   ["long", "Eastern Daylight Time"],
@@ -31,14 +31,3 @@ test.each([
   expect(formatOffset(dt, { width })).toEqual(expected)
 );
 
-// test("formatOffset accepts locale and options", () => {
-//   expect(formatOffset("be", { width: "short" })(dtMaker())).toEqual("жні");
-// });
-//
-// test("formatOffset accepts dtf options", () => {
-//   expect(formatOffset(dtMaker(), { calendar: "coptic" })).toEqual("Epep");
-//   expect(formatOffset(dtMaker(), "fr", { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
-//   expect(formatOffset(dtMaker(), { locale: "fr", numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
-//   expect(formatOffset(dtMaker(), { numberingSystem: "mong", width: "2-digit" })).toEqual("᠐᠘");
-// });
-//

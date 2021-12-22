@@ -1,4 +1,4 @@
-import { ExtractedResult } from "../impl/parsing/regexParser";
+import { DateTimeExtractedResult } from "../impl/parsing/regexParser";
 import { parseISODateTime } from "../impl/parsing/isoParser";
 import { parseFromFormat } from "../impl/parsing/tokenParser";
 import { ordinalInstance } from "../impl/calendars/ordinal";
@@ -42,7 +42,7 @@ const pickZone = (
   return { interpretationZone, targetZone };
 };
 
-const fromRegexParse = (extracted: ExtractedResult, opts: ParseOpts): DateTime => {
+const fromRegexParse = (extracted: DateTimeExtractedResult, opts: ParseOpts): DateTime => {
   const { interpretationZone, targetZone } = pickZone(extracted.zone, opts);
   const calendar = extracted.cal || gregorianInstance;
   const dt = fromCalendar(calendar, { ...extracted.date, ...extracted.time }, interpretationZone);
