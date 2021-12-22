@@ -8,7 +8,6 @@ import { ianaZone } from "../zone/iana";
 
 // internal-only types
 export type Cursor = number;
-
 export type Extractor<T> = (match: RegExpMatchArray, cur: Cursor) => T;
 
 export type DateTimeExtractedResult = {

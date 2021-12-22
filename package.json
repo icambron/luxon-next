@@ -12,29 +12,29 @@
     "test": "TZ=\"America/New_York\" LANG=en_US.utf8 jest",
     "coverage": "TZ=\"America/New_York\" LANG=en_US.utf8 jest --coverage",
     "prettier": "prettier -w src/**/*.ts test/**/*.js",
-    "docs": "typedoc src/dateTime src/duration src/model",
     "circular": "dpdm --exit-code=circular:1 src/**/*.ts",
     "repl": "LANG=en-US.utf8 node -i -r \"./scripts/bootstrap.cjs\"",
-    "docs": "typedoc -out build/docs src/luxon.ts"
+    "docs": "typedoc -out build/docs src/luxon.ts",
+    "copy-site": "mkdir -p build && rsync -a site/ build",
+    "full": "npm run build && npm run types && npm run docs && npm run copy-site",
+    "serve": "serve build"
   },
   "devDependencies": {
     "typedoc": "latest",
-    "@swc/core": "^1.2.119",
-    "@swc/jest": "^0.2.12",
+    "@swc/core": "latest",
+    "@swc/jest": "latest",
     "dpdm": "latest",
     "jest": "latest",
     "prettier": "latest",
     "typedoc": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "serve": "latest"
   },
   "sideEffects": false,
-  "main": "build/es6/luxon.js",
-  "browser": "build/global/luxon.js",
+  "main": "build/esm/luxon.js",
   "types": "build/types/luxon.d.ts",
   "files": [
-    "build/es6",
-    "build/types",
-    "build/global",
+    "build/esm",
     "build/types"
   ]
 }

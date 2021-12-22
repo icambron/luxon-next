@@ -14,7 +14,7 @@ const bundle = async (name, options = {}) => {
     await fs.mkdir(`build/${name}`);
   }
 
-  const swcOpts = {...defaultSwcOpts, minify: opts.minify, module: { type: opts.moduleType }};
+  const swcOpts = {...defaultSwcOpts, minify: opts.minify, };
 
   if (opts.minify) {
     const jsc = {...swcOpts.jsc };
@@ -25,7 +25,8 @@ const bundle = async (name, options = {}) => {
   const {luxon} = await swc.bundle({
     entry: { luxon: opts.entry },
     mode: "production",
-    options: swcOpts
+    options: swcOpts,
+    module: { type: opts.moduleType }
   });
 
   await Promise.all([
@@ -35,9 +36,8 @@ const bundle = async (name, options = {}) => {
 }
 
 const buildAll = () => Promise.all([
-  bundle("es6"),
-  bundle("global", { entry: "src/global.js", minify: true }),
-  // not sure why these don't work?? They just seem to produce es6 modules...
+  bundle("esm"),
+  // not sure why these don't work?? They just seem to produce esm modules...
   // bundle("commonjs", { moduleType: "commonjs" }),
   // bundle("amd", { moduleType: "amd" })
 ]);
