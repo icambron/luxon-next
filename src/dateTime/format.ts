@@ -15,6 +15,8 @@ import { DateTime, FormatFirstArg, DateTimeFormatOpts, FormatSecondArg, ISOForma
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
+import { padStart } from "../impl/util/string";
+import { formatNumericOffset } from "../impl/util/zoneUtils";
 
 /**
  * Returns a locale-appropriate locale string, given options to control the locale and format
@@ -173,19 +175,9 @@ export const toRFC2822 = (dt: DateTime) =>
  */
 export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH:mm:ss [GMT]");
 
-/**
- * Returns an ISO 8601-compliant string representation of this DateTime. Offers no extra options but is faster and smaller than {@link toISOAdvanced}.
- * @param dt - the DateTime to format
- * @example
- * ```js
- * toISO(ymdUTC(1982, 5, 25)) //=> '1982-05-25T00:00:00.000Z'
- * toISO(now()) //=> '2017-04-22T20:47:05.335-04:00'
- * ```
- */
-export const toISO = (dt: DateTime) => dt.toString();
 
 /**
- * Returns an ISO 8601-compliant string representation of this DateTime. Offers formatting options but is slower and has a larger code footprint than {@link toISO}
+ * Returns an ISO 8601-compliant string representation of this DateTime
  * @param dt - the DateTime to format
  * @param opts - options to govern the formatting. See {@link ISOFormatOpts}.
  * @example
@@ -202,24 +194,27 @@ export const toISO = (dt: DateTime) => dt.toString();
  *   millisecond: 123,
  * });
  *
- *  toISOAdvanced(dt) //=> "1982-05-25T09:23:54.123-04:00"
- *  toISOAdvanced(toUTC(dt)) //=> "1982-05-25T05:23:54.123Z"
- *  toISOAdvanced(dt, { includeOffset: false }) //=> "1982-05-25T09:23:54.123"
- *  toISOAdvanced(dt, { format: "basic" }) //=> "19820525T092354.123-0400"
+ *  toISO(dt) //=> "1982-05-25T09:23:54.123-04:00"
+ *  toISO(toUTC(dt)) //=> "1982-05-25T05:23:54.123Z"
+ *  toISO(dt, { includeOffset: false }) //=> "1982-05-25T09:23:54.123"
+ *  toISO(dt, { format: "basic" }) //=> "19820525T092354.123-0400"
  * ```
  */
-export const toISOAdvanced = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
+export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
   `${toISODate(dt, opts)}T${toISOTime(dt, opts)}`;
 
 export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}): string => {
-  let realOpts = { format: "extended", ...opts };
 
-  let fmt = realOpts.format === "basic" ? "yyyyMMdd" : "yyyy-MM-dd";
-
+  let y = padStart(dt.gregorian.year,  Math.abs(dt.gregorian.year) > 9999 ? 6 : 4);
+  
   if (dt.gregorian.year > 9999) {
-    fmt = "+" + fmt;
+    y = "+" + y;
   }
-  return dateTimeToFormat(dt, fmt);
+
+  const mo = padStart(dt.gregorian.month);
+  const d = padStart(dt.gregorian.day);
+
+  return opts.format === "basic" ? `${y}${mo}${d}` : `${y}-${mo}-${d}`;
 };
 
 /**
@@ -256,35 +251,34 @@ export const toISOWeekDate = (dt: DateTime) => toFormat(dt, "kkkk-[W]W-c");
  * ```
  */
 export const toISOTime = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) => {
-  let realOpts = {
-    seconds: true,
-    milliseconds: true,
-    elideZeroSeconds: false,
-    elideZeroMilliseconds: false,
-    format: "extended",
-    includeOffset: true,
-    ...opts,
-  };
-  let fmt = realOpts.format === "basic" ? "HHmm" : "HH:mm";
 
-  const shouldElideMilliseconds =
-    !realOpts.milliseconds || (realOpts.elideZeroMilliseconds && dt.time.millisecond === 0);
+  const h = padStart(dt.time.hour);
+  const m = padStart(dt.time.minute);
+  let result = opts.format === "basic" ? `${h}${m}`: `${h}:${m}`;
+
   const shouldElideSeconds =
-    !realOpts.seconds || (realOpts.elideZeroSeconds && dt.time.second === 0 && dt.time.millisecond == 0);
+    (typeof opts.seconds !== "undefined" && !opts.seconds) || (opts.elideZeroSeconds && dt.time.second === 0 && dt.time.millisecond == 0);
 
   if (!shouldElideSeconds) {
-    fmt += realOpts.format === "basic" ? "ss" : ":ss";
+    if (opts.format != "basic") {
+      result += ":"
+    }
+    result += padStart(dt.time.second);
+
+
+    const shouldElideMilliseconds =
+      (typeof opts.milliseconds !== "undefined" && !opts.milliseconds) || (opts.elideZeroMilliseconds && dt.time.millisecond === 0);
 
     if (!shouldElideMilliseconds) {
-      fmt += ".SSS";
+      result += "." + padStart(dt.time.millisecond, 3);
     }
   }
 
-  if (realOpts.includeOffset) {
-    fmt += realOpts.format === "basic" ? "ZZZ" : "ZZ";
+  if (typeof opts.includeOffset == "undefined" || opts.includeOffset) {
+    result += dt.offset == 0 && dt.zone.isUniversal ? "Z" : formatNumericOffset(dt.offset, opts.format == "basic" ? "narrow" : "standard");
   }
 
-  return dateTimeToFormat(dt, fmt, { allowZ: true });
+  return result;
 };
 
 /**

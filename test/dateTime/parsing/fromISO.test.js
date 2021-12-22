@@ -1,6 +1,5 @@
 import {
   fromISO,
-  simpleParseOpts,
   now,
   offset,
   toGregorian,
@@ -160,7 +159,7 @@ test("fromISO()'s interpretationZone and targetZone can work in combination", ()
 });
 
 test("fromISO() accepts a simpleParingOptions that sets both target and interpretation zones", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123", simpleParseOpts("utc+6"));
+  const dt = fromISO("2016-05-25T09:08:34.123", "utc+6");
   expect(offset(dt)).toEqual(6 * 60);
   expect(toGregorian(dt)).toEqual({
     year: 2016,

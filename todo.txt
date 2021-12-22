@@ -1,6 +1,7 @@
 Big stuff:
  * A new name!
  * Intervals
+ * Redux on interpretation zones. Specifically, fromGregorian(s, zone) is wonky about this
 
 Organization stuff:
  * nothing now

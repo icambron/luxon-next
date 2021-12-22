@@ -1,2 +1,11 @@
-export const padStart = (input: string | number, n = 2) =>
-  input.toString().length < n ? ("0".repeat(n) + input).slice(-n) : input.toString();
+export const padStart = (input: number, n = 2) => {
+  const isNeg = input < 0;
+  let padded = Math.abs(input).toString().padStart(n, "0");
+
+  if (isNeg) {
+    padded = "-" + padded;
+  }
+
+  return padded;
+}
+

@@ -20,29 +20,28 @@ import {
   TokenParseValue,
   TokenParseOpts,
   TokenParseSummary,
-  Zoneish,
+  ParseOptsOrZone,
 } from "../types";
 
 import { normalizeZone } from "../impl/zone/normalizeZone";
 import { setZone } from "./zone";
 
-export const simpleParseOpts = (zone: Zoneish = getDefaultZone()): ParseOpts => ({
-  interpretationZone: zone,
-  targetZone: zone,
-  useTargetZoneFromInput: false,
-});
-
 const pickZone = (
   parsedZone: Zone | null | undefined,
-  opts: ParseOpts = {}
+  opts: ParseOptsOrZone = {}
 ): { targetZone: Zone; interpretationZone: Zone } => {
-  const interpretationZone: Zone = parsedZone || normalizeZone(opts.interpretationZone) || getDefaultZone();
+
+  if (typeof opts === "string") {
+    opts = { zone: opts }
+  }
+
+  const interpretationZone: Zone = parsedZone || normalizeZone(opts.zone || opts.interpretationZone) || getDefaultZone();
   const targetZone =
-    opts.useTargetZoneFromInput && parsedZone ? parsedZone : normalizeZone(opts.targetZone) || getDefaultZone();
+    opts.useTargetZoneFromInput && parsedZone ? parsedZone : normalizeZone(opts.zone || opts.targetZone) || getDefaultZone();
   return { interpretationZone, targetZone };
 };
 
-const fromRegexParse = (extracted: DateTimeExtractedResult, opts: ParseOpts): DateTime => {
+const fromRegexParse = (extracted: DateTimeExtractedResult, opts: ParseOptsOrZone): DateTime => {
   const { interpretationZone, targetZone } = pickZone(extracted.zone, opts);
   const calendar = extracted.cal || gregorianInstance;
   const dt = fromCalendar(calendar, { ...extracted.date, ...extracted.time }, interpretationZone);
@@ -88,15 +87,15 @@ const dateTimeFromParsedValues = (parsed: TokenParseValue, opts: ParseOpts): Dat
   return setZone(dt, targetZone);
 };
 
-export const fromISO = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);
+export const fromISO = (input: string, opts: ParseOptsOrZone = {}): DateTime => fromRegexParse(parseISODateTime(input), opts);
 
 export const tryFromISO = wrapError(fromISO);
 
-export const fromRFC2822 = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseRFC2822(input), opts);
+export const fromRFC2822 = (input: string, opts: ParseOptsOrZone = {}): DateTime => fromRegexParse(parseRFC2822(input), opts);
 
 export const tryFromRFC2822 = wrapError(fromRFC2822);
 
-export const fromHTTP = (input: string, opts: ParseOpts = {}): DateTime => fromRegexParse(parseHTTPDate(input), opts);
+export const fromHTTP = (input: string, opts: ParseOptsOrZone = {}): DateTime => fromRegexParse(parseHTTPDate(input), opts);
 
 export const tryFromHTTP = wrapError(fromHTTP);
 

@@ -274,12 +274,14 @@ export type DurationHumanizeFormatOpts = SharedFormatOpts & Intl.NumberFormatOpt
 }
 
 // PARSING
-
 export type ParseOpts = {
+  zone?: Zoneish,
   interpretationZone?: Zoneish;
   targetZone?: Zoneish;
   useTargetZoneFromInput?: boolean;
-};
+}
+
+export type ParseOptsOrZone = ParseOpts | string;
 
 export type TokenParseOpts = ParseOpts & SharedFormatOpts;
 

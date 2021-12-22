@@ -1,4 +1,4 @@
-import { fromRFC2822, simpleParseOpts, day, offset, toGregorian, zone, toUTC } from "../../../src/luxon";
+import { fromRFC2822, day, offset, toGregorian, zone, toUTC } from "../../../src/luxon";
 
 test("fromRFC2822() accepts full format", () => {
   const dt = fromRFC2822("Tue, 01 Nov 2016 13:23:12 +0630");
@@ -99,7 +99,7 @@ test("fromRFC2822() uses -0000 to indicate that the zone is unknown", () => {
     millisecond: 0,
   });
 
-  dt = fromRFC2822("01 Nov 2016 13:23:12 -0000", simpleParseOpts("utc"));
+  dt = fromRFC2822("01 Nov 2016 13:23:12 -0000", "utc");
   expect(zone(dt).type).toBe("fixed");
   expect(offset(dt)).toEqual(0);
   expect(toGregorian(dt)).toEqual({

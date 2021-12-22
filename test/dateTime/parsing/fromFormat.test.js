@@ -1,6 +1,5 @@
 import {
   fromFormat,
-  simpleParseOpts,
   year,
   month,
   day,
@@ -371,6 +370,12 @@ test("DateTime.fromFormat() parses ordinals", () => {
   expect(ordinal(d)).toBe(16);
 });
 
+// todo - consider doing this
+// test("fromFormat() throws on mixed units", () => {
+//   expect(() => { fromFormat("2017 34", "yyyy WW") }).toThrow();
+//   expect(() => { fromFormat("2017 05 340", "yyyy MM ooo") }).toThrow();
+// });
+
 test("fromFormat() accepts weekYear by itself", () => {
   let d = fromFormat("2004", "kkkk");
   expect(weekYear(d)).toBe(2004);
@@ -446,7 +451,7 @@ test.each([
 });
 
 test("fromFormat() accepts a zone arguments", () => {
-  const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", simpleParseOpts("Asia/Tokyo"));
+  const dt = fromFormat("1982/05/25 09:10:11.445", "yyyy/MM/dd HH:mm:ss.SSS", { zone: "Asia/Tokyo" });
   expect(zoneName(dt)).toBe("Asia/Tokyo");
   expect(offset(dt)).toBe(9 * 60);
   expect(year(dt)).toBe(1982);
