@@ -1,18 +1,9 @@
-Middle of:
- * Messing with tree shaking in webpack
-
 Big stuff:
  * A new name!
  * Intervals
-
-Others:
- * Also need arbitrary formatting, but that seems pretty easy?
- * Lots of duration work to do, but mostly nbd? (parsing, formatting, etc)
 
 Organization stuff:
  * nothing now
 
 Odds and ends:
- * tests for defaultLocale
  * tests for toLocaleString() and friends (currently just testing toLocaleParts())
- * search for dummy tests and fill them in
