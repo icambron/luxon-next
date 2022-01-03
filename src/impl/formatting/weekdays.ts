@@ -1,6 +1,6 @@
 import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
-import { utcInstance } from "../zone/fixedOffset";
+import { utcZone } from "../zone/fixedOffset";
 import { Zone, WeekdayFormatOpts, DateTime, FormatFirstArg, FormatSecondArg } from "../../types";
 
 const weekdayDtf = (formatOpts: Partial<WeekdayFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
@@ -21,7 +21,7 @@ export const listWeekdays = (locale?: FormatFirstArg<WeekdayFormatOpts>, opts?: 
   const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("weekdayList", (formatOpts: Partial<WeekdayFormatOpts>) => {
-    const dtf = weekdayDtf(formatOpts, utcInstance);
+    const dtf = weekdayDtf(formatOpts, utcZone);
 
     const d = new Date(Date.UTC(2016, 10, 14, 12));
     return Array.from({ length: 7 }, (_, i) => {

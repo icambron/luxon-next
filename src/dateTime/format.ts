@@ -11,12 +11,13 @@ import {
 import { listEras as listErasInternal, formatEra as formatEraInternal } from "../impl/formatting/eras";
 import { dateTimeToFormat } from "../impl/formatting/tokenFormatter";
 import { formatOffset as formatOffsetInternal } from "../impl/formatting/namedOffset";
+import { formatNumericOffset } from "../impl/util/zoneUtils";
+import { getDefaultDateFormat, getDefaultDateTimeFormat, getDefaultLocale, getDefaultTimeFormat } from "../settings";
 import { DateTime, FormatFirstArg, DateTimeFormatOpts, FormatSecondArg, ISOFormatOpts } from "../types";
 
 // think we'll just have to live with these deps?
 import { toUTC } from "./zone";
 import { padStart } from "../impl/util/string";
-import { formatNumericOffset } from "../impl/util/zoneUtils";
 
 /**
  * Returns a locale-appropriate locale string, given options to control the locale and format
@@ -41,8 +42,8 @@ export const toLocaleString = (
   locale?: FormatFirstArg<DateTimeFormatOpts>,
   opts?: FormatSecondArg<DateTimeFormatOpts>
 ): string => {
-  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
-  return dt.native().toLocaleString(defaulted.locale, defaulted);
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts, getDefaultDateTimeFormat);
+  return dt.native().toLocaleString(defaulted.locale || getDefaultLocale(), defaulted);
 };
 
 /**
@@ -68,8 +69,8 @@ export const toLocaleDateString = (
   locale?: FormatFirstArg<DateTimeFormatOpts>,
   opts?: FormatSecondArg<DateTimeFormatOpts>
 ): string => {
-  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
-  return dt.native().toLocaleDateString(defaulted.locale, defaulted);
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts, getDefaultDateFormat);
+  return dt.native().toLocaleDateString(defaulted.locale || getDefaultLocale(), defaulted);
 };
 
 /**
@@ -95,8 +96,8 @@ export const toLocaleTimeString = (
   locale?: FormatFirstArg<DateTimeFormatOpts>,
   opts?: FormatSecondArg<DateTimeFormatOpts>
 ): string => {
-  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
-  return dt.native().toLocaleTimeString(defaulted.locale, defaulted);
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts, getDefaultTimeFormat);
+  return dt.native().toLocaleTimeString(defaulted.locale || getDefaultLocale(), defaulted);
 };
 
 /**
@@ -122,7 +123,7 @@ export const toLocaleParts = (
   locale?: FormatFirstArg<DateTimeFormatOpts>,
   opts?: FormatSecondArg<DateTimeFormatOpts>
 ): Intl.DateTimeFormatPart[] => {
-  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts);
+  const defaulted = getDefaultedDateTimeFormattingOpts(locale, opts, getDefaultDateTimeFormat);
   return dateTimeFormat(defaulted, dt.zone).formatToParts(new Date(+dt));
 };
 
@@ -183,7 +184,6 @@ export const toHTTP = (dt: DateTime) => toFormat(toUTC(dt), "EEE, dd LLL yyyy HH
  * @example
  *
  * ```js
- *
  * const dt = fromGregorian({
  *   year: 1982,
  *   month: 5,

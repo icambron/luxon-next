@@ -3,7 +3,7 @@ import { InvalidArgumentError, NoMatchingParserPattern } from "../../errors";
 import { gregorianInstance } from "../calendars/gregorian";
 import { parseInteger } from "../util/numeric";
 import { untruncateYear } from "../util/dateMath";
-import { utcInstance } from "../zone/fixedOffset";
+import { utcZone } from "../zone/fixedOffset";
 import { ianaZone } from "../zone/iana";
 
 // internal-only types
@@ -117,7 +117,7 @@ export const fromStrings = (
     cal: gregorianInstance,
     date,
     time,
-    zone: utcInstance,
+    zone: utcZone,
     cur: cur,
   };
 };

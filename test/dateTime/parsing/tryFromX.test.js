@@ -5,7 +5,7 @@ test("tryFromISO returns a DateTime for valid values", () => {
 });
 
 test("tryFromISO accepts options", () => {
-  const dt = tryFromISO("2021-11-06", { targetZone: "utc+6" });
+  const dt = tryFromISO("2021-11-06", { zone: "utc+6" });
   expect(offset(dt)).toEqual(6 * 60);
 });
 

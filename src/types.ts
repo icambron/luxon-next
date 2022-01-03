@@ -157,7 +157,7 @@ export type DateTimeFormatOpts = SharedFormatOpts & Intl.DateTimeFormatOptions;
 export type DateTimeTokenFormatOpts = SharedFormatOpts & {
   forceSimple: boolean,
   allowZ: boolean,
-  calendar: string | undefined
+  calendar?: string
 };
 
 export type MonthFormatOpts = DateTimeFormatOpts & {
@@ -276,9 +276,7 @@ export type DurationHumanizeFormatOpts = SharedFormatOpts & Intl.NumberFormatOpt
 // PARSING
 export type ParseOpts = {
   zone?: Zoneish,
-  interpretationZone?: Zoneish;
-  targetZone?: Zoneish;
-  useTargetZoneFromInput?: boolean;
+  useZoneFromInput?: boolean;
 }
 
 export type ParseOptsOrZone = ParseOpts | string;

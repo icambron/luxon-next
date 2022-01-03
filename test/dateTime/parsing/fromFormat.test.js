@@ -477,7 +477,7 @@ test("fromFormat() parses IANA zones", () => {
 
 test("fromFormat() with setZone parses IANA zones and sets it", () => {
   const d = fromFormat("1982/05/25 09:10:11.445 Asia/Tokyo", "yyyy/MM/dd HH:mm:ss.SSS z", {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(zoneName(d)).toBe("Asia/Tokyo");
   expect(offset(d)).toBe(9 * 60);
@@ -501,7 +501,7 @@ test.each([
   ["ZZZ", "-0400"],
 ])("fromFormat() with setZone parses fixed offsets like %p and sets it", (format, example) => {
   const dt = fromFormat(`1982/05/25 09:10:11.445 ${example}`, `yyyy/MM/dd HH:mm:ss.SSS ${format}`, {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(offset(dt)).toBe(-4 * 60);
   expect(hour(toUTC(dt))).toBe(13);
@@ -517,16 +517,16 @@ test("fromFormat validates weekdays", () => {
   expect(() => fromFormat("Thu 2017-11-29 02:00", "EEE yyyy-MM-dd HH:mm")).not.toThrow();
   expect(() => fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ")).not.toThrow();
   expect(() =>
-    fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true })
+    fromFormat("Wed 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useZoneFromInput: true })
   ).not.toThrow();
   expect(() =>
-    fromFormat("Tue 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useTargetZoneFromInput: true })
+    fromFormat("Tue 2017-11-29 02:00 +12:00", "EEE yyyy-MM-dd HH:mm ZZ", { useZoneFromInput: true })
   ).not.toThrow();
 });
 
 test("fromFormat containing special regex token", () => {
   const ianaFormat = "yyyy-MM-dd[T]HH-mm\\[z\\]";
-  const dt = fromFormat("2019-01-14T11-30[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
+  const dt = fromFormat("2019-01-14T11-30[Indian/Maldives]", ianaFormat, { useZoneFromInput: true });
   expect(zoneName(dt)).toBe("Indian/Maldives");
 
   expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
@@ -536,7 +536,7 @@ test("fromFormat containing special regex token", () => {
 
 test("fromFormat prefers z over ZZ", () => {
   const ianaFormat = "yyyy-MM-dd[T]HH-mmZZ\\[z\\]";
-  const dt = fromFormat("2019-01-14T11-30+1:00[Indian/Maldives]", ianaFormat, { useTargetZoneFromInput: true });
+  const dt = fromFormat("2019-01-14T11-30+1:00[Indian/Maldives]", ianaFormat, { useZoneFromInput: true });
   expect(zoneName(dt)).toBe("Indian/Maldives");
 
   expect(() => fromFormat("2019-01-14T11-30[[Indian/Maldives]]", "yyyy-MM-dd[T]HH-mm\\[\\[z\\]\\]")).not.toThrow();
@@ -547,7 +547,7 @@ test("fromFormat prefers z over ZZ", () => {
 test("fromFormat() ignores numerical offsets when they conflict with the zone", () => {
   // +11:00 is not a valid offset for the Australia/Perth time zone
   const i = fromFormat("2021-11-12T09:07:13.000+11:00[Australia/Perth]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(11);
@@ -563,7 +563,7 @@ test("fromFormat() ignores numerical offsets when they conflict with the zone", 
 test("fromFormat() ignores numerical offsets when they are are wrong right now", () => {
   // DST is not in effect at this timestamp, so +10:00 is the correct offset
   const i = fromFormat("2021-10-03T01:30:00.000+11:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(10);
@@ -579,7 +579,7 @@ test("fromFormat() ignores numerical offsets when they are are wrong right now",
 test("fromFormat() maintains offset that belongs to time zone during overlap", () => {
   // On this day, 02:30 exists for both offsets, due to DST ending.
   let i = fromFormat("2021-04-04T02:30:00.000+11:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(4);
@@ -592,7 +592,7 @@ test("fromFormat() maintains offset that belongs to time zone during overlap", (
   expect(zoneName(i)).toBe("Australia/Sydney");
 
   i = fromFormat("2021-04-04T02:30:00.000+10:00[Australia/Sydney]", "yyyy-MM-dd[T]HH:mm:ss.SSSZZ\\[z\\]", {
-    useTargetZoneFromInput: true,
+    useZoneFromInput: true,
   });
   expect(year(i)).toBe(2021);
   expect(month(i)).toBe(4);

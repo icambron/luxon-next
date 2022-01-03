@@ -1,6 +1,6 @@
 import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
-import { utcInstance } from "../zone/fixedOffset";
+import { utcZone } from "../zone/fixedOffset";
 import { Zone, MeridiemFormatOpts, DateTime, FormatFirstArg, FormatSecondArg } from "../../types";
 
 const meridiemDtf = (formatOpts: Partial<MeridiemFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
@@ -23,7 +23,7 @@ export const listMeridiems = (locale?: FormatFirstArg<MeridiemFormatOpts>, opts?
   const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("meridiemList", (formatOpts: Partial<MeridiemFormatOpts>) => {
-    const dtf = meridiemDtf(formatOpts, utcInstance);
+    const dtf = meridiemDtf(formatOpts, utcZone);
 
     // @ts-ignore
     const d = new Date(Date.UTC(2016, 6, 15));

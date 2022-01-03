@@ -1,6 +1,6 @@
 import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
-import { utcInstance } from "../zone/fixedOffset";
+import { utcZone } from "../zone/fixedOffset";
 import { Zone, MonthFormatOpts, FormatFirstArg, FormatSecondArg, DateTime } from "../../types";
 
 const monthDtf = (formatOpts: Partial<MonthFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
@@ -20,7 +20,7 @@ export const listMonths = (locale?: FormatFirstArg<MonthFormatOpts>, opts?: Form
   const formatOpts = getFormattingOpts(locale, opts);
 
   return memo("monthList", (formatOpts: Partial<MonthFormatOpts>) => {
-    const dtf = monthDtf(formatOpts, utcInstance);
+    const dtf = monthDtf(formatOpts, utcZone);
 
     // @ts-ignore
     const d = new Date([2016, 6, 15]);

@@ -2,7 +2,7 @@ import { adjustCalendarOverflow, gregorianInstance } from "../impl/calendars/gre
 import { daysInMonth, daysInYear, isLeapYear } from "../impl/util/dateMath";
 import { isDate, isDateTime as isDateTimeInternal } from "../impl/util/typeCheck";
 import { fromCalendar, fromMillis as fromMillisInternal, set } from "../impl/dateTime";
-import { utcInstance } from "../impl/zone/fixedOffset";
+import { utcZone } from "../impl/zone/fixedOffset";
 import { normalizeZone } from "../impl/zone/normalizeZone";
 import { getNowFn } from "../settings";
 import { InvalidArgumentError } from "../errors";
@@ -27,7 +27,7 @@ export const toSeconds = (dt: DateTime): number => dt.ts / 1000;
 
 // FROM ESSENTIALS
 export const now = (zone?: Zoneish) => fromMillisInternal(getNowFn()(), normalizeZone(zone));
-export const utcNow = () => now(utcInstance);
+export const utcNow = () => now(utcZone);
 export const fromMillis = (ms: number, zone?: Zoneish) => fromMillisInternal(ms, normalizeZone(zone));
 
 export const fromJSDate = (jsDate: Date, zone?: Zoneish): DateTime => {
@@ -55,7 +55,7 @@ export const ymdUTC = (
   minute?: number,
   second?: number,
   millisecond?: number
-) => fromGregorian({ year, month, day, hour, minute, second, millisecond }, utcInstance);
+) => fromGregorian({ year, month, day, hour, minute, second, millisecond }, utcZone);
 
 // TO/FROM GREGORIAN
 export const fromGregorian = (obj: Partial<GregorianDate & Time>, zone?: Zoneish): DateTime =>

@@ -31,7 +31,7 @@ class FixedOffsetZone implements Zone {
 /**
  * Get a singleton instance of UTC
  */
-export const utcInstance: Zone = new FixedOffsetZone(0);
+export const utcZone: Zone = new FixedOffsetZone(0);
 
 /**
  * Get an instance with a specified offset
@@ -39,7 +39,7 @@ export const utcInstance: Zone = new FixedOffsetZone(0);
  * @return {Zone}
  */
 export const fixedOffsetZone = (offset: number): Zone =>
-  offset === 0 ? utcInstance : new FixedOffsetZone(offset);
+  offset === 0 ? utcZone : new FixedOffsetZone(offset);
 
 /**
  * Get an instance of FixedOffsetZone from a UTC offset string, like "UTC+6"

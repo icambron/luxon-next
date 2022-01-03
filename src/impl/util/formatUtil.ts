@@ -96,10 +96,10 @@ export const getFormattingOpts = <T extends SharedFormatOpts>(
   return {...defaults, ...t, ...overrides };
 };
 
-export const getDefaultedDateTimeFormattingOpts = (firstArg: FormatFirstArg<DateTimeFormatOpts>, secondArg: FormatSecondArg<DateTimeFormatOpts>): DateTimeFormatOpts => {
+export const getDefaultedDateTimeFormattingOpts = (firstArg: FormatFirstArg<DateTimeFormatOpts>, secondArg: FormatSecondArg<DateTimeFormatOpts>, defaultOpts: () => Intl.DateTimeFormatOptions): DateTimeFormatOpts => {
   const formatOpts = getFormattingOpts(firstArg, secondArg);
   const { locale, calendar, numberingSystem, ...rest } = formatOpts;
-  return Object.keys(rest).length === 0 ? { ...formatOpts, ...getDefaultDateTimeFormat() } : formatOpts;
+  return Object.keys(rest).length === 0 ? { ...formatOpts, ...defaultOpts() } : formatOpts;
 }
 
 export const hasKeys =

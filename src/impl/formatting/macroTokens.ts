@@ -14,7 +14,11 @@ export type MacroToken =
   | "f"
   | "ff"
   | "fff"
-  | "ffff";
+  | "ffff"
+  | "F"
+  | "FF"
+  | "FFF"
+  | "FFFF";
 
 export const macroTokens: Record<MacroToken, Intl.DateTimeFormatOptions> = {
   D: { dateStyle: "short" },
@@ -33,6 +37,10 @@ export const macroTokens: Record<MacroToken, Intl.DateTimeFormatOptions> = {
   ff: { dateStyle: "medium", timeStyle: "medium" },
   fff: { dateStyle: "long", timeStyle: "long" },
   ffff: { dateStyle: "full", timeStyle: "full" },
+  F: { dateStyle: "short", timeStyle: "short", hourCycle: "h23" },
+  FF: { dateStyle: "medium", timeStyle: "medium" , hourCycle: "h23"},
+  FFF: { dateStyle: "long", timeStyle: "long" , hourCycle: "h23"},
+  FFFF: { dateStyle: "full", timeStyle: "full" , hourCycle: "h23"},
 };
 
 export const isMacroToken = (token: string): token is MacroToken => token in macroTokens;

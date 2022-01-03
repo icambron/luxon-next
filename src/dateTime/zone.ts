@@ -1,6 +1,6 @@
 import { gregorianToTS } from "../impl/calendars/gregorian";
 import { alter } from "../impl/dateTime";
-import { fixedOffsetZone as fixedOffsetZoneInternal, utcInstance } from "../impl/zone/fixedOffset";
+import { fixedOffsetZone as fixedOffsetZoneInternal, utcZone } from "../impl/zone/fixedOffset";
 import { ianaZone as ianaZoneInternal } from "../impl/zone/iana";
 import { systemZone as systemZoneInternal } from "../impl/zone/system";
 import { normalizeZone } from "../impl/zone/normalizeZone";
@@ -35,7 +35,7 @@ export const setZone = (dt: DateTime, zone: Zoneish, { keepLocalTime = false } =
  *  @param dt
  * @param [opts={}] - options to pass to `setZone()`
  */
-export const toUTC = (dt: DateTime, opts: object = {}): DateTime => setZone(dt, utcInstance, opts);
+export const toUTC = (dt: DateTime, opts: object = {}): DateTime => setZone(dt, utcZone, opts);
 
 /**
  * "Set" the DateTime's zone to a fixed-offset zone with the specified offset. Returns a newly-constructed DateTime.

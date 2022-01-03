@@ -1,6 +1,6 @@
 import { dateTimeFormat, extract, getFormattingOpts} from "../util/formatUtil";
 import { memo } from "../util/caching";
-import { utcInstance } from "../zone/fixedOffset";
+import { utcZone } from "../zone/fixedOffset";
 import { Zone, EraFormatOpts, FormatFirstArg, DateTime, FormatSecondArg} from "../../types";
 
 const eraDtf = (formatOpts: Partial<EraFormatOpts>, zone: Zone): Intl.DateTimeFormat => {
@@ -20,7 +20,7 @@ export const listEras = (locale?: FormatFirstArg<EraFormatOpts>, opts?: FormatSe
 
   const formatOpts = getFormattingOpts(locale, opts);
   return memo("eraList", (formatOpts: Partial<EraFormatOpts>) => {
-    const dtf = eraDtf(formatOpts, utcInstance);
+    const dtf = eraDtf(formatOpts, utcZone);
 
     // @ts-ignore
     const d = new Date([2016, 6, 15]);

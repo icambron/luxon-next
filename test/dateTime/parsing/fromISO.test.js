@@ -5,11 +5,9 @@ import {
   toGregorian,
   zoneName,
   toUTC,
-  fixedOffsetZone,
 } from "../../../src/luxon";
 
 import { UnitOutOfRangeError } from "../../../src/errors";
-import { withDefaultZone } from "../../helpers";
 
 test("fromISO() parses as local by default", () => {
   const dt = fromISO("2016-05-25T09:08:34.123");
@@ -51,7 +49,7 @@ test("fromISO() uses the Z if provided, but keeps the dateTime as local", () => 
 });
 
 test("fromISO() optionally adopts the UTC offset provided", () => {
-  let dt = fromISO("2016-05-25T09:08:34.123+06:00", { useTargetZoneFromInput: true });
+  let dt = fromISO("2016-05-25T09:08:34.123+06:00", { useZoneFromInput: true });
   expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 5,
@@ -62,7 +60,7 @@ test("fromISO() optionally adopts the UTC offset provided", () => {
     millisecond: 123,
   });
 
-  dt = fromISO("1983-10-14T13:30Z", { useTargetZoneFromInput: true });
+  dt = fromISO("1983-10-14T13:30Z", { useZoneFromInput: true });
   expect(offset(dt)).toBe(0);
   expect(toGregorian(dt)).toEqual({
     year: 1983,
@@ -75,7 +73,7 @@ test("fromISO() optionally adopts the UTC offset provided", () => {
   });
 
   // #580
-  dt = fromISO("2016-05-25T09:08:34.123-00:30", { useTargetZoneFromInput: true });
+  dt = fromISO("2016-05-25T09:08:34.123-00:30", { useZoneFromInput: true });
   expect(zoneName(dt)).toBe("UTC-0:30");
   expect(toGregorian(dt)).toEqual({
     year: 2016,
@@ -88,77 +86,22 @@ test("fromISO() optionally adopts the UTC offset provided", () => {
   });
 });
 
-test("fromISO() can optionally specify a targetZone", () => {
-  withDefaultZone(fixedOffsetZone(6 * 60), () => {
-    let dt = fromISO("2016-05-25T09:08:34.123", { targetZone: "utc" });
-    expect(offset(dt)).toEqual(0);
-    expect(toGregorian(dt)).toEqual({
-      year: 2016,
-      month: 5,
-      day: 25,
-      hour: 9 - 6, // minus 6 because the string was interpreted as +6 and converted to utc, so subtract
-      minute: 8,
-      second: 34,
-      millisecond: 123,
-    });
-  });
-});
-
-test("fromISO()'s useTargetZoneFromInput overrides targetZone", () => {
-  let dt = fromISO("2016-05-25T09:08:34.123+06:00", { targetZone: "utc", useTargetZoneFromInput: true });
+test("fromISO() accepts a zone", () => {
+  const dt = fromISO("2016-05-25T09:08:34.123", { zone: "utc+6" });
   expect(offset(dt)).toEqual(6 * 60);
   expect(toGregorian(dt)).toEqual({
     year: 2016,
     month: 5,
     day: 25,
-    hour: 9,
+    hour: 9, // hour matches because we didn't convert out of the interpretation zone
     minute: 8,
     second: 34,
     millisecond: 123,
   });
 });
 
-test("fromISO() can optionally specify an interpretationZone for strings without offsets", () => {
-  let dt = fromISO("2016-05-25T09:08:34.123", { interpretationZone: "utc" });
-  expect(toGregorian(toUTC(dt))).toEqual({
-    year: 2016,
-    month: 5,
-    day: 25,
-    hour: 9,
-    minute: 8,
-    second: 34,
-    millisecond: 123,
-  });
-});
 
-test("fromISO()'s interpretationZone option doesn't affect strings with built-in offsets", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123+06:00", { interpretationZone: "utc" });
-  expect(toGregorian(toUTC(dt))).toEqual({
-    year: 2016,
-    month: 5,
-    day: 25,
-    hour: 3,
-    minute: 8,
-    second: 34,
-    millisecond: 123,
-  });
-});
-
-test("fromISO()'s interpretationZone and targetZone can work in combination", () => {
-  const dt = fromISO("2016-05-25T09:08:34.123", { interpretationZone: "utc", targetZone: "utc+6" });
-  expect(offset(dt)).toEqual(6 * 60);
-  expect(toGregorian(dt)).toEqual({
-    year: 2016,
-    month: 5,
-    day: 25,
-    hour: 9 + 6, // add 6 because we interpreted it as utc, then converted to +6, so we add 6
-    minute: 8,
-    second: 34,
-    millisecond: 123,
-  });
-});
-
-test("fromISO() accepts a simpleParingOptions that sets both target and interpretation zones", () => {
+test("fromISO() accepts a zone straight-up", () => {
   const dt = fromISO("2016-05-25T09:08:34.123", "utc+6");
   expect(offset(dt)).toEqual(6 * 60);
   expect(toGregorian(dt)).toEqual({
@@ -166,6 +109,34 @@ test("fromISO() accepts a simpleParingOptions that sets both target and interpre
     month: 5,
     day: 25,
     hour: 9, // hour matches because we didn't convert out of the interpretation zone
+    minute: 8,
+    second: 34,
+    millisecond: 123,
+  });
+});
+
+
+test("fromISO()'s useZoneFromInput overrides zone", () => {
+  let dt = fromISO("2016-05-25T09:08:34.123+06:00", { zone: "utc", useZoneFromInput: true });
+  expect(offset(dt)).toEqual(6 * 60);
+  expect(toGregorian(dt)).toEqual({
+    year: 2016,
+    month: 5,
+    day: 25,
+    hour: 9,
+    minute: 8,
+    second: 34,
+    millisecond: 123,
+  });
+});
+
+test("fromISO()'s zone option doesn't affect the interpretation of strings with built-in offsets", () => {
+  const dt = fromISO("2016-05-25T09:08:34.123+06:00", "utc");
+  expect(toGregorian(toUTC(dt))).toEqual({
+    year: 2016,
+    month: 5,
+    day: 25,
+    hour: 3,
     minute: 8,
     second: 34,
     millisecond: 123,
@@ -497,7 +468,7 @@ test("fromISO() accepts year-ordinalTtime", () => {
 });
 
 test("fromISO() accepts year-ordinalTtime+offset", () => {
-  const dt = fromISO("2016-200T09:24:15.123+0600", { useTargetZoneFromInput: true });
+  const dt = fromISO("2016-200T09:24:15.123+0600", { useZoneFromInput: true });
   expect(zoneName(dt)).toBe("UTC+6");
   expect(toGregorian(dt)).toEqual({
     year: 2016,

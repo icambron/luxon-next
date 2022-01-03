@@ -28,10 +28,10 @@ test.each(["day", "hour", "second", "millisecond"])(
   "hasSame() with unit %p ignores time offsets and is symmetric",
   (unit) => {
     const d1 = fromISO("2019-10-02T01:02:03.045+03:00", {
-      targetZone: "Europe/Helsinki",
+      zone: "Europe/Helsinki",
     });
     const d2 = fromISO("2019-10-02T01:02:03.045-05:00", {
-      targetZone: "America/Chicago",
+      zone: "America/Chicago",
     });
 
     expect(hasSame(d1, d2, unit)).toBe(true);

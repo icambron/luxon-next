@@ -35,9 +35,8 @@ const pickZone = (
     opts = { zone: opts }
   }
 
-  const interpretationZone: Zone = parsedZone || normalizeZone(opts.zone || opts.interpretationZone) || getDefaultZone();
-  const targetZone =
-    opts.useTargetZoneFromInput && parsedZone ? parsedZone : normalizeZone(opts.zone || opts.targetZone) || getDefaultZone();
+  const interpretationZone: Zone = parsedZone || normalizeZone(opts.zone) || getDefaultZone();
+  const targetZone = opts.useZoneFromInput && parsedZone ? parsedZone : normalizeZone(opts.zone) || getDefaultZone();
   return { interpretationZone, targetZone };
 };
 

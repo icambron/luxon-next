@@ -2,7 +2,7 @@ import { Zone, Zoneish } from "../../types";
 import { isZone } from "../util/typeCheck";
 import { getDefaultZone } from "../../settings";
 import { systemZone } from "./system";
-import { fixedOffsetZone, parseFixedOffset, utcInstance } from "./fixedOffset";
+import { fixedOffsetZone, parseFixedOffset, utcZone } from "./fixedOffset";
 import { ianaZone } from "./iana";
 import { InvalidZoneError } from "../../errors";
 import { isValidIANASpecifier } from "../util/zoneUtils";
@@ -15,7 +15,7 @@ export const normalizeZone = (zoneish: Zoneish): Zone => {
     const lowered = zoneish.toLowerCase();
     if (lowered === "default") return getDefaultZone();
     if (lowered === "system") return systemZone;
-    if (lowered === "utc") return utcInstance;
+    if (lowered === "utc") return utcZone;
 
     if (isValidIANASpecifier(lowered)) return ianaZone(zoneish);
 
