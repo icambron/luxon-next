@@ -22,7 +22,7 @@ test("toISO() handles big years", () => {
 });
 
 test("toISO() handles negative years", () => {
-  expect(toISO(setGregorian(dt, { year: -1999 }))).toBe("-1999-05-25T09:23:54.123Z");
+  expect(toISO(setGregorian(dt, { year: -1999 }))).toBe("-001999-05-25T09:23:54.123Z");
 });
 
 test("toISO() handles big negative years", () => {

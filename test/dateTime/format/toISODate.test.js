@@ -35,8 +35,8 @@ test("toISODate() returns ISO 8601 date in format [±YYYYY]", () => {
 
 test("toISODate() correctly pads negative years", () => {
   let dt = fromGregorian({ year: -1, month: 1, day: 1 }, "utc");
-  expect(toISODate(dt)).toBe("-0001-01-01");
+  expect(toISODate(dt)).toBe("-000001-01-01");
 
   dt = fromGregorian({ year: -10, month: 1, day: 1 }, "utc");
-  expect(toISODate(dt)).toBe("-0010-01-01");
+  expect(toISODate(dt)).toBe("-000010-01-01");
 });

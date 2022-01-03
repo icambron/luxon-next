@@ -205,7 +205,7 @@ export const toISO = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}) =>
 
 export const toISODate = (dt: DateTime, opts: Partial<ISOFormatOpts> = {}): string => {
 
-  let y = padStart(dt.gregorian.year,  Math.abs(dt.gregorian.year) > 9999 ? 6 : 4);
+  let y = padStart(dt.gregorian.year,  dt.gregorian.year > 9999 || dt.gregorian.year < 0 ? 6 : 4);
   
   if (dt.gregorian.year > 9999) {
     y = "+" + y;
