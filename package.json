@@ -20,7 +20,6 @@
     "serve": "serve build"
   },
   "devDependencies": {
-    "typedoc": "latest",
     "@swc/core": "latest",
     "@swc/jest": "latest",
     "dpdm": "latest",

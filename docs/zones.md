@@ -268,7 +268,6 @@ zoneName(local); //=> 'America/New_York'
 offset(local);   //=> -240
 
 isOffsetFixed(local) //=> false
-isInDST(local)       //=> true
 
 formatOffset(local)                         //=> 'EST'
 formatOffset(local, { width: "short" })     //=> 'EST'

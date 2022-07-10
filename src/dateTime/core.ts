@@ -91,10 +91,3 @@ export const isInLeapYear = (dt: DateTime): boolean => isLeapYear(year(dt));
 export const daysInCurrentMonth = (dt: DateTime): number => daysInMonth(year(dt), month(dt));
 export const daysInCurrentYear = (dt: DateTime): number => daysInYear(year(dt));
 export const isOffsetFixed = (dt: DateTime): boolean => zone(dt).isUniversal;
-
-export const isInDST = (dt: DateTime): boolean => {
-  if (dt.zone.isUniversal) {
-    return false;
-  }
-  return dt.offset > setGregorian(dt, { month: 1 }).offset || dt.offset > setGregorian(dt, { month: 5 }).offset;
-};

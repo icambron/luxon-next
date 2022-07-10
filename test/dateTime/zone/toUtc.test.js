@@ -1,4 +1,4 @@
-import { fromMillis, toUTC, hour, isOffsetFixed, zoneName, isInDST } from "../../../src/luxon";
+import { fromMillis, toUTC, hour, isOffsetFixed, zoneName } from "../../../src/luxon";
 
 // 1982-05-25T04:00:00.000Z
 const millis = 391147200000;
@@ -10,5 +10,4 @@ test("toUTC() puts the dt in UTC 'mode'", () => {
   expect(hour(zoned)).toBe(4);
   expect(zoneName(zoned)).toBe("UTC");
   expect(isOffsetFixed(zoned)).toBe(true);
-  expect(isInDST(zoned)).toBe(false);
 });

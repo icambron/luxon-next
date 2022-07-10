@@ -17,7 +17,6 @@ import {
   toUTC,
   InvalidZoneError,
   ianaZone,
-  isInDST,
 } from "../../../src/luxon";
 
 import { withDefaultZone } from "../../helpers";
@@ -34,9 +33,6 @@ test("setZone setZone sets the TZ to the specified zone", () => {
   expect(toMillis(zoned)).toBe(millis);
   expect(day(zoned)).toBe(24);
   expect(hour(zoned)).toBe(21);
-
-  // pacific daylight time
-  expect(isInDST(zoned)).toBe(true);
 });
 
 test("setZone accepts 'system'", () => {
