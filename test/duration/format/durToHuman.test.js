@@ -15,6 +15,10 @@ test("durToHuman formats out a list", () => {
   expect(durToHuman(dur)).toEqual("1 year, 2 months, 1 week, 3 days, 4 hours, 5 minutes, 6 seconds, 7 milliseconds");
 });
 
+test("durToHuman drops trailing zeros", () => {
+  expect(durToHuman(duration({ years: 1, months: 0, seconds: 0}))).toEqual("1 year");
+});
+
 test("durToHuman accepts a listStyle", () => {
   expect(durToHuman(dur, { listStyle: "long" })).toEqual(
     "1 year, 2 months, 1 week, 3 days, 4 hours, 5 minutes, 6 seconds, and 7 milliseconds"

@@ -3,6 +3,7 @@ import { durationToFormat } from "../impl/formatting/tokenFormatter";
 import { formatList, getFormattingOpts, numberFormat } from "../impl/util/formatUtil";
 import { simpleSingular } from "../impl/util/units";
 import { Duration, DurationHumanizeFormatOpts, FormatFirstArg, FormatSecondArg } from "../types";
+import { stripTrailingZeros } from "./convert";
 
 /**
  * Returns a string representation of a Duration with all units included
@@ -26,10 +27,10 @@ export const durToHuman = (
   opts: FormatSecondArg<DurationHumanizeFormatOpts>
 ): string => {
   const formatOpts = getFormattingOpts(locale, opts);
-  const vals = dur.values;
+  const durStripped = stripTrailingZeros(dur);
   const l = orderedUnits
     .map((unit) => {
-      const v = vals[unit];
+      const v = durStripped.values[unit];
       return typeof v === "undefined"
         ? null
         : numberFormat({ style: "unit", unitDisplay: "long", ...formatOpts, unit: simpleSingular(unit) }).format(v);

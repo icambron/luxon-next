@@ -1,7 +1,7 @@
 import { getDefaultConversionAccuracy } from "../settings";
 import { antiTrunc } from "../impl/util/numeric";
-import { ConversionMatrix, fromValues, normalizeDurationUnit, orderedUnits, pickMatrix } from "../impl/duration";
-import { ConversionAccuracy, Duration, DurationUnit } from "../types";
+import { ConversionMatrix, DurationImpl, fromValues, normalizeDurationUnit, orderedUnits, pickMatrix } from "../impl/duration";
+import { ConversionAccuracy, Duration, DurationUnit, DurationValues } from "../types";
 
 const reverseUnits: DurationUnit[] = orderedUnits.slice(0).reverse();
 
@@ -33,6 +33,27 @@ const durToMap = (dur: Duration): Map<DurationUnit, number> => {
   const entries = Object.entries(dur.values) as [DurationUnit, number][];
   return new Map<DurationUnit, number>(entries);
 };
+
+export const stripTrailingZeros = (dur: Duration): Duration => {
+	const stripped: Partial<DurationValues> = {}
+	let foundNonZero = false
+	for (const unit of reverseUnits) {
+		const val = dur.values[unit]
+		if (typeof val != "undefined") {
+			if (foundNonZero) {
+				stripped[unit] = val
+				continue
+			}
+
+			if (val != 0) {
+				stripped[unit] = val
+				foundNonZero = false
+			}
+		}
+	}
+
+	return new DurationImpl(stripped)
+}
 
 // NB: mutates parameters
 const normalizeValues = (matrix: ConversionMatrix, vals: Map<DurationUnit, number>) => {
